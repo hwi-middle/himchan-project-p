@@ -12,11 +12,11 @@ UCLASS()
 class PROJECTP_API APPCharacterPlayer : public APPCharacterBase
 {
 	GENERATED_BODY()
-
-	// 상수 선언 이렇게 하면 되는거 맞겠죠?
+private:
 	constexpr static float PLAYER_WALK_SPEED = 0.5f;
 	constexpr static float PLAYER_RUN_SPEED = 1.0f;
 	constexpr static float PLAYER_CAMERA_ROTATION = 90.0f;
+	
 public:
 	APPCharacterPlayer();
 	
@@ -45,7 +45,7 @@ private:
 	void PlayerIsRunning(const FInputActionValue& Value);
 	void PlayerQuickRotation(const FInputActionValue& Value);
 	
-	uint8 bIsRunning : 1;
+	uint32 bIsRunning : 1;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float WalkSpeed = PLAYER_WALK_SPEED;

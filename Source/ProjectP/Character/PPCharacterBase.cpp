@@ -9,8 +9,6 @@
 
 
 // Sets default values
-// 직접 사용하지 않고 기본 값만 설정하는 클래스인데 매직넘버 처리 어떻게 해야 할지 고민중...
-// 
 APPCharacterBase::APPCharacterBase()
 {
 	// Pawn
