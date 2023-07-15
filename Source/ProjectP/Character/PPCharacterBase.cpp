@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PPCharacterBase.h"
-
-#include "PPCharacterControlData.h"
+#include "ProjectP/Character/PPCharacterBase.h"
+#include "ProjectP/Character/PPCharacterControlData.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
