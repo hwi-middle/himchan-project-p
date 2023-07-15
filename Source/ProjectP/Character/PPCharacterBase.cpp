@@ -4,6 +4,7 @@
 #include "ProjectP/Character/PPCharacterBase.h"
 #include "ProjectP/Character/PPCharacterControlData.h"
 #include "Components/CapsuleComponent.h"
+#include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
