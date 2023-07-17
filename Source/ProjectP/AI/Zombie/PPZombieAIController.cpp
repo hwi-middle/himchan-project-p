@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectP/AI/PPZombieAIController.h"
+#include "ProjectP/AI/Zombie/PPZombieAIController.h"
 
 APPZombieAIController::APPZombieAIController()
 {

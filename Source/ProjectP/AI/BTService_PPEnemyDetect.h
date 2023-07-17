@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "PPEnemyDetectBTService.generated.h"
+#include "BTService_PPEnemyDetect.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTP_API UPPEnemyDetectBTService : public UBTService
+class PROJECTP_API UBTService_PPEnemyDetect : public UBTService
 {
 	GENERATED_BODY()
 public:
-	UPPEnemyDetectBTService();
+	UBTService_PPEnemyDetect();
 };
