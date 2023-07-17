@@ -3,26 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectP/Enumeration/PPGunState.h"
 #include "ProjectP/Prop/Weapon/PPWeaponData.h"
 #include "GameFramework/Actor.h"
-#include "PPWeaponBase.generated.h"
-
-UENUM()
-enum EWeaponState : uint8
-{
-	Idle,
-	Fire,
-	Reload
-};
+#include "PPGunBase.generated.h"
 
 UCLASS()
-class PROJECTP_API APPWeaponBase : public AActor
+class PROJECTP_API APPGunBase : public AActor
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this actor's properties
-	APPWeaponBase();
+	APPGunBase();
 
 protected:
 	virtual void SetupWeaponData(UPPWeaponData* WeaponData);
@@ -34,7 +27,9 @@ protected:
 	void RemoveOnHand();
 	void ToggleLaserPoint();
 	void ToggleFlashlight();
-	
+
+	FORCEINLINE void SetGunState(const EGunState EState) { CurrentState = EState; }
+	FORCEINLINE EGunState GetGunState() const { return CurrentState; }
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 	class USkeletalMeshComponent* BaseWeaponMesh;
@@ -71,6 +66,9 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
 	uint32 HeadDamageMax;
+
+	UPROPERTY(EditAnywhere, Category = WeaponStatus)
+	EGunState CurrentState;
 	
 	uint32 bLaserPointIsEnable : 1;
 	uint32 bFlashlightIsEnable : 1;

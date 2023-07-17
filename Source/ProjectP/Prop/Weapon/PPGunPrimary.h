@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "ProjectP/Prop/Weapon/PPWeaponData.h"
-#include "ProjectP/Prop/Weapon/PPWeaponBase.h"
-#include "PPWeaponPrimary.generated.h"
+#include "ProjectP/Prop/Weapon/PPGunBase.h"
+#include "PPGunPrimary.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTP_API APPWeaponPrimary : public APPWeaponBase
+class PROJECTP_API APPGunPrimary : public APPGunBase
 {
 	GENERATED_BODY()
 public:
-	APPWeaponPrimary();
+	APPGunPrimary();
 	
 protected:
 	virtual void SetupWeaponData(UPPWeaponData* WeaponData) override;

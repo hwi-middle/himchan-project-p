@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectP/Prop/Weapon/PPWeaponBase.h"
+#include "ProjectP/Prop/Weapon/PPGunBase.h"
 
 // Sets default values
-APPWeaponBase::APPWeaponBase()
+APPGunBase::APPGunBase()
 {
 	BaseWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 
@@ -19,10 +19,9 @@ APPWeaponBase::APPWeaponBase()
 	
 	GripLocation = CreateDefaultSubobject<USceneComponent>(TEXT("GripLocation"));
 	GripLocation->SetupAttachment(BaseWeaponMesh);
-	
 }
 
-void APPWeaponBase::SetupWeaponData(UPPWeaponData* WeaponData)
+void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
 {
 	MagazineAmmo = WeaponData->MagazineAmmo;
 	ReloadDelay = WeaponData->ReloadDelay;
@@ -33,7 +32,7 @@ void APPWeaponBase::SetupWeaponData(UPPWeaponData* WeaponData)
 	HeadDamageMax = WeaponData->HeadDamageMax;
 }
 
-void APPWeaponBase::PressTrigger()
+void APPGunBase::PressTrigger()
 {
 	/*
 	 * Called to Player InputAction
@@ -43,7 +42,7 @@ void APPWeaponBase::PressTrigger()
 	 */
 }
 
-void APPWeaponBase::OnFire()
+void APPGunBase::OnFire()
 {
 	/*
 	 * Called to WeaponTriggered Function
@@ -51,7 +50,7 @@ void APPWeaponBase::OnFire()
 	 */
 }
 
-void APPWeaponBase::ReloadMagazine()
+void APPGunBase::ReloadMagazine()
 {
 	/*
 	 * Play weapon's Reload Animation
@@ -59,7 +58,7 @@ void APPWeaponBase::ReloadMagazine()
 	 */
 }
 
-void APPWeaponBase::GrabOnHand()
+void APPGunBase::GrabOnHand()
 {
 	/*
 	 * Enable weapon input mapping context
@@ -68,7 +67,7 @@ void APPWeaponBase::GrabOnHand()
 	bIsGrabbed = true;
 }
 
-void APPWeaponBase::RemoveOnHand()
+void APPGunBase::RemoveOnHand()
 {
 	/*
 	* Disable weapon input mapping context
@@ -76,7 +75,7 @@ void APPWeaponBase::RemoveOnHand()
 	bIsGrabbed = false;
 }
 
-void APPWeaponBase::ToggleLaserPoint()
+void APPGunBase::ToggleLaserPoint()
 {
 	if(!bLaserPointIsEnable)
 	{
@@ -94,7 +93,7 @@ void APPWeaponBase::ToggleLaserPoint()
 	}
 }
 
-void APPWeaponBase::ToggleFlashlight()
+void APPGunBase::ToggleFlashlight()
 {
 	if(!bFlashlightIsEnable)
 	{
