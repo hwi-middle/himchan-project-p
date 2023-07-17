@@ -26,14 +26,14 @@ public:
 
 protected:
 	virtual void SetupWeaponData(UPPWeaponData* WeaponData);
-
-	void WeaponTriggered();
+	
+	void PressTrigger();
 	void OnFire();
 	void ReloadMagazine();
-	void GrabbedOnHand();
-	void DroppedOnHand();
+	void GrabOnHand();
+	void RemoveOnHand();
 	void ToggleLaserPoint();
-	void ToggleTorchlight();
+	void ToggleFlashlight();
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
@@ -46,33 +46,33 @@ private:
 	class USceneComponent* LaserLocation;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	class USceneComponent* TorchLocation;
+	class USceneComponent* FlashLocation;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 	class USceneComponent* GripLocation;
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	uint32 BaseWeaponMagazineAmmo;
+	uint32 MagazineAmmo;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	float BaseWeaponShootRate;
+	float FireRate;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	float BaseWeaponReloadDelay;
+	float ReloadDelay;
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	uint32 BaseWeaponBodyDamageMin;
+	uint32 BodyDamageMin;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	uint32 BaseWeaponBodyDamageMax;
+	uint32 BodyDamageMax;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	uint32 BaseWeaponHeadDamageMin;
+	uint32 HeadDamageMin;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	uint32 BaseWeaponHeadDamageMax;
+	uint32 HeadDamageMax;
 	
-	uint32 bEnableLaserPoint : 1;
-	uint32 bEnableTorchlight : 1;
+	uint32 bLaserPointIsEnable : 1;
+	uint32 bFlashlightIsEnable : 1;
 	uint32 bIsGrabbed : 1;
 };

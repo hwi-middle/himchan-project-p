@@ -14,8 +14,8 @@ APPWeaponBase::APPWeaponBase()
 	LaserLocation = CreateDefaultSubobject<USceneComponent>(TEXT("LaserLocation"));
 	LaserLocation->SetupAttachment(BaseWeaponMesh);
 	
-	TorchLocation = CreateDefaultSubobject<USceneComponent>(TEXT("TorchLocation"));
-	TorchLocation->SetupAttachment(BaseWeaponMesh);
+	FlashLocation = CreateDefaultSubobject<USceneComponent>(TEXT("FlashLocation"));
+	FlashLocation->SetupAttachment(BaseWeaponMesh);
 	
 	GripLocation = CreateDefaultSubobject<USceneComponent>(TEXT("GripLocation"));
 	GripLocation->SetupAttachment(BaseWeaponMesh);
@@ -24,22 +24,22 @@ APPWeaponBase::APPWeaponBase()
 
 void APPWeaponBase::SetupWeaponData(UPPWeaponData* WeaponData)
 {
-	BaseWeaponMagazineAmmo = WeaponData->WeaponMagazineAmmo;
-	BaseWeaponReloadDelay = WeaponData->WeaponReloadDelay;
-	BaseWeaponShootRate = WeaponData->WeaponShootRate;
-	BaseWeaponBodyDamageMin = WeaponData->WeaponBodyDamageMin;
-	BaseWeaponBodyDamageMax = WeaponData->WeaponBodyDamageMax;
-	BaseWeaponHeadDamageMin = WeaponData->WeaponHeadDamageMin;
-	BaseWeaponHeadDamageMax = WeaponData->WeaponHeadDamageMax;
+	MagazineAmmo = WeaponData->MagazineAmmo;
+	ReloadDelay = WeaponData->ReloadDelay;
+	FireRate = WeaponData->FireRate;
+	BodyDamageMin = WeaponData->BodyDamageMin;
+	BodyDamageMax = WeaponData->BodyDamageMax;
+	HeadDamageMin = WeaponData->HeadDamageMin;
+	HeadDamageMax = WeaponData->HeadDamageMax;
 }
 
-void APPWeaponBase::WeaponTriggered()
+void APPWeaponBase::PressTrigger()
 {
 	/*
 	 * Called to Player InputAction
 	 * Check Ammo remain
-	 * Call OnFire every BaseWeaponShootRate seconds
-	 * Change weapon's state to Fire?
+	 * If Ammo is left, Call OnFire every BaseWeaponShootRate seconds
+	 * Change weapon's state to Fire
 	 */
 }
 
@@ -59,7 +59,7 @@ void APPWeaponBase::ReloadMagazine()
 	 */
 }
 
-void APPWeaponBase::GrabbedOnHand()
+void APPWeaponBase::GrabOnHand()
 {
 	/*
 	 * Enable weapon input mapping context
@@ -68,7 +68,7 @@ void APPWeaponBase::GrabbedOnHand()
 	bIsGrabbed = true;
 }
 
-void APPWeaponBase::DroppedOnHand()
+void APPWeaponBase::RemoveOnHand()
 {
 	/*
 	* Disable weapon input mapping context
@@ -78,37 +78,37 @@ void APPWeaponBase::DroppedOnHand()
 
 void APPWeaponBase::ToggleLaserPoint()
 {
-	if(!bEnableLaserPoint)
+	if(!bLaserPointIsEnable)
 	{
 		/*
 		 * Do something
 		 */
-		bEnableLaserPoint = true;
+		bLaserPointIsEnable = true;
 	}
 	else
 	{
 		/*
 		 * Do something
 		 */
-		bEnableLaserPoint = false;
+		bLaserPointIsEnable = false;
 	}
 }
 
-void APPWeaponBase::ToggleTorchlight()
+void APPWeaponBase::ToggleFlashlight()
 {
-	if(!bEnableTorchlight)
+	if(!bFlashlightIsEnable)
 	{
 		/*
 		 * Do something
 		 */
-		bEnableTorchlight = true;
+		bFlashlightIsEnable = true;
 	}
 	else
 	{
 		/*
 		 * Do something
 		 */
-		bEnableTorchlight = false;
+		bFlashlightIsEnable = false;
 	}
 }
 
