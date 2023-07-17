@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "PPGameMode.generated.h"
+#include "PPVRGameMode.generated.h"
 
 /**
  * 
