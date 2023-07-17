@@ -3,54 +3,54 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PPCharacterBase.h"
-#include "EnhancedInputSubsystems.h"
+#include "ProjectP/Character/PPCharacterBase.h"
+#include "..\Interface\CharacterStatusInterface.h"
+#include "ProjectP/Enumeration/PPCharacterState.h"
+#include "ProjectP/Character/PPCharacterStatusData.h"
 #include "PPCharacterPlayer.generated.h"
 
 
 UCLASS()
-class PROJECTP_API APPCharacterPlayer : public APPCharacterBase
+class PROJECTP_API APPCharacterPlayer : public APPCharacterBase, public ICharacterStatusInterface
 {
 	GENERATED_BODY()
-private:
-	constexpr static float PLAYER_WALK_SPEED = 0.5f;
-	constexpr static float PLAYER_RUN_SPEED = 1.0f;
-	constexpr static float PLAYER_CAMERA_ROTATION = 90.0f;
-	
 public:
 	APPCharacterPlayer();
-	
 	// Default Protected Section
 protected:
 	virtual void Tick(float DeltaTime) override;
 	virtual void BeginPlay() override;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UCameraComponent> FollowCamera;
+
+	// StatusInterface override
+public:
+	virtual void SetupCharacterStatusData(const class UPPCharacterStatusData* CharacterStatusData) override;
+	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
+	FORCEINLINE const virtual uint8 GetCurrentState() override { return CurrentState; }
+
+	virtual void IncreaseHealth(const float Value) override;
+	virtual void DecreaseHealth(const float Value) override;
+	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	
-	// Player Input And Movement Section
-protected:
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void SetupCharacterControlData(const class UPPCharacterControlData* CharacterControlData) override;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UPPCharacterControlData> PlayerControlData;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> PlayerMovementAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> PlayerRunAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> PlayerQuickRotationAction;
+	// Player Variable Section
 private:
-	void PlayerMovement(const FInputActionValue& Value);
-	void PlayerIsRunning(const FInputActionValue& Value);
-	void PlayerQuickRotation(const FInputActionValue& Value);
+	UPROPERTY(EditAnywhere, Category = DataAsset)
+	UPPCharacterStatusData* PlayerStatusData;
 	
-	uint32 bIsRunning : 1;
+	UPROPERTY(EditAnywhere, Category = CharacterStatus)
+	uint32 Health;
+
+	UPROPERTY(EditAnywhere, Category = CharacterStatus)
+	uint32 RecoveryHealthOnIdle;
+
+	UPROPERTY(EditAnywhere, Category = CharacterStatus)
+	float WalkSpeed;
+
+	UPROPERTY(EditAnywhere, Category = CharacterStatus)
+	float RunSpeed;
+
+	UPROPERTY(EditAnywhere, Category = CharacterStatus)
+	uint8 CurrentState;
 	
-	UPROPERTY(EditDefaultsOnly)
-	float WalkSpeed = PLAYER_WALK_SPEED;
-	UPROPERTY(EditDefaultsOnly)
-	float RunSpeed = PLAYER_RUN_SPEED;
-	UPROPERTY(EditDefaultsOnly)
-	float QuickRotationAngle = PLAYER_CAMERA_ROTATION;
+	UPROPERTY(EditAnywhere, Category = CharacterStatus)
+	float ReturnToIdleStateTime;
 };
