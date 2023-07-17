@@ -30,23 +30,23 @@ public:
 	UAnimMontage* FireAnimation;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 WeaponMagazineAmmo;
+	uint32 MagazineAmmo;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	float WeaponShootRate;
+	float FireRate;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	float WeaponReloadDelay;
+	float ReloadDelay;
 	
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 WeaponBodyDamageMin;
+	uint32 BodyDamageMin;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 WeaponBodyDamageMax;
+	uint32 BodyDamageMax;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 WeaponHeadDamageMin;
+	uint32 HeadDamageMin;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 WeaponHeadDamageMax;
+	uint32 HeadDamageMax;
 };
