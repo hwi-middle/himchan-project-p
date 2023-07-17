@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-
 #include "ProjectP/Character/PPCharacterPlayer.h"
 
 // Sets default values
@@ -27,30 +26,16 @@ void APPCharacterPlayer::SetupCharacterStatusData(const UPPCharacterStatusData* 
 	// CharacterStatusData를 기반으로 PlayerCharacter 초기 상태 셋업
 }
 
-void APPCharacterPlayer::SetIdleState()
+void APPCharacterPlayer::IncreaseHealth(const float Value)
 {
-	PlayerCurrentState = Idle;
+	Health += Value;
 }
 
-void APPCharacterPlayer::SetDeadState()
+void APPCharacterPlayer::DecreaseHealth(const float Value)
 {
-	PlayerCurrentState = Dead;
+	Health -= Value;
 }
 
-const float APPCharacterPlayer::GetCurrentHealth()
-{
-	return PlayerHealth;
-}
-
-void APPCharacterPlayer::RecoveryHealth(const float Health)
-{
-	PlayerHealth += Health;
-}
-
-const uint8 APPCharacterPlayer::GetCurrentState()
-{
-	return PlayerCurrentState;
-}
 
 
 

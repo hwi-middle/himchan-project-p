@@ -16,21 +16,21 @@ class PROJECTP_API UPPCharacterStatusData : public UDataAsset
 public:
 	UPPCharacterStatusData();
 
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
-	uint32 CharacterDefaultHealth;
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	uint32 DefaultHealth;
 	
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
-	uint32 CharacterRecoveryHealthOnIdle;
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	uint32 RecoveryHealthValueOnIdle;
 
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
-	float CharacterWalkSpeed;
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	float WalkSpeed;
 
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
-	float CharacterRunSpeed;
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	float RunSpeed;
 	
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	float ReturnToIdleStateTime;
 
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
-	float CharacterDestroyTime;
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	float DestroyTime;
 };

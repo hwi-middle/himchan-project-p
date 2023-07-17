@@ -7,7 +7,6 @@
 UENUM()
 enum ECharacterState :uint8
 {
-	Sleep UMETA(DisplayName = "Sleep"),
 	Idle UMETA(DisplayName = "Idle"),
 	Awake UMETA(DisplayName = "Awake"),
 	Tracking UMETA(DisplayName = "Tracking"),
