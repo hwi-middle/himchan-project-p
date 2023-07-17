@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "PPEnemyAttackBTTask.generated.h"
+#include "BTTask_PPZombieAttack.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTP_API UPPEnemyAttackBTTask : public UBTTaskNode
+class PROJECTP_API UBTTask_PPZombieAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
 public:
-	UPPEnemyAttackBTTask();
+	UBTTask_PPZombieAttack();
 };

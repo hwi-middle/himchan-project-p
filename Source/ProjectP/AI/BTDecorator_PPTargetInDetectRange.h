@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTDecorator.h"
-#include "PPPlayerInAttackRangeBTDecorator.generated.h"
+#include "BTDecorator_PPTargetInDetectRange.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTP_API UPPPlayerInAttackRangeBTDecorator : public UBTDecorator
+class PROJECTP_API UBTDecorator_PPTargetInDetectRange : public UBTDecorator
 {
 	GENERATED_BODY()
 public:
-	UPPPlayerInAttackRangeBTDecorator();
+	UBTDecorator_PPTargetInDetectRange();
 };
