@@ -35,16 +35,16 @@ private:
 	class USkeletalMeshComponent* BaseWeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	class USceneComponent* MuzzleLocation;
+	class USceneComponent* MuzzlePosition;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	class USceneComponent* LaserLocation;
+	class USceneComponent* LaserPosition;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	class USceneComponent* FlashLocation;
+	class USceneComponent* FlashPosition;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	class USceneComponent* GripLocation;
+	class USceneComponent* GripPosition;
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
 	uint32 MagazineAmmo;
@@ -70,7 +70,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = WeaponStatus)
 	EGunState CurrentState;
 	
-	uint32 bLaserPointIsEnable : 1;
-	uint32 bFlashlightIsEnable : 1;
+	uint32 bIsLaserPointEnable : 1;
+	uint32 bIsFlashlightEnable : 1;
 	uint32 bIsGrabbed : 1;
 };

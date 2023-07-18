@@ -8,17 +8,17 @@ APPGunBase::APPGunBase()
 {
 	BaseWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 
-	MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
-	MuzzleLocation->SetupAttachment(BaseWeaponMesh);
+	MuzzlePosition = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzlePosition"));
+	MuzzlePosition->SetupAttachment(BaseWeaponMesh);
 
-	LaserLocation = CreateDefaultSubobject<USceneComponent>(TEXT("LaserLocation"));
-	LaserLocation->SetupAttachment(BaseWeaponMesh);
+	LaserPosition = CreateDefaultSubobject<USceneComponent>(TEXT("LaserPosition"));
+	LaserPosition->SetupAttachment(BaseWeaponMesh);
 	
-	FlashLocation = CreateDefaultSubobject<USceneComponent>(TEXT("FlashLocation"));
-	FlashLocation->SetupAttachment(BaseWeaponMesh);
+	FlashPosition = CreateDefaultSubobject<USceneComponent>(TEXT("FlashPosition"));
+	FlashPosition->SetupAttachment(BaseWeaponMesh);
 	
-	GripLocation = CreateDefaultSubobject<USceneComponent>(TEXT("GripLocation"));
-	GripLocation->SetupAttachment(BaseWeaponMesh);
+	GripPosition = CreateDefaultSubobject<USceneComponent>(TEXT("GripPosition"));
+	GripPosition->SetupAttachment(BaseWeaponMesh);
 }
 
 void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
@@ -77,37 +77,37 @@ void APPGunBase::RemoveOnHand()
 
 void APPGunBase::ToggleLaserPoint()
 {
-	if(!bLaserPointIsEnable)
+	if(!bIsLaserPointEnable)
 	{
 		/*
 		 * Do something
 		 */
-		bLaserPointIsEnable = true;
+		bIsLaserPointEnable = true;
 	}
 	else
 	{
 		/*
 		 * Do something
 		 */
-		bLaserPointIsEnable = false;
+		bIsLaserPointEnable = false;
 	}
 }
 
 void APPGunBase::ToggleFlashlight()
 {
-	if(!bFlashlightIsEnable)
+	if(!bIsFlashlightEnable)
 	{
 		/*
 		 * Do something
 		 */
-		bFlashlightIsEnable = true;
+		bIsFlashlightEnable = true;
 	}
 	else
 	{
 		/*
 		 * Do something
 		 */
-		bFlashlightIsEnable = false;
+		bIsFlashlightEnable = false;
 	}
 }
 
