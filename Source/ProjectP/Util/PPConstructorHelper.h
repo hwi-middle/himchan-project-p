@@ -21,6 +21,7 @@ public:
 	static void FindObjectAndInitialize(const TCHAR* InName, TFunctionRef<void(T*)> Func, uint32 InLoadFlags = LOAD_None)
 	{
 		T* Object = FindAndGetObject<T>(InName, InLoadFlags);
+		if(!Object) return;
 		Func(Object);
 	}
 
@@ -35,6 +36,7 @@ public:
 	static void FindClassAndInitialize(const TCHAR* InName, TFunctionRef<void(TSubclassOf<T>)> Func)
 	{
 		TSubclassOf<T> Class = FindAndGetClass<T>(InName);
+		if(!Class) return;
 		Func(Class);
 	}
 };
