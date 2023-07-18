@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectP/Character/PPBossStatusData.h"
+#include "ProjectP/Character/PPBossData.h"
 
-UPPBossStatusData::UPPBossStatusData()
+UPPBossData::UPPBossData()
 {
 	
 }
