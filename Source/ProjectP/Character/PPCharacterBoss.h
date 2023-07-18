@@ -37,4 +37,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	TMap<EBossPattern, uint32> BossPatternDamage;
+
+	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
+	float GenerateWeakPointTime;
+	
+	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
+	uint32 WeakPointDestructionRequired;
+	
+	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
+	float NeutralizeTime;
 };

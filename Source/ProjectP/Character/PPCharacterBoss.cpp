@@ -3,9 +3,11 @@
 
 #include "ProjectP/Character/PPCharacterBoss.h"
 
+#include "ProjectP/AI/Boss/PPBossAIController.h"
+
 APPCharacterBoss::APPCharacterBoss()
 {
-	
+	AIControllerClass = APPBossAIController::StaticClass();
 }
 
 void APPCharacterBoss::SetupCharacterStatusData(const UPPCharacterStatusData* CharacterStatusData)
@@ -15,10 +17,16 @@ void APPCharacterBoss::SetupCharacterStatusData(const UPPCharacterStatusData* Ch
 
 void APPCharacterBoss::IncreaseHealth(const float Value)
 {
+	/*
+	 * Do something
+	 */
 	Health += Value;
 }
 
 void APPCharacterBoss::DecreaseHealth(const float Value)
 {
+	/*
+	 * Do something
+	 */
 	Health -= Value;
 }

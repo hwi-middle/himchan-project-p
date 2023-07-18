@@ -13,31 +13,23 @@
  * 
  */
 UCLASS()
+// CharacterStatusData를 상속받긴 하는데 기획상에선 실질적으로 체력 외에는 사용 목적 애매해서 고민중
 class PROJECTP_API UPPBossData : public UPPCharacterStatusData
 {
 	GENERATED_BODY()
 public:
 	UPPBossData();
-	
-	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* Mesh;
-
-	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	UAnimBlueprint* AnimationBP;
-
-	UPROPERTY(EditDefaultsOnly, Category = AIController)
-	APPBossAIController* Controller;
-	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	TMap<EBossPattern ,uint32> PattenDamages;
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
 	float GenerateWeakPointTime;
 
+	// 약점 파괴 횟수 체크
 	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
 	uint32 WeakPointDestructionRequired;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	float StunTime;
+	float NeutralizeTime;
 	
 };
