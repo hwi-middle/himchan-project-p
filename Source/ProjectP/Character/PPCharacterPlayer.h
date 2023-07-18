@@ -25,7 +25,7 @@ protected:
 public:
 	virtual void SetupCharacterStatusData(const class UPPCharacterStatusData* CharacterStatusData) override;
 	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
-	FORCEINLINE const virtual uint8 GetCurrentState() override { return CurrentState; }
+	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
 
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
@@ -49,7 +49,7 @@ private:
 	float RunSpeed;
 
 	UPROPERTY(EditAnywhere, Category = CharacterStatus)
-	uint8 CurrentState;
+	ECharacterState CurrentState;
 	
 	UPROPERTY(EditAnywhere, Category = CharacterStatus)
 	float ReturnToIdleStateTime;

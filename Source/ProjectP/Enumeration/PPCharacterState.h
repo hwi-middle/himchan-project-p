@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 UENUM()
-enum ECharacterState :uint8
+enum class ECharacterState :uint8
 {
 	Idle UMETA(DisplayName = "Idle"),
 	Awake UMETA(DisplayName = "Awake"),
