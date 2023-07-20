@@ -4,6 +4,7 @@
 #include "PPVRPawn.h"
 
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "PPMovementData.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 
@@ -29,10 +30,14 @@ APPVRPawn::APPVRPawn()
 
 	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovement"));
 
-	InputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_DefaultVR.IMC_DefaultVR'"));
-	ensure(InputMappingContext);
-	MoveAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/IA_VRMove.IA_VRMove'"));
-	TurnAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/IA_VRTurn.IA_VRTurn'"));
+	MovementData = FPPConstructorHelper::FindAndGetObject<UPPMovementData>(TEXT("/Script/ProjectP.PPMovementData'/Game/15-Basic-Movement/Input/PlayerData.PlayerData'"));
+	check(MovementData);
+	InputMappingContext = MovementData->InputMappingContext;
+	MoveAction = MovementData->MoveAction;
+	TurnAction = MovementData->TurnAction;
+
+	MoveSpeed = MovementData->MoveSpeed;
+	SnapTurnDegrees = MovementData->SnapTurnDegrees;
 }
 
 // Called when the game starts or when spawned
@@ -75,30 +80,24 @@ void APPVRPawn::Move(const FInputActionValue& Value)
 	CameraForward -= UKismetMathLibrary::ProjectVectorOnToVector(CameraForward, ActorUp);
 	CameraForward.Normalize();
 
-	AddActorWorldOffset(FVector(CameraForward * InputVector.Y * 3));
+	AddActorWorldOffset(FVector(CameraForward * InputVector.Y * MoveSpeed));
 
 	FVector CameraRight = Camera->GetRightVector();
 
 	CameraRight -= UKismetMathLibrary::ProjectVectorOnToVector(CameraRight, ActorUp);
 	CameraRight.Normalize();
 
-	AddActorWorldOffset(FVector(CameraRight * InputVector.X * 3));
+	AddActorWorldOffset(FVector(CameraRight * InputVector.X * MoveSpeed));
 }
 
 void APPVRPawn::Turn(const FInputActionValue& Value)
 {
 	const float InputValue = Value.Get<float>();
-	float SnapTurnDegrees = 45.f;
-
-	if (InputValue < 0)
-	{
-		SnapTurnDegrees *= -1;
-	}
 
 	const FVector CameraLocation = Camera->GetComponentLocation();
 	const FTransform CameraRelativeTransform = Camera->GetRelativeTransform();
 
-	AddActorWorldRotation(FRotator(0.f, SnapTurnDegrees, 0.f));
+	AddActorWorldRotation(FRotator(0.f, InputValue > 0 ? SnapTurnDegrees : -SnapTurnDegrees, 0.f));
 	const FTransform ChangedActorTransform = GetActorTransform();
 	const FVector TransformedLocation = UKismetMathLibrary::ComposeTransforms(CameraRelativeTransform, ChangedActorTransform).GetLocation();
 	const FVector InversedDirection = CameraLocation - TransformedLocation;

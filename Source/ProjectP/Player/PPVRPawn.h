@@ -28,6 +28,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "Input")
+	TObjectPtr<class UPPMovementData> MovementData;
+
 	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true))
 	TObjectPtr<class USceneComponent> VROrigin;
 
@@ -38,14 +41,20 @@ private:
 	TObjectPtr<class UFloatingPawnMovement> FloatingPawnMovement;
 
 private:
-	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "Input")
+	UPROPERTY()
 	TObjectPtr<class UInputMappingContext> InputMappingContext;
 
-	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "Input")
+	UPROPERTY()
 	TObjectPtr<class UInputAction> MoveAction;
 
-	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "Input")
+	UPROPERTY()
 	TObjectPtr<class UInputAction> TurnAction;
+
+	UPROPERTY()
+	float SnapTurnDegrees;
+
+	UPROPERTY()
+	float MoveSpeed;
 
 private:
 	void Move(const FInputActionValue& Value);
