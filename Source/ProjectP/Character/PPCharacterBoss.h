@@ -42,7 +42,7 @@ private:
 	float GenerateWeakPointTime;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	uint32 WeakPointDestructionRequired;
+	uint32 RequiredWeakPointDestructionCount;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
 	float NeutralizeTime;

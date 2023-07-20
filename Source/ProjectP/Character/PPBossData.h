@@ -20,14 +20,14 @@ class PROJECTP_API UPPBossData : public UPPCharacterStatusData
 public:
 	UPPBossData();
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	TMap<EBossPattern ,uint32> PattenDamages;
+	TMap<EBossPattern, uint32> PatternDamages;
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
 	float GenerateWeakPointTime;
 
 	// 약점 파괴 횟수 체크
 	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	uint32 WeakPointDestructionRequired;
+	uint32 RequiredWeakPointDestructionCount;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
 	float NeutralizeTime;
