@@ -17,17 +17,17 @@ public:
 	UPPWeaponData();
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	USkeletalMeshComponent* WeaponMesh;
+	TObjectPtr<class USkeletalMeshComponent> WeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category = Sound)
-	USoundBase* ReloadSound;
+	TObjectPtr<class USoundBase> ReloadSound;
 	
 	UPROPERTY(EditDefaultsOnly, Category = Sound)
-	USoundBase* FireSound;
+	TObjectPtr<class USoundBase> FireSound;
 
 	// 애님 몽타주와 시퀀스중 어떤 것을 사용할지는 나중에 결정
 	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	UAnimMontage* FireAnimation;
+	TObjectPtr<class UAnimMontage> FireAnimation;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
 	uint32 MagazineAmmo;

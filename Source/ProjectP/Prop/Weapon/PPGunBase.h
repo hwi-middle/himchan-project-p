@@ -32,19 +32,19 @@ protected:
 	FORCEINLINE EGunState GetGunState() const { return CurrentState; }
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	class USkeletalMeshComponent* BaseWeaponMesh;
+	TObjectPtr<class USkeletalMeshComponent> BaseWeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	class USceneComponent* MuzzlePosition;
+	TObjectPtr<class USceneComponent> MuzzlePosition;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	class USceneComponent* LaserPosition;
+	TObjectPtr<class USceneComponent> LaserPosition;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	class USceneComponent* FlashPosition;
+	TObjectPtr<class USceneComponent> FlashPosition;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	class USceneComponent* GripPosition;
+	TObjectPtr<class USceneComponent> GripPosition;
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
 	uint32 MagazineAmmo;

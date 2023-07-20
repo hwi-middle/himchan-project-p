@@ -22,5 +22,5 @@ protected:
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = DataAsset)
-	UPPWeaponData* PrimaryWeaponData;
+	TObjectPtr<class UPPWeaponData> PrimaryWeaponData;
 };
