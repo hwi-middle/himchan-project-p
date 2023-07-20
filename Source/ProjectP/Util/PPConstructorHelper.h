@@ -13,7 +13,7 @@ public:
 	template <class T>
 	static T* FindAndGetObject(const TCHAR* InName, uint32 InLoadFlags = LOAD_None)
 	{
-		static ConstructorHelpers::FObjectFinder<T> ObjectFinder(InName, InLoadFlags);
+		ConstructorHelpers::FObjectFinder<T> ObjectFinder(InName, InLoadFlags);
 		return ObjectFinder.Object;
 	}
 
@@ -28,7 +28,7 @@ public:
 	template <class T>
 	static TSubclassOf<T> FindAndGetClass(const TCHAR* InName)
 	{
-		static ConstructorHelpers::FClassFinder<T> ObjectFinder(InName);
+		ConstructorHelpers::FClassFinder<T> ObjectFinder(InName);
 		return ObjectFinder.Class;
 	}
 
