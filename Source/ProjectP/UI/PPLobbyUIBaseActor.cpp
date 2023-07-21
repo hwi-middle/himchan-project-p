@@ -15,37 +15,37 @@ APPLobbyUIBaseActor::APPLobbyUIBaseActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	LobbyUIWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("LobbyUIWidget"));
-	LobbyUIWidget->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPLobbyUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/LobbyUIBlueprint.LobbyUIBlueprint_C'")));
-	RootComponent = LobbyUIWidget;
+	LobbyWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("LobbyUIWidget"));
+	LobbyWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPLobbyUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/LobbyUIBlueprint.LobbyUIBlueprint_C'")));
+	RootComponent = LobbyWidgetComponent;
 
-	SettingUIWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("SettingUIWidget"));
-	SettingUIWidget->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPSettingUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/SettingUIBlueprint.SettingUIBlueprint_C'")));
-	SettingUIWidget->SetupAttachment(LobbyUIWidget);
+	SettingWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("SettingUIWidget"));
+	SettingWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPSettingUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/SettingUIBlueprint.SettingUIBlueprint_C'")));
+	SettingWidgetComponent->SetupAttachment(LobbyWidgetComponent);
 
-	HelpUIWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelpUIWidget"));
-	HelpUIWidget->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPHelpUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/HelpUIBlueprint.HelpUIBlueprint_C'")));
-	HelpUIWidget->SetupAttachment(LobbyUIWidget);
+	HelpWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelpUIWidget"));
+	HelpWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPHelpUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/HelpUIBlueprint.HelpUIBlueprint_C'")));
+	HelpWidgetComponent->SetupAttachment(LobbyWidgetComponent);
 
-	ExitCheckUIWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("ExitCheckUIWidget"));
-	ExitCheckUIWidget->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPExitCheckUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/ExitCheckUIBlueprint.ExitCheckUIBlueprint_C'")));
-	ExitCheckUIWidget->SetupAttachment(LobbyUIWidget);
+	ExitCheckWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ExitCheckUIWidget"));
+	ExitCheckWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPExitCheckUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/ExitCheckUIBlueprint.ExitCheckUIBlueprint_C'")));
+	ExitCheckWidgetComponent->SetupAttachment(LobbyWidgetComponent);
 	
 }
 
 void APPLobbyUIBaseActor::ToggleSettingWidgetVisible()
 {
-	SettingUIWidget->IsVisible() ? SettingUIWidget->SetVisibility(false) : SettingUIWidget->SetVisibility(true);
+	SettingWidgetComponent->IsVisible() ? SettingWidgetComponent->SetVisibility(false) : SettingWidgetComponent->SetVisibility(true);
 }
 
 void APPLobbyUIBaseActor::ToggleHelpWidgetVisible()
 {
-	HelpUIWidget->IsVisible() ? HelpUIWidget->SetVisibility(false) : HelpUIWidget->SetVisibility(true);
+	HelpWidgetComponent->IsVisible() ? HelpWidgetComponent->SetVisibility(false) : HelpWidgetComponent->SetVisibility(true);
 }
 
 void APPLobbyUIBaseActor::ToggleExitCheckWidgetVisible()
 {
-	ExitCheckUIWidget->IsVisible() ? ExitCheckUIWidget->SetVisibility(false) : ExitCheckUIWidget->SetVisibility(true);
+	ExitCheckWidgetComponent->IsVisible() ? ExitCheckWidgetComponent->SetVisibility(false) : ExitCheckWidgetComponent->SetVisibility(true);
 }
 
 // Called when the game starts or when spawned
@@ -53,8 +53,22 @@ void APPLobbyUIBaseActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SettingUIWidget->SetVisibility(false);
-	HelpUIWidget->SetVisibility(false);
+	SettingWidgetComponent->SetVisibility(false);
+	HelpWidgetComponent->SetVisibility(false);
+
+	UClass* LobbyWidget = LobbyWidgetComponent->GetWidgetClass();
+	if(LobbyWidget)
+	{
+		if (LobbyWidget->IsChildOf(UUserWidget::StaticClass()))
+		{
+			UPPLobbyUIWidget* UserWidget = Cast<UPPLobbyUIWidget>(LobbyWidgetComponent->GetUserWidgetObject());
+			if (UserWidget)
+			{
+				UserWidget->LobbyUIBaseActor = this;
+			}
+		}
+	}
+	
 }
 
 

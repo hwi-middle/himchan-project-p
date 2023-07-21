@@ -13,10 +13,6 @@ void UPPLobbyUIWidget::NativeConstruct()
 	SettingButton->OnClicked.AddDynamic(this, &UPPLobbyUIWidget::ToggleSettingWidget);
 	HelpButton->OnClicked.AddDynamic(this, &UPPLobbyUIWidget::ToggleHelpWidget);
 	ExitButton->OnClicked.AddDynamic(this, &UPPLobbyUIWidget::OpenExitCheckWidget);
-	
-	SettingDelegate.BindUObject(LobbyBaseActor, &APPLobbyUIBaseActor::ToggleSettingWidgetVisible);
-	HelpDelegate.BindUObject(LobbyBaseActor, &APPLobbyUIBaseActor::ToggleHelpWidgetVisible);
-	ExitDelegate.BindUObject(LobbyBaseActor, &APPLobbyUIBaseActor::ToggleExitCheckWidgetVisible);
 }
 
 void UPPLobbyUIWidget::EntryMainLevel()
@@ -27,15 +23,15 @@ void UPPLobbyUIWidget::EntryMainLevel()
 
 void UPPLobbyUIWidget::ToggleSettingWidget()
 {
-	SettingDelegate.ExecuteIfBound();
+	LobbyUIBaseActor->ToggleSettingWidgetVisible();
 }
 
 void UPPLobbyUIWidget::ToggleHelpWidget()
 {
-	SettingDelegate.ExecuteIfBound();
+	LobbyUIBaseActor->ToggleHelpWidgetVisible();
 }
 
 void UPPLobbyUIWidget::OpenExitCheckWidget()
 {
-	SettingDelegate.ExecuteIfBound();
+	LobbyUIBaseActor->ToggleExitCheckWidgetVisible();
 }

@@ -20,6 +20,10 @@ public:
 	// Sets default values for this actor's properties
 	APPLobbyUIBaseActor();
 
+	FSettingButtonDelegate SettingDelegate;
+	FHelpButtonDelegate HelpDelegate;
+	FExitButtonDelegate ExitDelegate;
+	
 	UFUNCTION(BlueprintCallable)
 	void ToggleSettingWidgetVisible();
 
@@ -33,16 +37,16 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = Widget)
-	TObjectPtr<UWidgetComponent> LobbyUIWidget;
+	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
+	TObjectPtr<UWidgetComponent> LobbyWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = Widget)
-	TObjectPtr<UWidgetComponent> SettingUIWidget;
+	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
+	TObjectPtr<UWidgetComponent> SettingWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = Widget)
-	TObjectPtr<UWidgetComponent> HelpUIWidget;
+	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
+	TObjectPtr<UWidgetComponent> HelpWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = Widget)
-	TObjectPtr<UWidgetComponent> ExitCheckUIWidget;
+	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
+	TObjectPtr<UWidgetComponent> ExitCheckWidgetComponent;
 	
 };

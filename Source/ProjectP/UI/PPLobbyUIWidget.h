@@ -16,6 +16,8 @@ class PROJECTP_API UPPLobbyUIWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<APPLobbyUIBaseActor> LobbyUIBaseActor;
 	UFUNCTION(BlueprintCallable)
 	void EntryMainLevel();
 	
@@ -43,12 +45,5 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<class UButton> ExitButton;
-
-private:
-	UPROPERTY(VisibleDefaultsOnly)
-	TObjectPtr<class APPLobbyUIBaseActor> LobbyBaseActor;
 	
-	FSettingButtonDelegate SettingDelegate;
-	FHelpButtonDelegate HelpDelegate;
-	FExitButtonDelegate ExitDelegate;
 };
