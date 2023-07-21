@@ -22,39 +22,53 @@ public:
 	template <class T>
 	static T* FindAndGetObject(const TCHAR* InName, const EAssertionLevel InAssertionLevel = EAssertionLevel::None, const uint32 InLoadFlags = LOAD_None)
 	{
+		static TMap<FName, UObject*> Cache;
+		
+		if (Cache.Contains(InName))
+		{
+			return Cast<T>(Cache[InName]);
+		}
+
 		ConstructorHelpers::FObjectFinder<T> ObjectFinder(InName, InLoadFlags);
 		AssertByAssertionLevel(ObjectFinder, InAssertionLevel);
-		return ObjectFinder.Object;
+		T* Object = ObjectFinder.Object;
+		Cache.Add(InName, Object);
+		return Object;
 	}
 
 	template <class T>
 	static void FindObjectAndInitialize(const TCHAR* InName, TFunctionRef<void(T*)> Func, const EAssertionLevel InAssertionLevel = EAssertionLevel::None, uint32 InLoadFlags = LOAD_None)
 	{
-		T* Object = FindAndGetObject<T>(InName, InAssertionLevel, InLoadFlags);
-		if (!Object)
+		if (T* Object = FindAndGetObject<T>(InName, InAssertionLevel, InLoadFlags))
 		{
-			return;
+			Func(Object);
 		}
-		Func(Object);
 	}
 
 	template <class T>
 	static TSubclassOf<T> FindAndGetClass(const TCHAR* InName, const EAssertionLevel InAssertionLevel = EAssertionLevel::None)
 	{
-		ConstructorHelpers::FClassFinder<T> ObjectFinder(InName);
-		AssertByAssertionLevel(ObjectFinder, InAssertionLevel);
-		return ObjectFinder.Class;
+		static TMap<FName, UObject*> Cache;
+		
+		if (Cache.Contains(InName))
+		{
+			return Cast<T>(Cache[InName]);
+		}
+
+		ConstructorHelpers::FClassFinder<T> ClassFinder(InName);
+		AssertByAssertionLevel(ClassFinder, InAssertionLevel);
+		T* Object = ClassFinder.Object;
+		Cache.Add(InName, Object);
+		return Object;
 	}
 
 	template <class T>
 	static void FindClassAndInitialize(const TCHAR* InName, TFunctionRef<void(TSubclassOf<T>)> Func, const EAssertionLevel InAssertionLevel = EAssertionLevel::None)
 	{
-		TSubclassOf<T> Class = FindAndGetClass<T>(InName, InAssertionLevel);
-		if (!Class)
+		if (TSubclassOf<T> Class = FindAndGetClass<T>(InName, InAssertionLevel))
 		{
-			return;
+			Func(Class);
 		}
-		Func(Class);
 	}
 
 private:
