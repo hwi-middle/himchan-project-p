@@ -31,7 +31,10 @@ public:
 	static void FindObjectAndInitialize(const TCHAR* InName, TFunctionRef<void(T*)> Func, const EAssertionLevel InAssertionLevel = EAssertionLevel::None, uint32 InLoadFlags = LOAD_None)
 	{
 		T* Object = FindAndGetObject<T>(InName, InAssertionLevel, InLoadFlags);
-		if (!Object) return;
+		if (!Object)
+		{
+			return;
+		}
 		Func(Object);
 	}
 
@@ -47,7 +50,10 @@ public:
 	static void FindClassAndInitialize(const TCHAR* InName, TFunctionRef<void(TSubclassOf<T>)> Func, const EAssertionLevel InAssertionLevel = EAssertionLevel::None)
 	{
 		TSubclassOf<T> Class = FindAndGetClass<T>(InName, InAssertionLevel);
-		if (!Class) return;
+		if (!Class)
+		{
+			return;
+		}
 		Func(Class);
 	}
 
