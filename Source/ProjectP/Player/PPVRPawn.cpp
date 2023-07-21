@@ -80,14 +80,14 @@ void APPVRPawn::Move(const FInputActionValue& Value)
 	CameraForward -= UKismetMathLibrary::ProjectVectorOnToVector(CameraForward, ActorUp);
 	CameraForward.Normalize();
 
-	AddActorWorldOffset(FVector(CameraForward * InputVector.Y * MoveSpeed));
+	AddActorWorldOffset(FVector(CameraForward * InputVector.Y * MoveSpeed), true);
 
 	FVector CameraRight = Camera->GetRightVector();
 
 	CameraRight -= UKismetMathLibrary::ProjectVectorOnToVector(CameraRight, ActorUp);
 	CameraRight.Normalize();
 
-	AddActorWorldOffset(FVector(CameraRight * InputVector.X * MoveSpeed));
+	AddActorWorldOffset(FVector(CameraRight * InputVector.X * MoveSpeed), true);
 }
 
 void APPVRPawn::Turn(const FInputActionValue& Value)
