@@ -7,6 +7,7 @@
 #include "PPMovementData.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "MotionControllerComponent.h"
 
 #include "EnhancedInput/Public/InputActionValue.h"
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
@@ -37,6 +38,16 @@ APPVRPawn::APPVRPawn()
 
 	MoveSpeed = MovementData->MoveSpeed;
 	SnapTurnDegrees = MovementData->SnapTurnDegrees;
+
+	LeftMotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftMotionController"));
+	LeftMotionController->SetupAttachment(VROrigin);
+	LeftMotionController->bDisplayDeviceModel= true;
+	LeftMotionController->SetTrackingSource(EControllerHand::Left);
+	
+	RightMotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("RightMotionController"));
+	RightMotionController->SetupAttachment(VROrigin);
+	RightMotionController->bDisplayDeviceModel= true;
+	RightMotionController->SetTrackingSource(EControllerHand::Right);
 }
 
 // Called when the game starts or when spawned
