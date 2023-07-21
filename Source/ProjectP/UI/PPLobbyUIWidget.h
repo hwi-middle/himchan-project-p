@@ -3,24 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectP/UI/PPUserWidget.h"
-#include "ProjectP/UI/PPSettingWidget.h"
-#include "PPLobbyWidget.generated.h"
+#include "Blueprint/UserWidget.h"
+#include "PPLobbyUIWidget.generated.h"
+
 
 /**
  * 
  */
 UCLASS()
-class PROJECTP_API UPPLobbyWidget : public UPPUserWidget
+class PROJECTP_API UPPLobbyUIWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UPPLobbyWidget(const FObjectInitializer& ObjectInitializer);
 
 protected:
-	virtual void NativeOnInitialized() override;
-	
-	// UI 바인딩
+	virtual void NativeConstruct() override;
+
+	// Widget
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<class UButton> StartButton;
@@ -33,26 +32,17 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<class UButton> ExitButton;
-	
-	// UI에서 호출될 이벤트 함수
+
 private:
 	UFUNCTION(BlueprintCallable)
 	void EntryMainLevel();
 	
 	UFUNCTION(BlueprintCallable)
-	void OpenSettingWidget();
+	void ToggleSettingWidget();
 
 	UFUNCTION(BlueprintCallable)
-	void OpenHelpWidget();
+	void ToggleHelpWidget();
 
 	UFUNCTION(BlueprintCallable)
 	void OpenExitCheckWidget();
-
-	// 위젯 이벤트에서 활성화/비활성화 할 서브위젯
-private:
-	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
-	TObjectPtr<class UPPSettingWidget> SettingWidget;
-
-	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
-	TObjectPtr<class UPPSettingWidget> HelpWidget;
 };
