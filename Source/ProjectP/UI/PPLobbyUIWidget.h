@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PPLobbyUIBaseActor.h"
 #include "Blueprint/UserWidget.h"
 #include "PPLobbyUIWidget.generated.h"
 
@@ -15,7 +16,17 @@ class PROJECTP_API UPPLobbyUIWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
+	UFUNCTION(BlueprintCallable)
+	void EntryMainLevel();
+	
+	UFUNCTION(BlueprintCallable)
+	void ToggleSettingWidget();
 
+	UFUNCTION(BlueprintCallable)
+	void ToggleHelpWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void OpenExitCheckWidget();
 protected:
 	virtual void NativeConstruct() override;
 
@@ -34,15 +45,10 @@ protected:
 	TObjectPtr<class UButton> ExitButton;
 
 private:
-	UFUNCTION(BlueprintCallable)
-	void EntryMainLevel();
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<class APPLobbyUIBaseActor> LobbyBaseActor;
 	
-	UFUNCTION(BlueprintCallable)
-	void ToggleSettingWidget();
-
-	UFUNCTION(BlueprintCallable)
-	void ToggleHelpWidget();
-
-	UFUNCTION(BlueprintCallable)
-	void OpenExitCheckWidget();
+	FSettingButtonDelegate SettingDelegate;
+	FHelpButtonDelegate HelpDelegate;
+	FExitButtonDelegate ExitDelegate;
 };

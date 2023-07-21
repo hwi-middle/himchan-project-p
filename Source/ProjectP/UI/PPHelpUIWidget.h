@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PPHelpUIWidget.generated.h"
 
-DECLARE_DELEGATE(FHelpButtonDelegate);
+
 /**
  * 
  */

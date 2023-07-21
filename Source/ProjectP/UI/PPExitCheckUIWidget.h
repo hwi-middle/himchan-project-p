@@ -6,7 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "PPExitCheckUIWidget.generated.h"
 
-DECLARE_DELEGATE(FExitButtonDelegate);
 /**
  * 
  */

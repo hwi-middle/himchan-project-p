@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectP/UI/PPLobbyUIWidget.h"
-
-#include "PPSettingUIWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 
@@ -15,6 +13,10 @@ void UPPLobbyUIWidget::NativeConstruct()
 	SettingButton->OnClicked.AddDynamic(this, &UPPLobbyUIWidget::ToggleSettingWidget);
 	HelpButton->OnClicked.AddDynamic(this, &UPPLobbyUIWidget::ToggleHelpWidget);
 	ExitButton->OnClicked.AddDynamic(this, &UPPLobbyUIWidget::OpenExitCheckWidget);
+	
+	SettingDelegate.BindUObject(LobbyBaseActor, &APPLobbyUIBaseActor::ToggleSettingWidgetVisible);
+	HelpDelegate.BindUObject(LobbyBaseActor, &APPLobbyUIBaseActor::ToggleHelpWidgetVisible);
+	ExitDelegate.BindUObject(LobbyBaseActor, &APPLobbyUIBaseActor::ToggleExitCheckWidgetVisible);
 }
 
 void UPPLobbyUIWidget::EntryMainLevel()
@@ -25,15 +27,15 @@ void UPPLobbyUIWidget::EntryMainLevel()
 
 void UPPLobbyUIWidget::ToggleSettingWidget()
 {
-	
+	SettingDelegate.ExecuteIfBound();
 }
 
 void UPPLobbyUIWidget::ToggleHelpWidget()
 {
-	
+	SettingDelegate.ExecuteIfBound();
 }
 
 void UPPLobbyUIWidget::OpenExitCheckWidget()
 {
-	
+	SettingDelegate.ExecuteIfBound();
 }

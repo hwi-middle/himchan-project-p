@@ -7,6 +7,10 @@
 #include "GameFramework/Actor.h"
 #include "PPLobbyUIBaseActor.generated.h"
 
+DECLARE_DELEGATE(FSettingButtonDelegate);
+DECLARE_DELEGATE(FHelpButtonDelegate);
+DECLARE_DELEGATE(FExitButtonDelegate);
+
 UCLASS()
 class PROJECTP_API APPLobbyUIBaseActor : public AActor
 {
@@ -16,6 +20,14 @@ public:
 	// Sets default values for this actor's properties
 	APPLobbyUIBaseActor();
 
+	UFUNCTION(BlueprintCallable)
+	void ToggleSettingWidgetVisible();
+
+	UFUNCTION(BlueprintCallable)
+	void ToggleHelpWidgetVisible();
+	
+	UFUNCTION(BlueprintCallable)
+	void ToggleExitCheckWidgetVisible();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

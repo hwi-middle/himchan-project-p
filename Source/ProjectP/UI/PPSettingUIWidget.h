@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PPSettingUIWidget.generated.h"
 
-DECLARE_DELEGATE(FSettingButtonDelegate);
+
 /**
  * 
  */
