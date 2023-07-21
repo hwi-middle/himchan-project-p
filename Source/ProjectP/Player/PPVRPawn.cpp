@@ -30,8 +30,7 @@ APPVRPawn::APPVRPawn()
 
 	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovement"));
 
-	MovementData = FPPConstructorHelper::FindAndGetObject<UPPMovementData>(TEXT("/Script/ProjectP.PPMovementData'/Game/15-Basic-Movement/Input/PlayerData.PlayerData'"));
-	check(MovementData);
+	MovementData = FPPConstructorHelper::FindAndGetObject<UPPMovementData>(TEXT("/Script/ProjectP.PPMovementData'/Game/15-Basic-Movement/Input/PlayerData.PlayerData'"), EAssertionLevel::Check);
 	InputMappingContext = MovementData->InputMappingContext;
 	MoveAction = MovementData->MoveAction;
 	TurnAction = MovementData->TurnAction;
