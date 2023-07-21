@@ -13,5 +13,9 @@ UCLASS()
 class PROJECTP_API UPPSettingWidget : public UPPUserWidget
 {
 	GENERATED_BODY()
+public:
+	UPPSettingWidget(const FObjectInitializer& ObjectInitializer);
+	
+protected:
 	
 };

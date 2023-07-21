@@ -3,3 +3,7 @@
 
 #include "ProjectP/UI/PPSettingWidget.h"
 
+UPPSettingWidget::UPPSettingWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	
+}

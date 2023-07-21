@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "ProjectP/UI/PPUserWidget.h"
-#include "PPPauseWidget.generated.h"
+#include "PPHelpWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTP_API UPPPauseWidget : public UPPUserWidget
+class PROJECTP_API UPPHelpWidget : public UPPUserWidget
 {
 	GENERATED_BODY()
 public:
-	UPPPauseWidget(const FObjectInitializer& ObjectInitializer);
+	UPPHelpWidget(const FObjectInitializer& ObjectInitializer);
 protected:
 };

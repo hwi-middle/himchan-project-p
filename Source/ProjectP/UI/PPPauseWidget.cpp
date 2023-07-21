@@ -3,3 +3,7 @@
 
 #include "ProjectP/UI/PPPauseWidget.h"
 
+UPPPauseWidget::UPPPauseWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	
+}
