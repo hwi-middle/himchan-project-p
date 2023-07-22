@@ -20,7 +20,7 @@ public:
 
 	
 protected:
-	virtual void SetupCharacterStatusData(const class UPPCharacterStatusData* CharacterStatusData) override;
+	virtual void SetupCharacterStatusData(const class UDataAsset* CharacterStatusData) override;
 	
 	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
 	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }

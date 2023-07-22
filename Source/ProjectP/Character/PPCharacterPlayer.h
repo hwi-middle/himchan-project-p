@@ -4,14 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "ProjectP/Character/PPCharacterBase.h"
-#include "..\Interface\CharacterStatusInterface.h"
+#include "ProjectP/Interface/CharacterStatusInterface.h"
 #include "ProjectP/Enumeration/PPCharacterState.h"
-#include "ProjectP/Character/PPCharacterStatusData.h"
+#include "ProjectP/Character/PPPlayerStatusData.h"
+#include "ProjectP/Player/PPVRPawn.h"
 #include "PPCharacterPlayer.generated.h"
 
 
 UCLASS()
-class PROJECTP_API APPCharacterPlayer : public APPCharacterBase, public ICharacterStatusInterface
+class PROJECTP_API APPCharacterPlayer : public APPVRPawn, public ICharacterStatusInterface
 {
 	GENERATED_BODY()
 public:
@@ -22,8 +23,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	// StatusInterface override
-public:
-	virtual void SetupCharacterStatusData(const class UPPCharacterStatusData* CharacterStatusData) override;
+protected:
+	virtual void SetupCharacterStatusData(const class UDataAsset* CharacterStatusData) override;
 	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
 	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
 
@@ -33,24 +34,27 @@ public:
 	
 	// Player Variable Section
 private:
-	UPROPERTY(EditAnywhere, Category = DataAsset)
-	UPPCharacterStatusData* PlayerStatusData;
+	UPROPERTY(VisibleAnywhere, Category = DataAsset)
+	UPPPlayerStatusData* PlayerStatusData;
 	
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	uint32 Health;
 
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
-	uint32 RecoveryHealthOnIdle;
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	uint32 Infection;
 
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
-	float WalkSpeed;
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	uint32 MaximumInfection;
+	
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	uint32 RecoveryHealthValueOnIdle;
 
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
-	float RunSpeed;
-
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	ECharacterState CurrentState;
 	
-	UPROPERTY(EditAnywhere, Category = CharacterStatus)
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	float ReturnToIdleStateTime;
+
+private:
+
 };

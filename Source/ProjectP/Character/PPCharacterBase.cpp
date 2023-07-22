@@ -2,7 +2,6 @@
 
 
 #include "ProjectP/Character/PPCharacterBase.h"
-#include "ProjectP/Character/PPCharacterControlData.h"
 #include "Components/CapsuleComponent.h"
 #include "Engine/DamageEvents.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -36,13 +35,3 @@ APPCharacterBase::APPCharacterBase()
 
 	// 메쉬와 애님 인스턴스 세부정보는 하위 클래스 생성자에서 지정하는 것으로?
 }
-
-void APPCharacterBase::SetupCharacterControlData(const UPPCharacterControlData* CharacterControlData)
-{
-	bUseControllerRotationYaw = CharacterControlData->bUseControllerRotationYaw;
-
-	GetCharacterMovement()->bOrientRotationToMovement = CharacterControlData->bOrientRotationToMovement;
-	GetCharacterMovement()->bUseControllerDesiredRotation = CharacterControlData->bUseControllerDesiredRotation;
-	GetCharacterMovement()->RotationRate = CharacterControlData->RotationRate;
-}
-

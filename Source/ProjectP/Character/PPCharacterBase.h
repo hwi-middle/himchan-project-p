@@ -14,6 +14,4 @@ class PROJECTP_API APPCharacterBase : public ACharacter
 public:
 	APPCharacterBase();
 	
-protected:
-	virtual void SetupCharacterControlData(const class UPPCharacterControlData* CharacterControlData);
 };

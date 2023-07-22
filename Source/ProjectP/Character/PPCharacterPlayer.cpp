@@ -21,7 +21,7 @@ void APPCharacterPlayer::BeginPlay()
 	SetupCharacterStatusData(PlayerStatusData);
 }
 
-void APPCharacterPlayer::SetupCharacterStatusData(const UPPCharacterStatusData* CharacterStatusData)
+void APPCharacterPlayer::SetupCharacterStatusData(const UDataAsset* CharacterStatusData)
 {
 	// CharacterStatusData를 기반으로 PlayerCharacter 초기 상태 셋업
 }

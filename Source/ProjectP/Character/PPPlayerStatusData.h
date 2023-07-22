@@ -4,33 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "PPCharacterStatusData.generated.h"
+#include "PPPlayerStatusData.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTP_API UPPCharacterStatusData : public UDataAsset
+class PROJECTP_API UPPPlayerStatusData : public UDataAsset
 {
 	GENERATED_BODY()
 public:
-	UPPCharacterStatusData();
+	UPPPlayerStatusData();
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	uint32 DefaultHealth;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	uint32 MaximumInfectionGauge;
+	
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	uint32 RecoveryHealthValueOnIdle;
-
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	float WalkSpeed;
-
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	float RunSpeed;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	float ReturnToIdleStateTime;
-
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	float DestroyTime;
+	
 };
