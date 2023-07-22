@@ -65,7 +65,7 @@ private:
 
 	UPROPERTY()
 	float MoveSpeed;
-
+	
 private:
 	void Move(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);

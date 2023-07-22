@@ -3,18 +3,21 @@
 
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "Engine/DamageEvents.h"
+#include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
 APPCharacterPlayer::APPCharacterPlayer()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	// 세부적인 조정은 에디터에서?
-	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollsionCapsule"));
-	CollisionCapsule->InitCapsuleSize(50.0f,100.0f);
-	CollisionCapsule->SetupAttachment(RootComponent);
 	
+	PlayerStatusData = FPPConstructorHelper::FindAndGetObject<UPPPlayerStatusData>(TEXT("/Script/ProjectP.PPPlayerStatusData'/Game/DataAssets/Player/PlayerStatusData.PlayerStatusData'"), EAssertionLevel::Check);
+	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollsionCapsule"));
+	CollisionCapsule->InitCapsuleSize(45.0f,90.0f);
+	CollisionCapsule->SetCollisionProfileName(TEXT("Pawn"));
+	TObjectPtr<USceneComponent> BeforeRootComponent = RootComponent;
+	RootComponent = CollisionCapsule;
+	BeforeRootComponent->SetupAttachment(RootComponent);
 }
 
 void APPCharacterPlayer::Tick(const float DeltaTime)
