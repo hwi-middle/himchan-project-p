@@ -58,6 +58,9 @@ private:
 	TObjectPtr<class UInputAction> TurnAction;
 
 	UPROPERTY()
+	TObjectPtr<class UInputAction> SprintAction;
+	
+	UPROPERTY()
 	float SnapTurnDegrees;
 
 	UPROPERTY()
@@ -66,4 +69,6 @@ private:
 private:
 	void Move(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
+	void EnableSprint(const FInputActionValue& Value);
+	void DisableSprint(const FInputActionValue& Value);
 };

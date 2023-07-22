@@ -19,6 +19,9 @@ public:
 	float MoveSpeed;
 
 	UPROPERTY(EditAnywhere, Category="VR Move")
+	float SprintSpeed;
+	
+	UPROPERTY(EditAnywhere, Category="VR Move")
 	float SnapTurnDegrees;
 
 	UPROPERTY(EditAnywhere, Category="Input")

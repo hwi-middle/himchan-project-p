@@ -24,6 +24,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	uint32 RecoveryHealthValueOnIdle;
+
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	uint32 RecoveryHealthTick;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	float ReturnToIdleStateTime;
