@@ -34,7 +34,7 @@ public:
 	// Player Variable Section
 private:
 	UPROPERTY(EditAnywhere, Category = DataAsset)
-	TObjectPtr<class UPPCharacterStatusData> PlayerStatusData;
+	UPPCharacterStatusData* PlayerStatusData;
 	
 	UPROPERTY(EditAnywhere, Category = CharacterStatus)
 	uint32 Health;
