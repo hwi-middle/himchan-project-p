@@ -58,7 +58,7 @@ private:
 	uint32 RecoveryHealthValueOnIdle;
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 RecoveryHealthTick;
+	float RecoveryHealthTick;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	FTimerHandle RecoveryTickTimer;
@@ -71,7 +71,4 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	FTimerHandle HitCheckTimer;
-
-private:
-	void ReturnIdleState();
 };

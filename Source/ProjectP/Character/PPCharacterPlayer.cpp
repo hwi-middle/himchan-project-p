@@ -41,18 +41,38 @@ float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 		CurrentState = ECharacterState::Dead;
 		return DamageAmount;
 	}
+	
 	if(CurrentState == ECharacterState::Idle)
 	{
+		GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
 		CurrentState = ECharacterState::Hit;
+		
+		// 막상 만들고 보니 람다 중첩 가독성 별로인 것 같아서 다시 함수로 빼야 하나 고민중
+		GetWorldTimerManager().SetTimer(HitCheckTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			SetCharacterState(ECharacterState::Idle);
+			GetWorldTimerManager().ClearTimer(HitCheckTimer);
+			// Idle 상태 자연 회복 관련
+			if(Health != PlayerStatusData->MaximumHealth)
+			{
+				GetWorldTimerManager().SetTimer(RecoveryTickTimer, FTimerDelegate::CreateLambda([&]()
+				{
+					Health += RecoveryHealthValueOnIdle;
+					if(Health >= PlayerStatusData->MaximumHealth)
+					{
+						Health = PlayerStatusData->MaximumHealth;
+						GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
+					}
+				}), RecoveryHealthTick, true);
+			}
+		}), ReturnToIdleStateTime, false);
+	}
+	else
+	{
 		if(GetWorldTimerManager().IsTimerActive(HitCheckTimer))
 		{
 			GetWorldTimerManager().ClearTimer(HitCheckTimer);
 		}
-		if(GetWorldTimerManager().IsTimerActive(RecoveryTickTimer))
-		{
-			GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
-		}
-		GetWorldTimerManager().SetTimer(HitCheckTimer, this, &APPCharacterPlayer::ReturnIdleState, ReturnToIdleStateTime, false);
 	}
 	return DamageAmount;
 }
@@ -61,7 +81,7 @@ void APPCharacterPlayer::SetupCharacterStatusData(UDataAsset* CharacterStatusDat
 {
 	// CharacterStatusData를 기반으로 PlayerCharacter 초기 상태 셋업
 	UPPPlayerStatusData* PlayerData = Cast<UPPPlayerStatusData>(CharacterStatusData);
-	Health = PlayerData->DefaultHealth;
+	Health = PlayerData->MaximumHealth;
 	RecoveryHealthValueOnIdle = PlayerData->RecoveryHealthValueOnIdle;
 	RecoveryHealthTick = PlayerData->RecoveryHealthTick;
 	ReturnToIdleStateTime = PlayerData->ReturnToIdleStateTime;
@@ -78,20 +98,6 @@ void APPCharacterPlayer::DecreaseHealth(const float Value)
 	Health -= Value;
 }
 
-void APPCharacterPlayer::ReturnIdleState()
-{
-	SetCharacterState(ECharacterState::Idle);
-	// 만약 상태가 다양해진다면 인자로 현재 상태를 받아서 switch문 돌리는 방식으로 변경
-	GetWorldTimerManager().ClearTimer(HitCheckTimer);
-	
-	if(Health != PlayerStatusData->DefaultHealth)
-	{
-		GetWorldTimerManager().SetTimer(HitCheckTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			IncreaseHealth(RecoveryHealthValueOnIdle);
-		}), 1.0f, false);
-	}
-}
 
 
 
