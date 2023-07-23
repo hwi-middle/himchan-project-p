@@ -48,18 +48,20 @@ public:
 	template <class T>
 	static TSubclassOf<T> FindAndGetClass(const TCHAR* InName, const EAssertionLevel InAssertionLevel = EAssertionLevel::None)
 	{
-		static TMap<FName, UObject*> Cache;
+		static TMap<FName, TSubclassOf<T>> Cache;
 		
 		if (Cache.Contains(InName))
 		{
-			return Cast<T>(Cache[InName]);
+			return Cache[InName];
 		}
-
+		
 		ConstructorHelpers::FClassFinder<T> ClassFinder(InName);
+		
 		AssertByAssertionLevel(ClassFinder, InAssertionLevel);
-		T* Object = ClassFinder.Object;
-		Cache.Add(InName, Object);
-		return Object;
+		TSubclassOf<T> Class = ClassFinder.Class;
+		Cache.Add(InName, Class);
+		
+		return Class;
 	}
 
 	template <class T>
