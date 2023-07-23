@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "ProjectP/AI/Boss/PPBossAIController.h"
-#include "ProjectP/Character/PPCharacterStatusData.h"
 #include "ProjectP/Enumeration/PPBossPattern.h"
 #include "PPBossData.generated.h"
 
@@ -14,11 +13,15 @@
  */
 UCLASS()
 // CharacterStatusData를 상속받긴 하는데 기획상에선 실질적으로 체력 외에는 사용 목적 애매해서 고민중
-class PROJECTP_API UPPBossData : public UPPCharacterStatusData
+class PROJECTP_API UPPBossData : public UDataAsset
 {
 	GENERATED_BODY()
 public:
 	UPPBossData();
+	
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	uint32 DefaultHealth;
+	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	TMap<EBossPattern, uint32> PatternDamages;
 

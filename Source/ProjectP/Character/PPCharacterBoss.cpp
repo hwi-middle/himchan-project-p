@@ -10,7 +10,7 @@ APPCharacterBoss::APPCharacterBoss()
 	AIControllerClass = APPBossAIController::StaticClass();
 }
 
-void APPCharacterBoss::SetupCharacterStatusData(const UPPCharacterStatusData* CharacterStatusData)
+void APPCharacterBoss::SetupCharacterStatusData(UDataAsset* CharacterStatusData)
 {
 	
 }
