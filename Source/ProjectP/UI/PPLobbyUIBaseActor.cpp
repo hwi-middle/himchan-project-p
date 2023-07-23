@@ -35,17 +35,17 @@ APPLobbyUIBaseActor::APPLobbyUIBaseActor()
 
 void APPLobbyUIBaseActor::ToggleSettingWidgetVisible()
 {
-	SettingWidgetComponent->IsVisible() ? SettingWidgetComponent->SetVisibility(false) : SettingWidgetComponent->SetVisibility(true);
+	SettingWidgetComponent->SetVisibility(!SettingWidgetComponent->IsVisible());
 }
 
 void APPLobbyUIBaseActor::ToggleHelpWidgetVisible()
 {
-	HelpWidgetComponent->IsVisible() ? HelpWidgetComponent->SetVisibility(false) : HelpWidgetComponent->SetVisibility(true);
+	HelpWidgetComponent->SetVisibility(!HelpWidgetComponent->IsVisible());
 }
 
 void APPLobbyUIBaseActor::ToggleExitCheckWidgetVisible()
 {
-	ExitCheckWidgetComponent->IsVisible() ? ExitCheckWidgetComponent->SetVisibility(false) : ExitCheckWidgetComponent->SetVisibility(true);
+	ExitCheckWidgetComponent->SetVisibility(!ExitCheckWidgetComponent->IsVisible());
 }
 
 // Called when the game starts or when spawned
