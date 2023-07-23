@@ -55,7 +55,7 @@ private:
 	uint32 MaximumInfectionValue;
 	*/
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 RecoveryHealthValueOnIdle;
+	uint32 RecoveryHealthAmountOnIdle;
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	float RecoveryHealthTick;
@@ -71,4 +71,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	FTimerHandle HitCheckTimer;
+
+private:
+	void EnableRecoveryHealthTimer();
 };

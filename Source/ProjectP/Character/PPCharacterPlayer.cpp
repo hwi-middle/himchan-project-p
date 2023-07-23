@@ -15,9 +15,9 @@ APPCharacterPlayer::APPCharacterPlayer()
 	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollsionCapsule"));
 	CollisionCapsule->InitCapsuleSize(45.0f,90.0f);
 	CollisionCapsule->SetCollisionProfileName(TEXT("Pawn"));
-	TObjectPtr<USceneComponent> BeforeRootComponent = RootComponent;
+	TObjectPtr<USceneComponent> OriginalRootComponent = RootComponent;
 	RootComponent = CollisionCapsule;
-	BeforeRootComponent->SetupAttachment(RootComponent);
+	OriginalRootComponent->SetupAttachment(RootComponent);
 }
 
 void APPCharacterPlayer::Tick(const float DeltaTime)
@@ -31,8 +31,7 @@ void APPCharacterPlayer::BeginPlay()
 	SetupCharacterStatusData(PlayerStatusData);
 }
 
-float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-	AActor* DamageCauser)
+float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Health -= DamageAmount;
@@ -47,24 +46,11 @@ float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 		GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
 		CurrentState = ECharacterState::Hit;
 		
-		// 막상 만들고 보니 람다 중첩 가독성 별로인 것 같아서 다시 함수로 빼야 하나 고민중
 		GetWorldTimerManager().SetTimer(HitCheckTimer, FTimerDelegate::CreateLambda([&]()
 		{
 			SetCharacterState(ECharacterState::Idle);
 			GetWorldTimerManager().ClearTimer(HitCheckTimer);
-			// Idle 상태 자연 회복 관련
-			if(Health != PlayerStatusData->MaximumHealth)
-			{
-				GetWorldTimerManager().SetTimer(RecoveryTickTimer, FTimerDelegate::CreateLambda([&]()
-				{
-					Health += RecoveryHealthValueOnIdle;
-					if(Health >= PlayerStatusData->MaximumHealth)
-					{
-						Health = PlayerStatusData->MaximumHealth;
-						GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
-					}
-				}), RecoveryHealthTick, true);
-			}
+			EnableRecoveryHealthTimer();
 		}), ReturnToIdleStateTime, false);
 	}
 	else
@@ -82,7 +68,7 @@ void APPCharacterPlayer::SetupCharacterStatusData(UDataAsset* CharacterStatusDat
 	// CharacterStatusData를 기반으로 PlayerCharacter 초기 상태 셋업
 	UPPPlayerStatusData* PlayerData = Cast<UPPPlayerStatusData>(CharacterStatusData);
 	Health = PlayerData->MaximumHealth;
-	RecoveryHealthValueOnIdle = PlayerData->RecoveryHealthValueOnIdle;
+	RecoveryHealthAmountOnIdle = PlayerData->RecoveryHealthValueOnIdle;
 	RecoveryHealthTick = PlayerData->RecoveryHealthTick;
 	ReturnToIdleStateTime = PlayerData->ReturnToIdleStateTime;
 	CurrentState = ECharacterState::Idle;
@@ -96,6 +82,23 @@ void APPCharacterPlayer::IncreaseHealth(const float Value)
 void APPCharacterPlayer::DecreaseHealth(const float Value)
 {
 	Health -= Value;
+}
+
+void APPCharacterPlayer::EnableRecoveryHealthTimer()
+{
+	// Idle 상태 자연 회복 관련
+	if(Health < PlayerStatusData->MaximumHealth)
+	{
+		GetWorldTimerManager().SetTimer(RecoveryTickTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			Health += RecoveryHealthAmountOnIdle;
+			if(Health >= PlayerStatusData->MaximumHealth)
+			{
+				Health = PlayerStatusData->MaximumHealth;
+				GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
+			}
+		}), RecoveryHealthTick, true);
+	}
 }
 
 
