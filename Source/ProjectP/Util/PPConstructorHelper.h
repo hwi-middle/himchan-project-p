@@ -7,36 +7,86 @@
 /**
  * 
  */
+
+UENUM()
+enum class EAssertionLevel : uint8
+{
+	None,
+	Ensure,
+	Check,
+};
+
 class PROJECTP_API FPPConstructorHelper
 {
 public:
 	template <class T>
-	static T* FindAndGetObject(const TCHAR* InName, uint32 InLoadFlags = LOAD_None)
+	static T* FindAndGetObject(const TCHAR* InName, const EAssertionLevel InAssertionLevel = EAssertionLevel::None, const uint32 InLoadFlags = LOAD_None)
 	{
+		static TMap<FName, UObject*> Cache;
+		
+		if (Cache.Contains(InName))
+		{
+			return Cast<T>(Cache[InName]);
+		}
+
 		ConstructorHelpers::FObjectFinder<T> ObjectFinder(InName, InLoadFlags);
-		return ObjectFinder.Object;
+		AssertByAssertionLevel(ObjectFinder, InAssertionLevel);
+		T* Object = ObjectFinder.Object;
+		Cache.Add(InName, Object);
+		return Object;
 	}
 
 	template <class T>
-	static void FindObjectAndInitialize(const TCHAR* InName, TFunctionRef<void(T*)> Func, uint32 InLoadFlags = LOAD_None)
+	static void FindObjectAndInitialize(const TCHAR* InName, TFunctionRef<void(T*)> Func, const EAssertionLevel InAssertionLevel = EAssertionLevel::None, uint32 InLoadFlags = LOAD_None)
 	{
-		T* Object = FindAndGetObject<T>(InName, InLoadFlags);
-		if(!Object) return;
-		Func(Object);
+		if (T* Object = FindAndGetObject<T>(InName, InAssertionLevel, InLoadFlags))
+		{
+			Func(Object);
+		}
 	}
 
 	template <class T>
-	static TSubclassOf<T> FindAndGetClass(const TCHAR* InName)
+	static TSubclassOf<T> FindAndGetClass(const TCHAR* InName, const EAssertionLevel InAssertionLevel = EAssertionLevel::None)
 	{
-		ConstructorHelpers::FClassFinder<T> ObjectFinder(InName);
-		return ObjectFinder.Class;
+		static TMap<FName, UObject*> Cache;
+		
+		if (Cache.Contains(InName))
+		{
+			return Cast<T>(Cache[InName]);
+		}
+
+		ConstructorHelpers::FClassFinder<T> ClassFinder(InName);
+		AssertByAssertionLevel(ClassFinder, InAssertionLevel);
+		T* Object = ClassFinder.Object;
+		Cache.Add(InName, Object);
+		return Object;
 	}
 
 	template <class T>
-	static void FindClassAndInitialize(const TCHAR* InName, TFunctionRef<void(TSubclassOf<T>)> Func)
+	static void FindClassAndInitialize(const TCHAR* InName, TFunctionRef<void(TSubclassOf<T>)> Func, const EAssertionLevel InAssertionLevel = EAssertionLevel::None)
 	{
-		TSubclassOf<T> Class = FindAndGetClass<T>(InName);
-		if(!Class) return;
-		Func(Class);
+		if (TSubclassOf<T> Class = FindAndGetClass<T>(InName, InAssertionLevel))
+		{
+			Func(Class);
+		}
+	}
+
+private:
+	template <class T>
+	static void AssertByAssertionLevel(T& InFinder, const EAssertionLevel InAssertionLevel)
+	{
+		switch (InAssertionLevel)
+		{
+		case EAssertionLevel::None:
+			break;
+		case EAssertionLevel::Ensure:
+			ensure(InFinder.Succeeded());
+			break;
+		case EAssertionLevel::Check:
+			check(InFinder.Succeeded());
+			break;
+		default:
+			checkNoEntry();
+		}
 	}
 };
