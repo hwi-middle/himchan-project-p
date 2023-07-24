@@ -77,13 +77,9 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APPVRPawn::Move);
+	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &APPVRPawn::DisableSprint);
 	EnhancedInputComponent->BindAction(TurnAction, ETriggerEvent::Started, this, &APPVRPawn::Turn);
-	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &APPVRPawn::EnableSprint);
-	/*
-	 *	현재 구현: SprintAction의 입력 여부에 따라 달리기 전환
-	 *	IF 한번 누르면 이동 입력이 끝나기 전 까지 달리기 상태를 유지한다면 아래 바인딩을 MoveAction으로 변경
-	 */ 
-	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APPVRPawn::DisableSprint);
+	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleSprint);
 }
 
 void APPVRPawn::Move(const FInputActionValue& Value)
@@ -121,14 +117,17 @@ void APPVRPawn::Turn(const FInputActionValue& Value)
 	SetActorLocation(GetActorLocation() + InversedDirection);
 }
 
-void APPVRPawn::EnableSprint(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Log, TEXT("%f"), MoveSpeed);
-	MoveSpeed = MovementData->SprintSpeed;
-}
-
 void APPVRPawn::DisableSprint(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Log, TEXT("%f"), MoveSpeed);
-	MoveSpeed = MovementData->MoveSpeed;
+	if(MoveSpeed == MovementData-> SprintSpeed)
+	{
+		MoveSpeed = MovementData->MoveSpeed;
+	}
 }
+
+void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
+{
+	MoveSpeed == MovementData->MoveSpeed ? MoveSpeed = MovementData->SprintSpeed : MoveSpeed = MovementData->MoveSpeed;
+}
+
+
