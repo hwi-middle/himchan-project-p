@@ -18,6 +18,7 @@ class PROJECTP_API UPPLobbyUIWidget : public UUserWidget
 public:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<APPLobbyUIBaseActor> LobbyUIBaseActor;
+	
 	UFUNCTION(BlueprintCallable)
 	void EntryMainLevel();
 	
@@ -29,6 +30,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OpenExitCheckWidget();
+	
+	// 
 protected:
 	virtual void NativeConstruct() override;
 
