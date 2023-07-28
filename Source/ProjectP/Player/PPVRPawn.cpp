@@ -36,18 +36,18 @@ APPVRPawn::APPVRPawn()
 	MoveAction = MovementData->MoveAction;
 	TurnAction = MovementData->TurnAction;
 	SprintAction = MovementData->SprintAction;
-	
+
 	MoveSpeed = MovementData->MoveSpeed;
 	SnapTurnDegrees = MovementData->SnapTurnDegrees;
 
 	LeftMotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftMotionController"));
 	LeftMotionController->SetupAttachment(VROrigin);
-	LeftMotionController->bDisplayDeviceModel= true;
+	LeftMotionController->bDisplayDeviceModel = true;
 	LeftMotionController->SetTrackingSource(EControllerHand::Left);
-	
+
 	RightMotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("RightMotionController"));
 	RightMotionController->SetupAttachment(VROrigin);
-	RightMotionController->bDisplayDeviceModel= true;
+	RightMotionController->bDisplayDeviceModel = true;
 	RightMotionController->SetTrackingSource(EControllerHand::Right);
 }
 
@@ -56,6 +56,7 @@ void APPVRPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
+	InitVROrigin();
 }
 
 // Called every frame
@@ -74,12 +75,18 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 	SubSystem->ClearAllMappings();
 	SubSystem->AddMappingContext(InputMappingContext, 0);
-	
+
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APPVRPawn::Move);
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &APPVRPawn::DisableSprint);
 	EnhancedInputComponent->BindAction(TurnAction, ETriggerEvent::Started, this, &APPVRPawn::Turn);
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleSprint);
+}
+
+void APPVRPawn::InitVROrigin()
+{
+	const float DistanceToFloor = GetActorLocation().Z;
+	VROrigin->SetRelativeLocation(FVector{0, 0, -DistanceToFloor});
 }
 
 void APPVRPawn::Move(const FInputActionValue& Value)
@@ -112,14 +119,15 @@ void APPVRPawn::Turn(const FInputActionValue& Value)
 	AddActorWorldRotation(FRotator(0.f, InputValue > 0 ? SnapTurnDegrees : -SnapTurnDegrees, 0.f));
 	const FTransform ChangedActorTransform = GetActorTransform();
 	const FVector TransformedLocation = UKismetMathLibrary::ComposeTransforms(CameraRelativeTransform, ChangedActorTransform).GetLocation();
-	const FVector InversedDirection = CameraLocation - TransformedLocation;
+	FVector InversedDirection = CameraLocation - TransformedLocation;
+	InversedDirection.Z = 0;
 
 	SetActorLocation(GetActorLocation() + InversedDirection);
 }
 
 void APPVRPawn::DisableSprint(const FInputActionValue& Value)
 {
-	if(MoveSpeed == MovementData-> SprintSpeed)
+	if (MoveSpeed == MovementData->SprintSpeed)
 	{
 		MoveSpeed = MovementData->MoveSpeed;
 	}
@@ -129,5 +137,3 @@ void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 {
 	MoveSpeed == MovementData->MoveSpeed ? MoveSpeed = MovementData->SprintSpeed : MoveSpeed = MovementData->MoveSpeed;
 }
-
-

@@ -28,6 +28,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+	void InitVROrigin();
+
+private:
 	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "MotionTracking")
 	TObjectPtr<class UMotionControllerComponent> LeftMotionController;
 
