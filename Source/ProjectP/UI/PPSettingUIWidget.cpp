@@ -16,6 +16,15 @@ void UPPSettingUIWidget::NativeConstruct()
 	MasterSoundToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyMasterSoundToggle);
 	BgmSoundToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyBgmSoundToggle);
 	SFXSoundToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplySFXSoundToggle);
+
+	DisplayBrightnessSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyDisplayBrightnessSliderValue);
+	DisplayVignettingSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyDisplayVignettingSliderValue);
+
+	PauseInterfaceDistanceSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyPauseInterfaceDistanceSliderValue);
+	PauseInterfaceHeightSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyPauseInterfaceHeightSliderValue);
+
+	LeftHandedSettingToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyLeftHandedSettingToggle);
+	ControllerVibrationToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyControllerVibrationToggle);
 }
 
 void UPPSettingUIWidget::ApplyMasterSliderValue(float Value)
@@ -35,36 +44,45 @@ void UPPSettingUIWidget::ApplySFXSliderValue(float Value)
 
 void UPPSettingUIWidget::ApplyMasterSoundToggle(bool IsChecked)
 {
-	if(!IsChecked)
-	{
-		MasterSoundVolumeSlider->SetLocked(true);
-	}
-	else
-	{
-		MasterSoundVolumeSlider->SetLocked(false);
-	}
+	!IsChecked ? MasterSoundVolumeSlider->SetLocked(true) : MasterSoundVolumeSlider->SetLocked(false);
 }
 
 void UPPSettingUIWidget::ApplyBgmSoundToggle(bool IsChecked)
 {
-	if(!IsChecked)
-	{
-		BgmSoundVolumeSlider->SetLocked(true);
-	}
-	else
-	{
-		BgmSoundVolumeSlider->SetLocked(false);
-	}
+	!IsChecked ? BgmSoundVolumeSlider->SetLocked(true) : BgmSoundVolumeSlider->SetLocked(false);
 }
 
 void UPPSettingUIWidget::ApplySFXSoundToggle(bool IsChecked)
 {
-	if(!IsChecked)
-	{
-		SFXSoundVolumeSlider->SetLocked(true);
-	}
-	else
-	{
-		SFXSoundVolumeSlider->SetLocked(false);
-	}
+	!IsChecked ? SFXSoundVolumeSlider->SetLocked(true) : SFXSoundVolumeSlider->SetLocked(false);
+}
+
+void UPPSettingUIWidget::ApplyDisplayBrightnessSliderValue(float Value)
+{
+	
+}
+
+void UPPSettingUIWidget::ApplyDisplayVignettingSliderValue(float Value)
+{
+	
+}
+
+void UPPSettingUIWidget::ApplyPauseInterfaceDistanceSliderValue(float Value)
+{
+	
+}
+
+void UPPSettingUIWidget::ApplyPauseInterfaceHeightSliderValue(float Value)
+{
+	
+}
+
+void UPPSettingUIWidget::ApplyLeftHandedSettingToggle(bool IsChecked)
+{
+	LeftHandedSettingDelegate.ExecuteIfBound(IsChecked);
+}
+
+void UPPSettingUIWidget::ApplyControllerVibrationToggle(bool IsChecked)
+{
+	ControllerVibrationDelegate.ExecuteIfBound(IsChecked);
 }
