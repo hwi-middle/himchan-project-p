@@ -3,3 +3,7 @@
 
 #include "ProjectP/Sound/PPMasterSoundClass.h"
 
+UPPMasterSoundClass::UPPMasterSoundClass()
+{
+	
+}

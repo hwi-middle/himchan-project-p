@@ -2,10 +2,10 @@
 
 
 #include "ProjectP/UI/PPSettingUIWidget.h"
-
 #include "Components/CheckBox.h"
 #include "Components/Slider.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPSaveSettingOption.h"
 
 void UPPSettingUIWidget::NativeConstruct()
@@ -35,49 +35,51 @@ void UPPSettingUIWidget::NativeConstruct()
 
 void UPPSettingUIWidget::SaveSettingData()
 {
-	TObjectPtr<UPPSaveSettingOption> SaveSettingInstance = Cast<UPPSaveSettingOption>(UGameplayStatics::CreateSaveGameObject(UPPSaveSettingOption::StaticClass()));
-
-	SaveSettingInstance->MasterSoundVolumeSliderValue = MasterSoundVolumeSlider->GetValue();
-	SaveSettingInstance->BGMSoundVolumeSliderValue = BGMSoundVolumeSlider->GetValue();
-	SaveSettingInstance->SFXSoundVolumeSliderValue = SFXSoundVolumeSlider->GetValue();
-	SaveSettingInstance->bMasterSoundToggle = MasterSoundToggle->IsChecked();
-	SaveSettingInstance->bBGMSoundToggle = BGMSoundToggle->IsChecked();
-	SaveSettingInstance->bSFXSoundToggle = SFXSoundToggle->IsChecked();
+	TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	
-	SaveSettingInstance->DisplayBrightnessValue = DisplayBrightnessSlider->GetValue();
-	SaveSettingInstance->DisplayVignettingValue = DisplayVignettingSlider->GetValue();
+	CurrentGI->SaveSettingOption->MasterSoundVolumeSliderValue = MasterSoundVolumeSlider->GetValue();
+	CurrentGI->SaveSettingOption->BGMSoundVolumeSliderValue = BGMSoundVolumeSlider->GetValue();
+	CurrentGI->SaveSettingOption->SFXSoundVolumeSliderValue = SFXSoundVolumeSlider->GetValue();
+	CurrentGI->SaveSettingOption->bMasterSoundToggle = MasterSoundToggle->IsChecked();
+	CurrentGI->SaveSettingOption->bBGMSoundToggle = BGMSoundToggle->IsChecked();
+	CurrentGI->SaveSettingOption->bSFXSoundToggle = SFXSoundToggle->IsChecked();
 	
-	SaveSettingInstance->PauseInterfaceDistanceValue = PauseInterfaceDistanceSlider->GetValue();
-	SaveSettingInstance->PauseInterfaceHeightValue = PauseInterfaceHeightSlider->GetValue();
-	SaveSettingInstance->bUseLeftHandedSetting = LeftHandedSettingToggle->IsChecked();
-	SaveSettingInstance->bUseControllerVibration = ControllerVibrationToggle->IsChecked();
+	CurrentGI->SaveSettingOption->DisplayBrightnessValue = DisplayBrightnessSlider->GetValue();
+	CurrentGI->SaveSettingOption->DisplayVignettingValue = DisplayVignettingSlider->GetValue();
+	
+	CurrentGI->SaveSettingOption->PauseInterfaceDistanceValue = PauseInterfaceDistanceSlider->GetValue();
+	CurrentGI->SaveSettingOption->PauseInterfaceHeightValue = PauseInterfaceHeightSlider->GetValue();
+	CurrentGI->SaveSettingOption->bUseLeftHandedSetting = LeftHandedSettingToggle->IsChecked();
+	CurrentGI->SaveSettingOption->bUseControllerVibration = ControllerVibrationToggle->IsChecked();
 
 	// 만약 게임 플레이 저장/불러오기 기능을 구현한다고 해도 설정은 여러개 저장 할 일이 없기 때문에 인덱스 0 고정
 	// 파일 이름 또한 마찬가지로 생성자에서 설정한 초기 값 사용
-	UGameplayStatics::SaveGameToSlot(SaveSettingInstance, SaveSettingInstance->SaveFileName, 0);
+	if(CurrentGI->SaveSettingOption != nullptr)
+	{
+		UGameplayStatics::SaveGameToSlot(CurrentGI->SaveSettingOption, CurrentGI->SaveSettingOption->SaveFileName, 0);
+	}
 	UE_LOG(LogTemp, Log, TEXT("Save SettingOption Data Completed"));
 }
 
 void UPPSettingUIWidget::LoadSettingData()
 {
-	TObjectPtr<UPPSaveSettingOption> SaveSettingInstance = Cast<UPPSaveSettingOption>(UGameplayStatics::CreateSaveGameObject(UPPSaveSettingOption::StaticClass()));
-	SaveSettingInstance = Cast<UPPSaveSettingOption>(UGameplayStatics::LoadGameFromSlot(SaveSettingInstance->SaveFileName, 0));
-	if(SaveSettingInstance)
+	TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if(CurrentGI->SaveSettingOption)
 	{
-		MasterSoundVolumeSlider->SetValue(SaveSettingInstance->MasterSoundVolumeSliderValue);
-		BGMSoundVolumeSlider->SetValue(SaveSettingInstance->BGMSoundVolumeSliderValue);
-		SFXSoundVolumeSlider->SetValue(SaveSettingInstance->SFXSoundVolumeSliderValue);
-		MasterSoundToggle->SetIsChecked(SaveSettingInstance->bMasterSoundToggle);
-		BGMSoundToggle->SetIsChecked(SaveSettingInstance->bBGMSoundToggle);
-		SFXSoundToggle->SetIsChecked(SaveSettingInstance->bSFXSoundToggle);
+		MasterSoundVolumeSlider->SetValue(CurrentGI->SaveSettingOption->MasterSoundVolumeSliderValue);
+		BGMSoundVolumeSlider->SetValue(CurrentGI->SaveSettingOption->BGMSoundVolumeSliderValue);
+		SFXSoundVolumeSlider->SetValue(CurrentGI->SaveSettingOption->SFXSoundVolumeSliderValue);
+		MasterSoundToggle->SetIsChecked(CurrentGI->SaveSettingOption->bMasterSoundToggle);
+		BGMSoundToggle->SetIsChecked(CurrentGI->SaveSettingOption->bBGMSoundToggle);
+		SFXSoundToggle->SetIsChecked(CurrentGI->SaveSettingOption->bSFXSoundToggle);
 
-		DisplayBrightnessSlider->SetValue(SaveSettingInstance->DisplayBrightnessValue);
-		DisplayVignettingSlider->SetValue(SaveSettingInstance->DisplayVignettingValue);
+		DisplayBrightnessSlider->SetValue(CurrentGI->SaveSettingOption->DisplayBrightnessValue);
+		DisplayVignettingSlider->SetValue(CurrentGI->SaveSettingOption->DisplayVignettingValue);
 
-		PauseInterfaceDistanceSlider->SetValue(SaveSettingInstance->PauseInterfaceDistanceValue);
-		PauseInterfaceHeightSlider->SetValue(SaveSettingInstance->PauseInterfaceHeightValue);
-		LeftHandedSettingToggle->SetIsChecked(SaveSettingInstance->bUseLeftHandedSetting);
-		ControllerVibrationToggle->SetIsChecked(SaveSettingInstance->bUseControllerVibration);
+		PauseInterfaceDistanceSlider->SetValue(CurrentGI->SaveSettingOption->PauseInterfaceDistanceValue);
+		PauseInterfaceHeightSlider->SetValue(CurrentGI->SaveSettingOption->PauseInterfaceHeightValue);
+		LeftHandedSettingToggle->SetIsChecked(CurrentGI->SaveSettingOption->bUseLeftHandedSetting);
+		ControllerVibrationToggle->SetIsChecked(CurrentGI->SaveSettingOption->bUseControllerVibration);
 
 		UE_LOG(LogTemp, Log, TEXT("Load Setting Option SaveFile Completed"));
 	}

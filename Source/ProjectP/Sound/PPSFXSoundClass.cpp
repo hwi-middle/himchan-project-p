@@ -3,3 +3,7 @@
 
 #include "ProjectP/Sound/PPSFXSoundClass.h"
 
+UPPSFXSoundClass::UPPSFXSoundClass()
+{
+	
+}

@@ -13,5 +13,7 @@ UCLASS()
 class PROJECTP_API UPPSFXSoundClass : public UPPMasterSoundClass
 {
 	GENERATED_BODY()
-	
+
+public:
+	UPPSFXSoundClass();
 };

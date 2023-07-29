@@ -13,5 +13,7 @@ UCLASS()
 class PROJECTP_API UPPMasterSoundClass : public USoundClass
 {
 	GENERATED_BODY()
-	
+
+public:
+	UPPMasterSoundClass();
 };
