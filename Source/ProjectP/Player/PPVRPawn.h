@@ -29,13 +29,14 @@ public:
 
 private:
 	void InitVROrigin();
+	void InitVRHands();
 
 private:
-	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "MotionTracking")
-	TObjectPtr<class UMotionControllerComponent> LeftMotionController;
+	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "Hand")
+	TObjectPtr<class APPVRHand> LeftHand;
 
-	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "MotionTracking")
-	TObjectPtr<class UMotionControllerComponent> RightMotionController;
+	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "Hand")
+	TObjectPtr<class APPVRHand> RightHand;
 
 private:
 	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "Input")
@@ -62,13 +63,13 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UInputAction> SprintAction;
-	
+
 	UPROPERTY()
 	float SnapTurnDegrees;
 
 	UPROPERTY()
 	float MoveSpeed;
-	
+
 private:
 	void Move(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);

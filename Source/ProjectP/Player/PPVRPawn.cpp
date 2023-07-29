@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "MotionControllerComponent.h"
+#include "PPVRHand.h"
 
 #include "EnhancedInput/Public/InputActionValue.h"
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
@@ -39,16 +40,6 @@ APPVRPawn::APPVRPawn()
 
 	MoveSpeed = MovementData->MoveSpeed;
 	SnapTurnDegrees = MovementData->SnapTurnDegrees;
-
-	LeftMotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftMotionController"));
-	LeftMotionController->SetupAttachment(VROrigin);
-	LeftMotionController->bDisplayDeviceModel = true;
-	LeftMotionController->SetTrackingSource(EControllerHand::Left);
-
-	RightMotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("RightMotionController"));
-	RightMotionController->SetupAttachment(VROrigin);
-	RightMotionController->bDisplayDeviceModel = true;
-	RightMotionController->SetTrackingSource(EControllerHand::Right);
 }
 
 // Called when the game starts or when spawned
@@ -57,6 +48,7 @@ void APPVRPawn::BeginPlay()
 	Super::BeginPlay();
 	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
 	InitVROrigin();
+	InitVRHands();
 }
 
 // Called every frame
@@ -87,6 +79,24 @@ void APPVRPawn::InitVROrigin()
 {
 	const float DistanceToFloor = GetActorLocation().Z;
 	VROrigin->SetRelativeLocation(FVector{0, 0, -DistanceToFloor});
+}
+
+void APPVRPawn::InitVRHands()
+{
+	const FTransform IdentityTransform;
+	const FAttachmentTransformRules AttachRule(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, true);
+
+	LeftHand = GetWorld()->SpawnActorDeferred<APPVRHand>(APPVRHand::StaticClass(), IdentityTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ensure(LeftHand);
+	LeftHand->SetHandType(EControllerHand::Left);
+	LeftHand->FinishSpawning(IdentityTransform);
+	LeftHand->AttachToComponent(VROrigin, AttachRule);
+
+	RightHand = GetWorld()->SpawnActorDeferred<APPVRHand>(APPVRHand::StaticClass(), IdentityTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	ensure(RightHand);
+	RightHand->SetHandType(EControllerHand::Right);
+	RightHand->FinishSpawning(IdentityTransform);
+	RightHand->AttachToComponent(VROrigin, AttachRule);
 }
 
 void APPVRPawn::Move(const FInputActionValue& Value)
