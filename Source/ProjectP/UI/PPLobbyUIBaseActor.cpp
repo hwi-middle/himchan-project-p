@@ -30,7 +30,11 @@ APPLobbyUIBaseActor::APPLobbyUIBaseActor()
 	ExitCheckWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ExitCheckUIWidget"));
 	ExitCheckWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPExitCheckUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/ExitCheckUIBlueprint.ExitCheckUIBlueprint_C'")));
 	ExitCheckWidgetComponent->SetupAttachment(LobbyWidgetComponent);
-	
+
+	LobbyWidgetComponent->SetCastShadow(false);
+	SettingWidgetComponent->SetCastShadow(false);
+	HelpWidgetComponent->SetCastShadow(false);
+	ExitCheckWidgetComponent->SetCastShadow(false);
 }
 
 void APPLobbyUIBaseActor::ToggleSettingWidgetVisible()
@@ -46,6 +50,7 @@ void APPLobbyUIBaseActor::ToggleHelpWidgetVisible()
 void APPLobbyUIBaseActor::ToggleExitCheckWidgetVisible()
 {
 	ExitCheckWidgetComponent->SetVisibility(!ExitCheckWidgetComponent->IsVisible());
+	
 }
 
 // Called when the game starts or when spawned
@@ -56,19 +61,23 @@ void APPLobbyUIBaseActor::BeginPlay()
 	SettingWidgetComponent->SetVisibility(false);
 	HelpWidgetComponent->SetVisibility(false);
 
-	UClass* LobbyWidget = LobbyWidgetComponent->GetWidgetClass();
+	TObjectPtr<UClass> LobbyWidget = LobbyWidgetComponent->GetWidgetClass();
 	if(LobbyWidget)
 	{
 		if (LobbyWidget->IsChildOf(UUserWidget::StaticClass()))
 		{
-			UPPLobbyUIWidget* UserWidget = Cast<UPPLobbyUIWidget>(LobbyWidgetComponent->GetUserWidgetObject());
+			TObjectPtr<UPPLobbyUIWidget> UserWidget = Cast<UPPLobbyUIWidget>(LobbyWidgetComponent->GetUserWidgetObject());
 			if (UserWidget)
 			{
 				UserWidget->LobbyUIBaseActor = this;
 			}
 		}
 	}
-	
+	TObjectPtr<UPPSettingUIWidget> SettingUIWidget = Cast<UPPSettingUIWidget>(SettingWidgetComponent->GetUserWidgetObject());
+	if(SettingUIWidget)
+	{
+		SettingUIWidget->SettingButtonDelegate.AddUObject(this, &APPLobbyUIBaseActor::ToggleHelpWidgetVisible);
+	}
 }
 
 

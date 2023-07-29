@@ -10,9 +10,9 @@
  * 
  */
 UCLASS()
-class PROJECTP_API APPGameMode : public AGameModeBase
+class PROJECTP_API APPVRGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 public:
-	APPGameMode();
+	APPVRGameMode();
 };

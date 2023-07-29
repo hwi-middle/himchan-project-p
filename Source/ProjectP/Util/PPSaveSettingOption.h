@@ -17,14 +17,26 @@ public:
 	UPPSaveSettingOption();
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	FString SaveFileName;
+	
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float MasterSoundVolumeSliderValue;
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
-	float BgmSoundVolumeSliderValue;
+	float BGMSoundVolumeSliderValue;
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float SFXSoundVolumeSliderValue;
 
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 bMasterSoundToggle : 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 bBGMSoundToggle : 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 bSFXSoundToggle : 1;
+	
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float DisplayBrightnessValue;
 

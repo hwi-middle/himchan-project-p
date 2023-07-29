@@ -5,9 +5,13 @@
 
 UPPSaveSettingOption::UPPSaveSettingOption()
 {
-	MasterSoundVolumeSliderValue = 50.0f;
-	BgmSoundVolumeSliderValue = 50.0f;
-	SFXSoundVolumeSliderValue = 50.f;
+	SaveFileName = "SettingOptionsData";
+	MasterSoundVolumeSliderValue = 0.5f;
+	BGMSoundVolumeSliderValue = 0.5f;
+	SFXSoundVolumeSliderValue = 0.5f;
+	bMasterSoundToggle = false;
+	bBGMSoundToggle = false;
+	bSFXSoundToggle = false;
 	DisplayBrightnessValue = 0.5f;
 	DisplayVignettingValue = 0.0f;
 	PauseInterfaceDistanceValue = 0.5f;

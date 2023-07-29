@@ -3,7 +3,8 @@
 
 #include "ProjectP/Game/PPVRGameMode.h"
 
-APPGameMode::APPGameMode()
+
+APPVRGameMode::APPVRGameMode()
 {
 	static ConstructorHelpers::FClassFinder<APawn> DefaultPawnClassRef(TEXT("/Script/ProjectP.PPCharacterPlayer"));
 	if (DefaultPawnClassRef.Class)
@@ -17,3 +18,4 @@ APPGameMode::APPGameMode()
 		PlayerControllerClass = PlayerControllerClassRef.Class;
 	}
 }
+

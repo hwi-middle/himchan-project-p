@@ -7,9 +7,9 @@
 #include "GameFramework/Actor.h"
 #include "PPLobbyUIBaseActor.generated.h"
 
-DECLARE_DELEGATE(FSettingButtonDelegate);
-DECLARE_DELEGATE(FHelpButtonDelegate);
-DECLARE_DELEGATE(FExitButtonDelegate);
+DECLARE_MULTICAST_DELEGATE(FSettingButtonDelegate);
+DECLARE_MULTICAST_DELEGATE(FHelpButtonDelegate);
+DECLARE_MULTICAST_DELEGATE(FExitButtonDelegate);
 
 UCLASS()
 class PROJECTP_API APPLobbyUIBaseActor : public AActor
@@ -20,9 +20,7 @@ public:
 	// Sets default values for this actor's properties
 	APPLobbyUIBaseActor();
 
-	FSettingButtonDelegate SettingDelegate;
-	FHelpButtonDelegate HelpDelegate;
-	FExitButtonDelegate ExitDelegate;
+	FSettingButtonDelegate SettingButtonDelegate;
 	
 	UFUNCTION(BlueprintCallable)
 	void ToggleSettingWidgetVisible();
