@@ -11,7 +11,7 @@
 void UPPSettingUIWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+
 	MasterSoundVolumeSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyMasterSliderValue);
 	BGMSoundVolumeSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyBGMSliderValue);
 	SFXSoundVolumeSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplySFXSliderValue);
@@ -28,14 +28,18 @@ void UPPSettingUIWidget::NativeConstruct()
 
 	LeftHandedSettingToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyLeftHandedSettingToggle);
 	ControllerVibrationToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyControllerVibrationToggle);
-
+	//CameraTurnValue30Button->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValue30);
+	//CameraTurnValue45Button->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValue45);
+	//CameraTurnValue60Button->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValue60);
+	
 	ExitSettingUIButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ExitSettingUI);
+	
 	LoadSettingData();
 }
 
 void UPPSettingUIWidget::SaveSettingData()
 {
-	TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	const TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	
 	CurrentGI->SaveSettingOption->MasterSoundVolumeSliderValue = MasterSoundVolumeSlider->GetValue();
 	CurrentGI->SaveSettingOption->BGMSoundVolumeSliderValue = BGMSoundVolumeSlider->GetValue();
@@ -92,7 +96,7 @@ void UPPSettingUIWidget::LoadSettingData()
 void UPPSettingUIWidget::ExitSettingUI()
 {
 	SaveSettingData();
-	SettingButtonDelegate.Broadcast();
+	SettingButtonDelegate.Broadcast(EWidgetName::Setting);
 }
 
 void UPPSettingUIWidget::ApplyMasterSliderValue(float Value)
@@ -147,10 +151,11 @@ void UPPSettingUIWidget::ApplyPauseInterfaceHeightSliderValue(float Value)
 
 void UPPSettingUIWidget::ApplyLeftHandedSettingToggle(bool IsChecked)
 {
-	//LeftHandedSettingDelegate.ExecuteIfBound(IsChecked);
+	
 }
 
 void UPPSettingUIWidget::ApplyControllerVibrationToggle(bool IsChecked)
 {
-	//ControllerVibrationDelegate.ExecuteIfBound(IsChecked);
+	
 }
+

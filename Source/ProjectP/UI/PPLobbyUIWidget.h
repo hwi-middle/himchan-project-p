@@ -7,17 +7,17 @@
 #include "Blueprint/UserWidget.h"
 #include "PPLobbyUIWidget.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FLobbyButtonDelegate, EWidgetName);
 
 /**
  * 
  */
-UCLASS()
+UCLASS(meta =(DisableNativeTick))
 class PROJECTP_API UPPLobbyUIWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<APPLobbyUIBaseActor> LobbyUIBaseActor;
+	FLobbyButtonDelegate LobbyButtonDelegate;
 	
 	UFUNCTION(BlueprintCallable)
 	void EntryMainLevel();
@@ -26,7 +26,7 @@ public:
 	void ToggleSettingWidget();
 
 	UFUNCTION(BlueprintCallable)
-	void ToggleHelpWidget();
+	void ToggleTutorialWidget();
 
 	UFUNCTION(BlueprintCallable)
 	void OpenExitCheckWidget();
@@ -44,7 +44,7 @@ protected:
 	TObjectPtr<class UButton> SettingButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<class UButton> HelpButton;
+	TObjectPtr<class UButton> TutorialButton;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<class UButton> ExitButton;

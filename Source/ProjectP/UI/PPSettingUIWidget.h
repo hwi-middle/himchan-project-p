@@ -5,13 +5,10 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
-#include "PPLobbyUIBaseActor.h"
+#include "ProjectP/Enumeration/PPWidgetName.h"
 #include "PPSettingUIWidget.generated.h"
 
-// 추후 PPVRPawn으로 옮길 예정
-DECLARE_DELEGATE_OneParam(FLeftHandedSettingDelegate, bool IsChecked)
-DECLARE_DELEGATE_OneParam(FControllerVibrationDelegate, bool IsChecked)
-//
+DECLARE_MULTICAST_DELEGATE_OneParam(FSettingButtonDelegate, EWidgetName);
 
 /*
  * 
@@ -22,11 +19,10 @@ class PROJECTP_API UPPSettingUIWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	FLeftHandedSettingDelegate LeftHandedSettingDelegate;
-	FControllerVibrationDelegate ControllerVibrationDelegate;
-	FSettingButtonDelegate SettingButtonDelegate;
 	void SaveSettingData();
 	void LoadSettingData();
+
+	FSettingButtonDelegate SettingButtonDelegate;
 	// Generate Default Widget Section
 protected:
 	virtual void NativeConstruct() override;
@@ -36,11 +32,16 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Button, meta = (BindWidget))
 	TObjectPtr<UButton> ExitSettingUIButton;
-	
-	// Sound Option Function Section
-	// UI 종류마다 함수를 하나로 통일하고 싶었는데...
-	// 대충 찾아본 바로는 그렇게 하는거나 함수 여러개 만드는거나 가독성이나 복잡도는 비슷해보여서
-	// 구현 편한 함수로 대체...
+
+	/*
+	 * Sound Option Function Section
+	 * UI 종류마다 함수를 하나로 통일하고 싶었는데...
+	 * 대충 찾아본 바로는 그렇게 하는거나 함수 여러개 만드는거나 가독성이나 복잡도는 비슷해보여서
+	 * (Template Class랑 Enum 만들고 바인딩 할 '때' 마다 람다식 만들어야 함)
+	 * https://forums.unrealengine.com/t/dynamic-multicast-delegate-how-to-bind-lambda/140046/13
+	 * (또는 엔진 내 UMG Delegate 뜯어 고치는건데 프로젝트 관리에 매우 좋지 못함)
+	 * 구현 편한 함수 여러개 선언하는 방식으로 대체. 어쩌피 여기말곤 쓰는 곳도 없어서 오히려 공수만 들고 작업속도 지연될것 같기도
+	*/
 public:
 	UFUNCTION(BlueprintCallable)
 	void ApplyMasterSliderValue(float Value);
@@ -109,6 +110,15 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void ApplyControllerVibrationToggle(bool IsChecked);
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void ApplyCameraTurnValue30() { }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void ApplyCameraTurnValue45() { }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void ApplyCameraTurnValue60() { }
 	
 	// Accessibility Option Widget Section
 protected:
@@ -123,4 +133,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility, meta = (BindWidget))
 	TObjectPtr<UCheckBox> ControllerVibrationToggle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
+	TObjectPtr<UButton> CameraTurnValue30Button;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
+	TObjectPtr<UButton> CameraTurnValue45Button;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
+	TObjectPtr<UButton> CameraTurnValue60Button;
 };

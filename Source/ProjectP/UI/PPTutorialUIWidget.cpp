@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectP/UI/PPHelpUIWidget.h"
+#include "ProjectP/UI/PPTutorialUIWidget.h"
 
 
-void UPPHelpUIWidget::NativeConstruct()
+void UPPTutorialUIWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	

@@ -3,7 +3,7 @@
 
 
 #include "ProjectP/UI/PPLobbyUIBaseActor.h"
-#include "PPHelpUIWidget.h"
+#include "PPTutorialUIWidget.h"
 #include "PPSettingUIWidget.h"
 #include "PPExitCheckUIWidget.h"
 #include "PPLobbyUIWidget.h"
@@ -23,9 +23,9 @@ APPLobbyUIBaseActor::APPLobbyUIBaseActor()
 	SettingWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPSettingUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/SettingUIBlueprint.SettingUIBlueprint_C'")));
 	SettingWidgetComponent->SetupAttachment(LobbyWidgetComponent);
 
-	HelpWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelpUIWidget"));
-	HelpWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPHelpUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/HelpUIBlueprint.HelpUIBlueprint_C'")));
-	HelpWidgetComponent->SetupAttachment(LobbyWidgetComponent);
+	TutorialWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelpUIWidget"));
+	TutorialWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPTutorialUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/HelpUIBlueprint.HelpUIBlueprint_C'")));
+	TutorialWidgetComponent->SetupAttachment(LobbyWidgetComponent);
 
 	ExitCheckWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ExitCheckUIWidget"));
 	ExitCheckWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPExitCheckUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/ExitCheckUIBlueprint.ExitCheckUIBlueprint_C'")));
@@ -33,23 +33,9 @@ APPLobbyUIBaseActor::APPLobbyUIBaseActor()
 
 	LobbyWidgetComponent->SetCastShadow(false);
 	SettingWidgetComponent->SetCastShadow(false);
-	HelpWidgetComponent->SetCastShadow(false);
+	TutorialWidgetComponent->SetCastShadow(false);
 	ExitCheckWidgetComponent->SetCastShadow(false);
-}
 
-void APPLobbyUIBaseActor::ToggleSettingWidgetVisible()
-{
-	SettingWidgetComponent->SetVisibility(!SettingWidgetComponent->IsVisible());
-}
-
-void APPLobbyUIBaseActor::ToggleHelpWidgetVisible()
-{
-	HelpWidgetComponent->SetVisibility(!HelpWidgetComponent->IsVisible());
-}
-
-void APPLobbyUIBaseActor::ToggleExitCheckWidgetVisible()
-{
-	ExitCheckWidgetComponent->SetVisibility(!ExitCheckWidgetComponent->IsVisible());
 	
 }
 
@@ -59,25 +45,43 @@ void APPLobbyUIBaseActor::BeginPlay()
 	Super::BeginPlay();
 
 	SettingWidgetComponent->SetVisibility(false);
-	HelpWidgetComponent->SetVisibility(false);
+	TutorialWidgetComponent->SetVisibility(false);
 
-	TObjectPtr<UClass> LobbyWidget = LobbyWidgetComponent->GetWidgetClass();
-	if(LobbyWidget)
+	TObjectPtr<UPPLobbyUIWidget> LobbyWidget = Cast<UPPLobbyUIWidget>(LobbyWidgetComponent->GetUserWidgetObject());
+	if (LobbyWidget)
 	{
-		if (LobbyWidget->IsChildOf(UUserWidget::StaticClass()))
-		{
-			TObjectPtr<UPPLobbyUIWidget> UserWidget = Cast<UPPLobbyUIWidget>(LobbyWidgetComponent->GetUserWidgetObject());
-			if (UserWidget)
-			{
-				UserWidget->LobbyUIBaseActor = this;
-			}
-		}
+		LobbyWidget->LobbyButtonDelegate.AddUObject(this, &APPLobbyUIBaseActor::ToggleWidgetVisible);
 	}
 	TObjectPtr<UPPSettingUIWidget> SettingUIWidget = Cast<UPPSettingUIWidget>(SettingWidgetComponent->GetUserWidgetObject());
 	if(SettingUIWidget)
 	{
-		SettingUIWidget->SettingButtonDelegate.AddUObject(this, &APPLobbyUIBaseActor::ToggleHelpWidgetVisible);
+		SettingUIWidget->SettingButtonDelegate.AddUObject(this, &APPLobbyUIBaseActor::ToggleWidgetVisible);
+	}
+	TObjectPtr<UPPTutorialUIWidget> TutorialUIWidget = Cast<UPPTutorialUIWidget>(TutorialWidgetComponent->GetUserWidgetObject());
+	if(TutorialUIWidget)
+	{
+		TutorialUIWidget->TutorialButtonDelegate.AddUObject(this, &APPLobbyUIBaseActor::ToggleWidgetVisible);
 	}
 }
+
+void APPLobbyUIBaseActor::ToggleWidgetVisible(EWidgetName WidgetName)
+{
+	switch (WidgetName)
+	{
+	case EWidgetName::Setting:
+		SettingWidgetComponent->SetVisibility(!SettingWidgetComponent->IsVisible());
+		break;
+	case EWidgetName::Tutorial:
+		TutorialWidgetComponent->SetVisibility(!TutorialWidgetComponent->IsVisible());
+		break;
+	case EWidgetName::ExitCheck:
+		ExitCheckWidgetComponent->SetVisibility(!ExitCheckWidgetComponent->IsVisible());
+		break;
+	default:
+		break;
+	}
+}
+
+
 
 

@@ -5,11 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
+#include "ProjectP/Enumeration/PPWidgetName.h"
 #include "PPLobbyUIBaseActor.generated.h"
-
-DECLARE_MULTICAST_DELEGATE(FSettingButtonDelegate);
-DECLARE_MULTICAST_DELEGATE(FHelpButtonDelegate);
-DECLARE_MULTICAST_DELEGATE(FExitButtonDelegate);
 
 UCLASS()
 class PROJECTP_API APPLobbyUIBaseActor : public AActor
@@ -19,17 +16,9 @@ class PROJECTP_API APPLobbyUIBaseActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APPLobbyUIBaseActor();
-
-	FSettingButtonDelegate SettingButtonDelegate;
 	
 	UFUNCTION(BlueprintCallable)
-	void ToggleSettingWidgetVisible();
-
-	UFUNCTION(BlueprintCallable)
-	void ToggleHelpWidgetVisible();
-	
-	UFUNCTION(BlueprintCallable)
-	void ToggleExitCheckWidgetVisible();
+	void ToggleWidgetVisible(EWidgetName WidgetName);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,9 +31,8 @@ protected:
 	TObjectPtr<UWidgetComponent> SettingWidgetComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
-	TObjectPtr<UWidgetComponent> HelpWidgetComponent;
+	TObjectPtr<UWidgetComponent> TutorialWidgetComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
 	TObjectPtr<UWidgetComponent> ExitCheckWidgetComponent;
-	
 };
