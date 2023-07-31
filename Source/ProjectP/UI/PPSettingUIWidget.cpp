@@ -167,21 +167,11 @@ void UPPSettingUIWidget::ApplySFXSoundToggle(bool IsChecked)
 
 void UPPSettingUIWidget::ApplyPauseInterfaceDistanceSliderValue(float Value)
 {
-	// 여기 난감해서 보류
+	// 일시정지 기능 구현 작업단계에서 할 예정
 }
 
 void UPPSettingUIWidget::ApplyPauseInterfaceHeightSliderValue(float Value)
 {
-	// 여기 난감해서 보류
-}
-
-void UPPSettingUIWidget::ApplyLeftHandedSettingToggle(bool IsChecked)
-{
-	
-}
-
-void UPPSettingUIWidget::ApplyControllerVibrationToggle(bool IsChecked)
-{
-	
+	// 일시정지 기능 구현 작업단계에서 할 예정
 }
 

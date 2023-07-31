@@ -10,11 +10,6 @@
 #include "Sound/SoundClass.h"
 #include "PPSettingUIWidget.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FSettingButtonDelegate, EWidgetType);
-// VRPawn 작업 끝난 뒤에 VRPawn에 함수 만들어서 아래 두 델리게이트에 바인딩 할 예정
-DECLARE_MULTICAST_DELEGATE_OneParam(FCameraTurnValueSettingDelegate, float);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FAccessibilityOptionDelegate, FName, bool);
-
 UENUM()
 enum class ECameraTurnValue : uint8
 {
@@ -22,6 +17,19 @@ enum class ECameraTurnValue : uint8
 	Middle = 45,
 	High = 60
 };
+
+UENUM()
+enum class EAccessibilityOption : uint8
+{
+	LeftHanded,
+	Vibration,
+	CameraTurn
+};
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FSettingButtonDelegate, EWidgetType);
+// VRPawn 작업 끝난 뒤에 VRPawn에 함수 만들어서 아래 두 델리게이트에 바인딩 할 예정
+DECLARE_MULTICAST_DELEGATE_OneParam(FCameraTurnValueSettingDelegate, float);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FAccessibilityOptionDelegate, EAccessibilityOption, bool);
 
 /*
  * 
@@ -37,6 +45,7 @@ public:
 
 	FSettingButtonDelegate SettingButtonDelegate;
 	FCameraTurnValueSettingDelegate CameraTurnValueSettingDelegate;
+	FAccessibilityOptionDelegate AccessibilityOptionDelegate;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<APostProcessVolume> PostProcessVolume;
@@ -134,10 +143,10 @@ public:
 	void ApplyPauseInterfaceHeightSliderValue(float Value);
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyLeftHandedSettingToggle(bool IsChecked);
+	FORCEINLINE void ApplyLeftHandedSettingToggle(const bool IsChecked) { AccessibilityOptionDelegate.Broadcast(EAccessibilityOption::LeftHanded, IsChecked); }
 	
 	UFUNCTION(BlueprintCallable)
-	void ApplyControllerVibrationToggle(bool IsChecked);
+	FORCEINLINE void ApplyControllerVibrationToggle(const bool IsChecked) { AccessibilityOptionDelegate.Broadcast(EAccessibilityOption::Vibration, IsChecked); }
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void ApplyCameraTurnValueLow() { CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::Low)); }
