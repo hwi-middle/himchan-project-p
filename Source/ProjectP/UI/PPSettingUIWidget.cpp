@@ -3,15 +3,34 @@
 
 #include "ProjectP/UI/PPSettingUIWidget.h"
 #include "Components/CheckBox.h"
+#include "Components/PostProcessComponent.h"
 #include "Components/Slider.h"
+#include "Engine/PostProcessVolume.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPSaveSettingOption.h"
+#include "Sound/SoundClass.h"
 
 void UPPSettingUIWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
+	
+	if(MasterSoundClass && BGMSoundClass && SFXSoundClass)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Get SoundClass Accepted"));
+	}
+	TArray<AActor*> PostProcessVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), PostProcessVolumes);
+	if(PostProcessVolumes.Num() > 0)
+	{
+		PostProcessVolume = Cast<APostProcessVolume>(PostProcessVolumes[0]);
+		if(PostProcessVolume)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Get World's PostProcessVolume Completed"));
+		}
+	}
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	PlayerController->ConsoleCommand(TEXT(""));
 	MasterSoundVolumeSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyMasterSliderValue);
 	BGMSoundVolumeSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyBGMSliderValue);
 	SFXSoundVolumeSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplySFXSliderValue);
@@ -28,9 +47,9 @@ void UPPSettingUIWidget::NativeConstruct()
 
 	LeftHandedSettingToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyLeftHandedSettingToggle);
 	ControllerVibrationToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyControllerVibrationToggle);
-	//CameraTurnValue30Button->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValue30);
-	//CameraTurnValue45Button->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValue45);
-	//CameraTurnValue60Button->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValue60);
+	//CameraTurnValueLowButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValueLow);
+	//CameraTurnValueMiddleButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValueMiddle);
+	//CameraTurnValueHighButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValueHigh);
 	
 	ExitSettingUIButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ExitSettingUI);
 	
@@ -39,35 +58,40 @@ void UPPSettingUIWidget::NativeConstruct()
 
 void UPPSettingUIWidget::SaveSettingData()
 {
-	const TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	
-	CurrentGI->SaveSettingOption->MasterSoundVolumeSliderValue = MasterSoundVolumeSlider->GetValue();
-	CurrentGI->SaveSettingOption->BGMSoundVolumeSliderValue = BGMSoundVolumeSlider->GetValue();
-	CurrentGI->SaveSettingOption->SFXSoundVolumeSliderValue = SFXSoundVolumeSlider->GetValue();
-	CurrentGI->SaveSettingOption->bMasterSoundToggle = MasterSoundToggle->IsChecked();
-	CurrentGI->SaveSettingOption->bBGMSoundToggle = BGMSoundToggle->IsChecked();
-	CurrentGI->SaveSettingOption->bSFXSoundToggle = SFXSoundToggle->IsChecked();
-	
-	CurrentGI->SaveSettingOption->DisplayBrightnessValue = DisplayBrightnessSlider->GetValue();
-	CurrentGI->SaveSettingOption->DisplayVignettingValue = DisplayVignettingSlider->GetValue();
-	
-	CurrentGI->SaveSettingOption->PauseInterfaceDistanceValue = PauseInterfaceDistanceSlider->GetValue();
-	CurrentGI->SaveSettingOption->PauseInterfaceHeightValue = PauseInterfaceHeightSlider->GetValue();
-	CurrentGI->SaveSettingOption->bUseLeftHandedSetting = LeftHandedSettingToggle->IsChecked();
-	CurrentGI->SaveSettingOption->bUseControllerVibration = ControllerVibrationToggle->IsChecked();
 
 	// 만약 게임 플레이 저장/불러오기 기능을 구현한다고 해도 설정은 여러개 저장 할 일이 없기 때문에 인덱스 0 고정
 	// 파일 이름 또한 마찬가지로 생성자에서 설정한 초기 값 사용
-	if(CurrentGI->SaveSettingOption != nullptr)
+	if(CurrentGI->SaveSettingOption)
 	{
+		CurrentGI->SaveSettingOption->MasterSoundVolumeSliderValue = MasterSoundVolumeSlider->GetValue();
+		CurrentGI->SaveSettingOption->BGMSoundVolumeSliderValue = BGMSoundVolumeSlider->GetValue();
+		CurrentGI->SaveSettingOption->SFXSoundVolumeSliderValue = SFXSoundVolumeSlider->GetValue();
+		CurrentGI->SaveSettingOption->bMasterSoundToggle = MasterSoundToggle->IsChecked();
+		CurrentGI->SaveSettingOption->bBGMSoundToggle = BGMSoundToggle->IsChecked();
+		CurrentGI->SaveSettingOption->bSFXSoundToggle = SFXSoundToggle->IsChecked();
+	
+		CurrentGI->SaveSettingOption->DisplayBrightnessValue = DisplayBrightnessSlider->GetValue();
+		CurrentGI->SaveSettingOption->DisplayVignettingValue = DisplayVignettingSlider->GetValue();
+	
+		CurrentGI->SaveSettingOption->PauseInterfaceDistanceValue = PauseInterfaceDistanceSlider->GetValue();
+		CurrentGI->SaveSettingOption->PauseInterfaceHeightValue = PauseInterfaceHeightSlider->GetValue();
+		CurrentGI->SaveSettingOption->bUseLeftHandedSetting = LeftHandedSettingToggle->IsChecked();
+		CurrentGI->SaveSettingOption->bUseControllerVibration = ControllerVibrationToggle->IsChecked();
+		
 		UGameplayStatics::SaveGameToSlot(CurrentGI->SaveSettingOption, CurrentGI->SaveSettingOption->SaveFileName, 0);
+		UE_LOG(LogTemp, Log, TEXT("Save SettingOption Data Completed"));
 	}
-	UE_LOG(LogTemp, Log, TEXT("Save SettingOption Data Completed"));
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Save SettingOption Data Completed"));
+	}
 }
 
 void UPPSettingUIWidget::LoadSettingData()
 {
-	TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	const TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	if(CurrentGI->SaveSettingOption)
 	{
 		MasterSoundVolumeSlider->SetValue(CurrentGI->SaveSettingOption->MasterSoundVolumeSliderValue);
@@ -96,57 +120,59 @@ void UPPSettingUIWidget::LoadSettingData()
 void UPPSettingUIWidget::ExitSettingUI()
 {
 	SaveSettingData();
-	SettingButtonDelegate.Broadcast(EWidgetName::Setting);
-}
-
-void UPPSettingUIWidget::ApplyMasterSliderValue(float Value)
-{
-	
-}
-
-void UPPSettingUIWidget::ApplyBGMSliderValue(float Value)
-{
-	
-}
-
-void UPPSettingUIWidget::ApplySFXSliderValue(float Value)
-{
-	
+	SettingButtonDelegate.Broadcast(EWidgetType::Setting);
 }
 
 void UPPSettingUIWidget::ApplyMasterSoundToggle(bool IsChecked)
 {
-	IsChecked ? MasterSoundVolumeSlider->SetLocked(true) : MasterSoundVolumeSlider->SetLocked(false);
+	if(IsChecked)
+	{
+		MasterSoundVolumeSlider->SetLocked(true);
+		MasterSoundClass->Properties.Volume = 0;
+	}
+	else
+	{
+		MasterSoundVolumeSlider->SetLocked(false);
+		MasterSoundClass->Properties.Volume = MasterSoundVolumeSlider->GetValue();
+	}
 }
 
 void UPPSettingUIWidget::ApplyBGMSoundToggle(bool IsChecked)
 {
-	IsChecked ? BGMSoundVolumeSlider->SetLocked(true) : BGMSoundVolumeSlider->SetLocked(false);
+	if(IsChecked)
+	{
+		BGMSoundVolumeSlider->SetLocked(true);
+		BGMSoundClass->Properties.Volume = 0;
+	}
+	else
+	{
+		BGMSoundVolumeSlider->SetLocked(false);
+		BGMSoundClass->Properties.Volume = BGMSoundVolumeSlider->GetValue();
+	}
 }
 
 void UPPSettingUIWidget::ApplySFXSoundToggle(bool IsChecked)
 {
-	IsChecked ? SFXSoundVolumeSlider->SetLocked(true) : SFXSoundVolumeSlider->SetLocked(false);
-}
-
-void UPPSettingUIWidget::ApplyDisplayBrightnessSliderValue(float Value)
-{
-	
-}
-
-void UPPSettingUIWidget::ApplyDisplayVignettingSliderValue(float Value)
-{
-	
+	if(IsChecked)
+	{
+		SFXSoundVolumeSlider->SetLocked(true);
+		SFXSoundClass->Properties.Volume = 0;
+	}
+	else
+	{
+		SFXSoundVolumeSlider->SetLocked(false);
+		SFXSoundClass->Properties.Volume = SFXSoundVolumeSlider->GetValue();
+	}
 }
 
 void UPPSettingUIWidget::ApplyPauseInterfaceDistanceSliderValue(float Value)
 {
-	
+	// 여기 난감해서 보류
 }
 
 void UPPSettingUIWidget::ApplyPauseInterfaceHeightSliderValue(float Value)
 {
-	
+	// 여기 난감해서 보류
 }
 
 void UPPSettingUIWidget::ApplyLeftHandedSettingToggle(bool IsChecked)

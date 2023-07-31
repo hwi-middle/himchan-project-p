@@ -7,7 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PPLobbyUIWidget.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FLobbyButtonDelegate, EWidgetName);
+DECLARE_MULTICAST_DELEGATE_OneParam(FLobbyButtonDelegate, EWidgetType);
 
 /**
  * 

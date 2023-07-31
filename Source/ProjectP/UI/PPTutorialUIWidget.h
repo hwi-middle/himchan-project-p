@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/Button.h"
 #include "Blueprint/UserWidget.h"
-#include "ProjectP/Enumeration/PPWidgetName.h"
+#include "ProjectP/Enumeration/PPWidgetType.h"
 #include "PPTutorialUIWidget.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FTutorialButtonDelegate, EWidgetName);
+DECLARE_MULTICAST_DELEGATE_OneParam(FTutorialButtonDelegate, EWidgetType);
 
 /**
  * 
@@ -23,7 +24,7 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Button, meta = (BindWidget))
-	TObjectPtr<UButton> ExitSettingUIButton;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Button/*, meta = (BindWidget)*/)
+	TObjectPtr<UButton> ExitTutorialUIButton;
 	
 };

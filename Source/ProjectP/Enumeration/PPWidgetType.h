@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 UENUM()
-enum class EWidgetName : uint8
+enum class EWidgetType : uint8
 {
 	Lobby UMETA(DisplayName = "Lobby"),
 	Setting UMETA(DisplayName = "Setting"),

@@ -23,15 +23,15 @@ void UPPLobbyUIWidget::EntryMainLevel()
 
 void UPPLobbyUIWidget::ToggleSettingWidget()
 {
-	LobbyButtonDelegate.Broadcast(EWidgetName::Setting);
+	LobbyButtonDelegate.Broadcast(EWidgetType::Setting);
 }
 
 void UPPLobbyUIWidget::ToggleTutorialWidget()
 {
-	LobbyButtonDelegate.Broadcast(EWidgetName::Tutorial);
+	LobbyButtonDelegate.Broadcast(EWidgetType::Tutorial);
 }
 
 void UPPLobbyUIWidget::OpenExitCheckWidget()
 {
-	LobbyButtonDelegate.Broadcast(EWidgetName::ExitCheck);
+	LobbyButtonDelegate.Broadcast(EWidgetType::ExitCheck);
 }

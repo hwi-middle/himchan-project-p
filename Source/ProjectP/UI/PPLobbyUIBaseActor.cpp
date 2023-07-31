@@ -64,17 +64,17 @@ void APPLobbyUIBaseActor::BeginPlay()
 	}
 }
 
-void APPLobbyUIBaseActor::ToggleWidgetVisible(EWidgetName WidgetName)
+void APPLobbyUIBaseActor::ToggleWidgetVisible(const EWidgetType WidgetType)
 {
-	switch (WidgetName)
+	switch (WidgetType)
 	{
-	case EWidgetName::Setting:
+	case EWidgetType::Setting:
 		SettingWidgetComponent->SetVisibility(!SettingWidgetComponent->IsVisible());
 		break;
-	case EWidgetName::Tutorial:
+	case EWidgetType::Tutorial:
 		TutorialWidgetComponent->SetVisibility(!TutorialWidgetComponent->IsVisible());
 		break;
-	case EWidgetName::ExitCheck:
+	case EWidgetType::ExitCheck:
 		ExitCheckWidgetComponent->SetVisibility(!ExitCheckWidgetComponent->IsVisible());
 		break;
 	default:

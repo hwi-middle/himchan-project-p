@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
-#include "ProjectP/Enumeration/PPWidgetName.h"
+#include "ProjectP/Enumeration/PPWidgetType.h"
 #include "PPLobbyUIBaseActor.generated.h"
 
 UCLASS()
@@ -18,7 +18,7 @@ public:
 	APPLobbyUIBaseActor();
 	
 	UFUNCTION(BlueprintCallable)
-	void ToggleWidgetVisible(EWidgetName WidgetName);
+	void ToggleWidgetVisible(const EWidgetType WidgetType);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

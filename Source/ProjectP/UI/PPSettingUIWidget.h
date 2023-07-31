@@ -5,10 +5,23 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
-#include "ProjectP/Enumeration/PPWidgetName.h"
+#include "Engine/PostProcessVolume.h"
+#include "ProjectP/Enumeration/PPWidgetType.h"
+#include "Sound/SoundClass.h"
 #include "PPSettingUIWidget.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FSettingButtonDelegate, EWidgetName);
+DECLARE_MULTICAST_DELEGATE_OneParam(FSettingButtonDelegate, EWidgetType);
+// VRPawn 작업 끝난 뒤에 VRPawn에 함수 만들어서 아래 두 델리게이트에 바인딩 할 예정
+DECLARE_MULTICAST_DELEGATE_OneParam(FCameraTurnValueSettingDelegate, float);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FAccessibilityOptionDelegate, FName, bool);
+
+UENUM()
+enum class ECameraTurnValue : uint8
+{
+	Low = 30,
+	Middle = 45,
+	High = 60
+};
 
 /*
  * 
@@ -23,6 +36,10 @@ public:
 	void LoadSettingData();
 
 	FSettingButtonDelegate SettingButtonDelegate;
+	FCameraTurnValueSettingDelegate CameraTurnValueSettingDelegate;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<APostProcessVolume> PostProcessVolume;
 	// Generate Default Widget Section
 protected:
 	virtual void NativeConstruct() override;
@@ -44,13 +61,13 @@ protected:
 	*/
 public:
 	UFUNCTION(BlueprintCallable)
-	void ApplyMasterSliderValue(float Value);
+	FORCEINLINE void ApplyMasterSliderValue(const float Value) { MasterSoundClass->Properties.Volume = Value; }
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyBGMSliderValue(float Value);
+	FORCEINLINE void ApplyBGMSliderValue(const float Value) { BGMSoundClass->Properties.Volume = Value; }
 	
 	UFUNCTION(BlueprintCallable)
-	void ApplySFXSliderValue(float Value);
+	FORCEINLINE void ApplySFXSliderValue(const float Value) { SFXSoundClass->Properties.Volume = Value; }
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyMasterSoundToggle(bool IsChecked);
@@ -81,13 +98,24 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound, meta = (BindWidget))
 	TObjectPtr<class UCheckBox> SFXSoundToggle;
 
+	// Sound Class Section
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = SoundClass)
+	TObjectPtr<class USoundClass> MasterSoundClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = SoundClass)
+	TObjectPtr<class USoundClass> BGMSoundClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = SoundClass)
+	TObjectPtr<class USoundClass> SFXSoundClass;
+	
 	// Display Option Function Section
 public:
 	UFUNCTION(BlueprintCallable)
-	void ApplyDisplayBrightnessSliderValue(float Value);
+	FORCEINLINE void ApplyDisplayBrightnessSliderValue(const float Value) {  PostProcessVolume->Settings.AutoExposureBias = Value; }
 	
 	UFUNCTION(BlueprintCallable)
-	void ApplyDisplayVignettingSliderValue(float Value);
+	FORCEINLINE void ApplyDisplayVignettingSliderValue(const float Value) { PostProcessVolume->Settings.VignetteIntensity = Value; }
 	
 	// Display Option Widget Section
 protected:
@@ -112,13 +140,13 @@ public:
 	void ApplyControllerVibrationToggle(bool IsChecked);
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ApplyCameraTurnValue30() { }
+	FORCEINLINE void ApplyCameraTurnValueLow() { CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::Low)); }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ApplyCameraTurnValue45() { }
+	FORCEINLINE void ApplyCameraTurnValueMiddle() { CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::Middle)); }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ApplyCameraTurnValue60() { }
+	FORCEINLINE void ApplyCameraTurnValueHigh() { CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::High)); }
 	
 	// Accessibility Option Widget Section
 protected:
@@ -135,11 +163,11 @@ protected:
 	TObjectPtr<UCheckBox> ControllerVibrationToggle;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
-	TObjectPtr<UButton> CameraTurnValue30Button;
+	TObjectPtr<UButton> CameraTurnValueLowButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
-	TObjectPtr<UButton> CameraTurnValue45Button;
+	TObjectPtr<UButton> CameraTurnValueMiddleButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
-	TObjectPtr<UButton> CameraTurnValue60Button;
+	TObjectPtr<UButton> CameraTurnValueHighButton;
 };
