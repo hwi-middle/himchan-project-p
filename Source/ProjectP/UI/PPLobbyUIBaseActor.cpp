@@ -23,8 +23,8 @@ APPLobbyUIBaseActor::APPLobbyUIBaseActor()
 	SettingWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPSettingUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/SettingUIBlueprint.SettingUIBlueprint_C'")));
 	SettingWidgetComponent->SetupAttachment(LobbyWidgetComponent);
 
-	TutorialWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HelpUIWidget"));
-	TutorialWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPTutorialUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/HelpUIBlueprint.HelpUIBlueprint_C'")));
+	TutorialWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("TutorialUIWidget"));
+	TutorialWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPTutorialUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/TutorialWidgetBlueprint.TutorialWidgetBlueprint_C'")));
 	TutorialWidgetComponent->SetupAttachment(LobbyWidgetComponent);
 
 	ExitCheckWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ExitCheckUIWidget"));

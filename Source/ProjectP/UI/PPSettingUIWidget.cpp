@@ -95,20 +95,41 @@ void UPPSettingUIWidget::LoadSettingData()
 	if(CurrentGI->SaveSettingOption)
 	{
 		MasterSoundVolumeSlider->SetValue(CurrentGI->SaveSettingOption->MasterSoundVolumeSliderValue);
+		MasterSoundVolumeSlider->OnValueChanged.Broadcast(MasterSoundVolumeSlider->GetValue());
+		
 		BGMSoundVolumeSlider->SetValue(CurrentGI->SaveSettingOption->BGMSoundVolumeSliderValue);
+		BGMSoundVolumeSlider->OnValueChanged.Broadcast(BGMSoundVolumeSlider->GetValue());
+		
 		SFXSoundVolumeSlider->SetValue(CurrentGI->SaveSettingOption->SFXSoundVolumeSliderValue);
+		SFXSoundVolumeSlider->OnValueChanged.Broadcast(SFXSoundVolumeSlider->GetValue());
+		
 		MasterSoundToggle->SetIsChecked(CurrentGI->SaveSettingOption->bMasterSoundToggle);
+		MasterSoundToggle->OnCheckStateChanged.Broadcast(MasterSoundToggle->IsChecked());
+		
 		BGMSoundToggle->SetIsChecked(CurrentGI->SaveSettingOption->bBGMSoundToggle);
+		BGMSoundToggle->OnCheckStateChanged.Broadcast(BGMSoundToggle->IsChecked());
+		
 		SFXSoundToggle->SetIsChecked(CurrentGI->SaveSettingOption->bSFXSoundToggle);
-
+		SFXSoundToggle->OnCheckStateChanged.Broadcast(SFXSoundToggle->IsChecked());
+		
 		DisplayBrightnessSlider->SetValue(CurrentGI->SaveSettingOption->DisplayBrightnessValue);
+		DisplayBrightnessSlider->OnValueChanged.Broadcast(DisplayBrightnessSlider->GetValue());
+		
 		DisplayVignettingSlider->SetValue(CurrentGI->SaveSettingOption->DisplayVignettingValue);
-
+		DisplayVignettingSlider->OnValueChanged.Broadcast(DisplayVignettingSlider->GetValue());
+		
 		PauseInterfaceDistanceSlider->SetValue(CurrentGI->SaveSettingOption->PauseInterfaceDistanceValue);
+		PauseInterfaceDistanceSlider->OnValueChanged.Broadcast(PauseInterfaceDistanceSlider->GetValue());
+		
 		PauseInterfaceHeightSlider->SetValue(CurrentGI->SaveSettingOption->PauseInterfaceHeightValue);
+		PauseInterfaceDistanceSlider->OnValueChanged.Broadcast(PauseInterfaceDistanceSlider->GetValue());
+		
 		LeftHandedSettingToggle->SetIsChecked(CurrentGI->SaveSettingOption->bUseLeftHandedSetting);
+		LeftHandedSettingToggle->OnCheckStateChanged.Broadcast(LeftHandedSettingToggle->IsChecked());
+		
 		ControllerVibrationToggle->SetIsChecked(CurrentGI->SaveSettingOption->bUseControllerVibration);
-
+		ControllerVibrationToggle->OnCheckStateChanged.Broadcast(ControllerVibrationToggle->IsChecked());
+		
 		UE_LOG(LogTemp, Log, TEXT("Load Setting Option SaveFile Completed"));
 	}
 	else
