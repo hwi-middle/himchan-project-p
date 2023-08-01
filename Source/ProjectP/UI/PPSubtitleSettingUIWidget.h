@@ -12,9 +12,9 @@
 UENUM()
 enum class ESubtitleFontSize : uint8
 {
-	Small = 60,
-	Normal = 72,
-	Large = 96
+	Small = 32,
+	Normal = 48,
+	Large = 60
 };
 
 /**
@@ -39,18 +39,18 @@ public:
 	FORCEINLINE void ApplySubtitleFontSizeNormal() { check(GEngine); GEngine->GetSubtitleFont()->LegacyFontSize = StaticCast<uint32>(ESubtitleFontSize::Normal); }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ApplySubtitleFontSizeLarge() { check(GEngine); GEngine->GetSubtitleFont()->LegacyFontSize = StaticCast<uint32>(ESubtitleFontSize::Large);}
+	FORCEINLINE void ApplySubtitleFontSizeLarge() { check(GEngine); GEngine->GetSubtitleFont()->LegacyFontSize = StaticCast<uint32>(ESubtitleFontSize::Large); }
 	// Subtitle Option Widget Section
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, meta = (BindWidget)*/)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility, meta = (BindWidget))
 	TObjectPtr<UCheckBox> SubtitleToggle;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility, meta = (BindWidget))
 	TObjectPtr<UButton> SubtitleSmallFontSizeButton;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility, meta = (BindWidget))
 	TObjectPtr<UButton> SubtitleNormalFontSizeButton;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility, meta = (BindWidget))
 	TObjectPtr<UButton> SubtitleLargeFontSizeButton;
 };

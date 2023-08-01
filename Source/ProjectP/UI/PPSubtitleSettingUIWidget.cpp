@@ -3,10 +3,15 @@
 
 #include "ProjectP/UI/PPSubtitleSettingUIWidget.h"
 
+#include "Components/Button.h"
+
 void UPPSubtitleSettingUIWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	ApplySubtitleFontSizeLarge();
-	// 예상값: 96
+
+	SubtitleSmallFontSizeButton->OnClicked.AddDynamic(this, &UPPSubtitleSettingUIWidget::ApplySubtitleFontSizeSmall);
+	SubtitleNormalFontSizeButton->OnClicked.AddDynamic(this, &UPPSubtitleSettingUIWidget::ApplySubtitleFontSizeNormal);
+	SubtitleLargeFontSizeButton->OnClicked.AddDynamic(this, &UPPSubtitleSettingUIWidget::ApplySubtitleFontSizeLarge);
+
 	UE_LOG(LogTemp, Log, TEXT("Current Font Size: %f"), GEngine->GetSubtitleFont()->GetFontScalingFactor());
 }
