@@ -29,13 +29,14 @@ public:
 
 private:
 	void InitVROrigin();
+	void InitVRHands();
 
 private:
-	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "MotionTracking")
-	TObjectPtr<class UMotionControllerComponent> LeftMotionController;
+	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "Hand")
+	TObjectPtr<class APPVRHand> LeftHand;
 
-	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "MotionTracking")
-	TObjectPtr<class UMotionControllerComponent> RightMotionController;
+	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "Hand")
+	TObjectPtr<class APPVRHand> RightHand;
 
 private:
 	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true), Category = "Input")
@@ -62,16 +63,58 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UInputAction> SprintAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> GrabLeftAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> GrabRightAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> IndexCurlLeftAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> IndexCurlRightAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> PointLeftAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> PointRightAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> ThumbUpLeftAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> ThumbUpRightAction;
 	
 	UPROPERTY()
 	float SnapTurnDegrees;
 
 	UPROPERTY()
 	float MoveSpeed;
-	
+
 private:
 	void Move(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
+	void GrabLeft(const FInputActionValue& Value);
+	void GrabRight(const FInputActionValue& Value);
+	void IndexCurlLeft(const FInputActionValue& Value);
+	void IndexCurlRight(const FInputActionValue& Value);
+	void PointLeft(const FInputActionValue& Value);
+	void PointRight(const FInputActionValue& Value);
+	void ThumbUpLeft(const FInputActionValue& Value);
+	void ThumbUpRight(const FInputActionValue& Value);
 	void DisableSprint(const FInputActionValue& Value);
 	void ToggleSprint(const FInputActionValue& Value);
+
+private:
+	void CancelOrCompleteGrabLeft();
+	void CancelOrCompleteGrabRight();
+	void CancelOrCompleteIndexCurlLeft();
+	void CancelOrCompleteIndexCurlRight();
+	void CompletePointLeft();
+	void CompletePointRight();
+	void CompleteThumbUpLeft();
+	void CompleteThumbUpRight();
 };
