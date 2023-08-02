@@ -37,6 +37,14 @@ APPVRPawn::APPVRPawn()
 	MoveAction = MovementData->MoveAction;
 	TurnAction = MovementData->TurnAction;
 	SprintAction = MovementData->SprintAction;
+	GrabLeftAction = MovementData->GrabLeftAction;
+	GrabRightAction = MovementData->GrabRightAction;
+	IndexCurlLeftAction = MovementData->IndexCurlLeftAction;
+	IndexCurlRightAction = MovementData->IndexCurlRightAction;
+	PointLeftAction = MovementData->PointLeftAction;
+	PointRightAction = MovementData->PointRightAction;
+	ThumbUpLeftAction = MovementData->ThumbUpLeftAction;
+	ThumbUpRightAction = MovementData->ThumbUpRightAction;
 
 	MoveSpeed = MovementData->MoveSpeed;
 	SnapTurnDegrees = MovementData->SnapTurnDegrees;
@@ -73,6 +81,34 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &APPVRPawn::DisableSprint);
 	EnhancedInputComponent->BindAction(TurnAction, ETriggerEvent::Started, this, &APPVRPawn::Turn);
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleSprint);
+
+	EnhancedInputComponent->BindAction(GrabLeftAction, ETriggerEvent::Triggered, this, &APPVRPawn::GrabLeft);
+	EnhancedInputComponent->BindAction(GrabLeftAction, ETriggerEvent::Completed, this, &APPVRPawn::CancelOrCompleteGrabLeft);
+	EnhancedInputComponent->BindAction(GrabLeftAction, ETriggerEvent::Canceled, this, &APPVRPawn::CancelOrCompleteGrabLeft);
+	EnhancedInputComponent->BindAction(GrabRightAction, ETriggerEvent::Triggered, this, &APPVRPawn::GrabRight);
+	EnhancedInputComponent->BindAction(GrabRightAction, ETriggerEvent::Completed, this, &APPVRPawn::CancelOrCompleteGrabRight);
+	EnhancedInputComponent->BindAction(GrabRightAction, ETriggerEvent::Canceled, this, &APPVRPawn::CancelOrCompleteGrabRight);
+
+	EnhancedInputComponent->BindAction(IndexCurlLeftAction, ETriggerEvent::Triggered, this, &APPVRPawn::IndexCurlLeft);
+	EnhancedInputComponent->BindAction(IndexCurlLeftAction, ETriggerEvent::Completed, this, &APPVRPawn::CancelOrCompleteIndexCurlLeft);
+	EnhancedInputComponent->BindAction(IndexCurlLeftAction, ETriggerEvent::Canceled, this, &APPVRPawn::CancelOrCompleteIndexCurlLeft);
+	EnhancedInputComponent->BindAction(IndexCurlRightAction, ETriggerEvent::Triggered, this, &APPVRPawn::IndexCurlRight);
+	EnhancedInputComponent->BindAction(IndexCurlRightAction, ETriggerEvent::Completed, this, &APPVRPawn::CancelOrCompleteIndexCurlRight);
+	EnhancedInputComponent->BindAction(IndexCurlRightAction, ETriggerEvent::Canceled, this, &APPVRPawn::CancelOrCompleteIndexCurlRight);
+
+	EnhancedInputComponent->BindAction(PointLeftAction, ETriggerEvent::Triggered, this, &APPVRPawn::PointLeft);
+	EnhancedInputComponent->BindAction(PointLeftAction, ETriggerEvent::Completed, this, &APPVRPawn::CompletePointLeft);
+	EnhancedInputComponent->BindAction(PointLeftAction, ETriggerEvent::Canceled, this, &APPVRPawn::PointLeft);
+	EnhancedInputComponent->BindAction(PointRightAction, ETriggerEvent::Triggered, this, &APPVRPawn::PointRight);
+	EnhancedInputComponent->BindAction(PointRightAction, ETriggerEvent::Completed, this, &APPVRPawn::CompletePointRight);
+	EnhancedInputComponent->BindAction(PointRightAction, ETriggerEvent::Canceled, this, &APPVRPawn::PointRight);
+
+	EnhancedInputComponent->BindAction(ThumbUpLeftAction, ETriggerEvent::Triggered, this, &APPVRPawn::ThumbUpLeft);
+	EnhancedInputComponent->BindAction(ThumbUpLeftAction, ETriggerEvent::Completed, this, &APPVRPawn::CompleteThumbUpLeft);
+	EnhancedInputComponent->BindAction(ThumbUpLeftAction, ETriggerEvent::Canceled, this, &APPVRPawn::ThumbUpLeft);
+	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Triggered, this, &APPVRPawn::ThumbUpRight);
+	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Completed, this, &APPVRPawn::CompleteThumbUpRight);
+	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Canceled, this, &APPVRPawn::ThumbUpRight);
 }
 
 void APPVRPawn::InitVROrigin()
@@ -135,6 +171,47 @@ void APPVRPawn::Turn(const FInputActionValue& Value)
 	SetActorLocation(GetActorLocation() + InversedDirection);
 }
 
+void APPVRPawn::GrabLeft(const FInputActionValue& Value)
+{
+	LeftHand->SetPoseAlphaGrasp(Value.Get<float>());
+}
+
+void APPVRPawn::GrabRight(const FInputActionValue& Value)
+{
+	RightHand->SetPoseAlphaGrasp(Value.Get<float>());
+}
+
+void APPVRPawn::IndexCurlLeft(const FInputActionValue& Value)
+{
+	LeftHand->SetPoseAlphaIndexCurl(Value.Get<float>());
+}
+
+void APPVRPawn::IndexCurlRight(const FInputActionValue& Value)
+{
+	RightHand->SetPoseAlphaIndexCurl(Value.Get<float>());
+
+}
+
+void APPVRPawn::PointLeft(const FInputActionValue& Value)
+{
+	LeftHand->SetPoseAlphaPoint(0);
+}
+
+void APPVRPawn::PointRight(const FInputActionValue& Value)
+{
+	RightHand->SetPoseAlphaPoint(0);
+}
+
+void APPVRPawn::ThumbUpLeft(const FInputActionValue& Value)
+{
+	LeftHand->SetPoseAlphaThumbUp(0);
+}
+
+void APPVRPawn::ThumbUpRight(const FInputActionValue& Value)
+{
+	RightHand->SetPoseAlphaThumbUp(0);
+}
+
 void APPVRPawn::DisableSprint(const FInputActionValue& Value)
 {
 	if (MoveSpeed == MovementData->SprintSpeed)
@@ -146,4 +223,44 @@ void APPVRPawn::DisableSprint(const FInputActionValue& Value)
 void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 {
 	MoveSpeed == MovementData->MoveSpeed ? MoveSpeed = MovementData->SprintSpeed : MoveSpeed = MovementData->MoveSpeed;
+}
+
+void APPVRPawn::CancelOrCompleteGrabLeft()
+{
+	LeftHand->SetPoseAlphaGrasp(0);
+}
+
+void APPVRPawn::CancelOrCompleteGrabRight()
+{
+	RightHand->SetPoseAlphaGrasp(0);
+}
+
+void APPVRPawn::CancelOrCompleteIndexCurlLeft()
+{
+	LeftHand->SetPoseAlphaIndexCurl(0);
+}
+
+void APPVRPawn::CancelOrCompleteIndexCurlRight()
+{
+	RightHand->SetPoseAlphaIndexCurl(0);
+}
+
+void APPVRPawn::CompletePointLeft()
+{
+	LeftHand->SetPoseAlphaPoint(1);
+}
+
+void APPVRPawn::CompletePointRight()
+{
+	RightHand->SetPoseAlphaPoint(1);
+}
+
+void APPVRPawn::CompleteThumbUpLeft()
+{
+	LeftHand->SetPoseAlphaThumbUp(1);
+}
+
+void APPVRPawn::CompleteThumbUpRight()
+{
+	RightHand->SetPoseAlphaThumbUp(1);
 }

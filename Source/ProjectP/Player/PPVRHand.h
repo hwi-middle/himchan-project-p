@@ -24,7 +24,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	FORCEINLINE EControllerHand GetHandType() const { return HandType; }
 	FORCEINLINE void SetHandType(const EControllerHand InHandType) { HandType = InHandType; }
 
 private:
@@ -36,6 +35,17 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UMotionControllerComponent> MotionController;
-	
+
+	UPROPERTY(VisibleAnywhere)
+	TSubclassOf<class UPPVRHandAnimInstance> HandAnimInstanceClass;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UPPVRHandAnimInstance> AnimInstance;
+
+public:
+	void SetPoseAlphaGrasp(float Value);
+	void SetPoseAlphaIndexCurl(const float Value);
+	void SetPoseAlphaThumbUp(const float Value);
+	void SetPoseAlphaPoint(const float Value);
 	void InitHand();
 };
