@@ -18,7 +18,7 @@ protected:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
-	uint8 bMirror : 1;
+	uint32 bMirror : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Animation")
 	float PoseAlphaGrasp;
@@ -39,7 +39,7 @@ protected:
 	float CurrentPoseAlphaPoint;
 
 public:
-	FORCEINLINE void SetIsMirror(const uint8 Value) { bMirror = Value; }
+	FORCEINLINE void SetIsMirror(const uint32 Value) { bMirror = Value; }
 	FORCEINLINE void SetPoseAlphaGrasp(const float Value) { PoseAlphaGrasp = Value; }
 	FORCEINLINE void SetPoseAlphaIndexCurl(const float Value) { PoseAlphaIndexCurl = Value; }
 	FORCEINLINE void SetPoseAlphaThumbUp(const float Value) { PoseAlphaThumbUp = Value; }
