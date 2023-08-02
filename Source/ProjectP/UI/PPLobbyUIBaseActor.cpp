@@ -35,8 +35,6 @@ APPLobbyUIBaseActor::APPLobbyUIBaseActor()
 	SettingWidgetComponent->SetCastShadow(false);
 	TutorialWidgetComponent->SetCastShadow(false);
 	ExitCheckWidgetComponent->SetCastShadow(false);
-
-	
 }
 
 // Called when the game starts or when spawned
@@ -78,7 +76,7 @@ void APPLobbyUIBaseActor::ToggleWidgetVisible(const EWidgetType WidgetType)
 		ExitCheckWidgetComponent->SetVisibility(!ExitCheckWidgetComponent->IsVisible());
 		break;
 	default:
-		break;
+		checkNoEntry();
 	}
 }
 

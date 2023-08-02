@@ -37,16 +37,16 @@ protected:
 
 	// Widget
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class UButton> StartButton;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class UButton> SettingButton;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class UButton> TutorialButton;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class UButton> ExitButton;
 	
 };

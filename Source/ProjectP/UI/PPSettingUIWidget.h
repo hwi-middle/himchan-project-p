@@ -56,7 +56,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ExitSettingUI();
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Button, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> ExitSettingUIButton;
 
 	/*
@@ -89,33 +89,33 @@ public:
 	
 	// Sound Option Widget Section
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class USlider> MasterSoundVolumeSlider;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class USlider> BGMSoundVolumeSlider;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class USlider> SFXSoundVolumeSlider;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class UCheckBox> MasterSoundToggle;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class UCheckBox> BGMSoundToggle;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Sound, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class UCheckBox> SFXSoundToggle;
 
 	// Sound Class Section
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = SoundClass)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SoundClass")
 	TObjectPtr<class USoundClass> MasterSoundClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = SoundClass)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SoundClass")
 	TObjectPtr<class USoundClass> BGMSoundClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = SoundClass)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SoundClass")
 	TObjectPtr<class USoundClass> SFXSoundClass;
 	
 	// Display Option Function Section
@@ -128,10 +128,10 @@ public:
 	
 	// Display Option Widget Section
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class USlider> DisplayBrightnessSlider;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Display, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class USlider> DisplayVignettingSlider;
 
 	// Accessibility Option Function Section
@@ -159,24 +159,24 @@ public:
 	
 	// Accessibility Option Widget Section
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<USlider> PauseInterfaceDistanceSlider;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<USlider> PauseInterfaceHeightSlider;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UCheckBox> LeftHandedSettingToggle;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UCheckBox> ControllerVibrationToggle;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, *meta = (BindWidget)*/)
 	TObjectPtr<UButton> CameraTurnValueLowButton;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, *meta = (BindWidget)*/)
 	TObjectPtr<UButton> CameraTurnValueMiddleButton;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Accessibility/*, *meta = (BindWidget)*/)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, *meta = (BindWidget)*/)
 	TObjectPtr<UButton> CameraTurnValueHighButton;
 };

@@ -24,7 +24,7 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Button/*, meta = (BindWidget)*/)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
 	TObjectPtr<UButton> ExitTutorialUIButton;
 	
 };

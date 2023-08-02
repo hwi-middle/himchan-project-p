@@ -3,7 +3,6 @@
 
 #include "ProjectP/UI/PPSettingUIWidget.h"
 #include "Components/CheckBox.h"
-#include "Components/PostProcessComponent.h"
 #include "Components/Slider.h"
 #include "Engine/PostProcessVolume.h"
 #include "Kismet/GameplayStatics.h"
@@ -19,6 +18,7 @@ void UPPSettingUIWidget::NativeConstruct()
 	{
 		UE_LOG(LogTemp, Log, TEXT("Get SoundClass Accepted"));
 	}
+	
 	TArray<AActor*> PostProcessVolumes;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APostProcessVolume::StaticClass(), PostProcessVolumes);
 	if(PostProcessVolumes.Num() > 0)
@@ -29,8 +29,8 @@ void UPPSettingUIWidget::NativeConstruct()
 			UE_LOG(LogTemp, Log, TEXT("Get World's PostProcessVolume Completed"));
 		}
 	}
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	PlayerController->ConsoleCommand(TEXT(""));
+
+	// 추후 종류별 위젯 분리 예정
 	MasterSoundVolumeSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyMasterSliderValue);
 	BGMSoundVolumeSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyBGMSliderValue);
 	SFXSoundVolumeSlider->OnValueChanged.AddDynamic(this, &UPPSettingUIWidget::ApplySFXSliderValue);
@@ -47,6 +47,8 @@ void UPPSettingUIWidget::NativeConstruct()
 
 	LeftHandedSettingToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyLeftHandedSettingToggle);
 	ControllerVibrationToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyControllerVibrationToggle);
+
+	// VRPawn 관련 작업 끝난 뒤 적용 예정
 	//CameraTurnValueLowButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValueLow);
 	//CameraTurnValueMiddleButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValueMiddle);
 	//CameraTurnValueHighButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValueHigh);
@@ -59,9 +61,8 @@ void UPPSettingUIWidget::NativeConstruct()
 void UPPSettingUIWidget::SaveSettingData()
 {
 	TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	
 
-	// 만약 게임 플레이 저장/불러오기 기능을 구현한다고 해도 설정은 여러개 저장 할 일이 없기 때문에 인덱스 0 고정
+	// 만약 게임 플레이 내용 저장/불러오기 기능을 구현한다고 해도 설정은 여러개 저장 할 일이 없기 때문에 인덱스 0 고정
 	// 파일 이름 또한 마찬가지로 생성자에서 설정한 초기 값 사용
 	if(CurrentGI->SaveSettingOption)
 	{
@@ -92,6 +93,7 @@ void UPPSettingUIWidget::SaveSettingData()
 void UPPSettingUIWidget::LoadSettingData()
 {
 	const TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	
 	if(CurrentGI->SaveSettingOption)
 	{
 		MasterSoundVolumeSlider->SetValue(CurrentGI->SaveSettingOption->MasterSoundVolumeSliderValue);

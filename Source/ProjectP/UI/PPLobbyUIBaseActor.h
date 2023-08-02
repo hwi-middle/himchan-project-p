@@ -19,20 +19,21 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void ToggleWidgetVisible(const EWidgetType WidgetType);
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
 	TObjectPtr<UWidgetComponent> LobbyWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
 	TObjectPtr<UWidgetComponent> SettingWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
 	TObjectPtr<UWidgetComponent> TutorialWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetCompnent")
 	TObjectPtr<UWidgetComponent> ExitCheckWidgetComponent;
 };
