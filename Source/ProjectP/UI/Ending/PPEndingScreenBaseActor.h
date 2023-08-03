@@ -6,7 +6,7 @@
 #include "Components/SpotLightComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
-#include "ProjectP/UI/PPEndingUIWidget.h"
+#include "ProjectP/UI/Ending/PPEndingUIWidget.h"
 #include "PPEndingScreenBaseActor.generated.h"
 
 UCLASS()

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectP/UI/PPEndingScreenBaseActor.h"
+#include "ProjectP/UI/Ending/PPEndingScreenBaseActor.h"
 
 #include "PPEndingUIWidget.h"
 
@@ -37,10 +37,6 @@ void APPEndingScreenBaseActor::BeginPlay()
 	{
 		EndingUIWidget->SetScreenOpacity(0.0f);
 	}
-	
-	// Convert To Candelas
-	// LightMaxBrightness = LightMaxBrightness * 10000.0f;
-	// LightEnhanceBrightnessPerTick = LightEnhanceBrightnessPerTick * 10000.0f;
 	
 	ScreenLight->SetIntensity(0.0f);
 	EnableLight();

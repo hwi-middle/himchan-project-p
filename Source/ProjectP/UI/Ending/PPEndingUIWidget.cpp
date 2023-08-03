@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectP/UI/PPEndingUIWidget.h"
+#include "ProjectP/UI/Ending/PPEndingUIWidget.h"
 
 #include "Components/CanvasPanelSlot.h"
 
