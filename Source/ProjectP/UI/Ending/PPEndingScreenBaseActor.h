@@ -28,7 +28,7 @@ protected:
 	void FadeInOrOutScreenImage(const bool IsFaded);
 
 	// 람다안의람다안의람다안의람다식으로 합치기 가능
-	void VisibleCreditPanel();
+	void ActivateCreditPanel();
 	void MoveCreditPanel();
 	void ExitToLobby();
 	

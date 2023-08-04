@@ -76,14 +76,14 @@ void APPEndingScreenBaseActor::FadeInOrOutScreenImage(const bool IsFaded)
 				else
 				{
 					MaxCreditBottomPosition = EndingUIWidget->GetCreditHeight();
-					VisibleCreditPanel();
+					ActivateCreditPanel();
 				}
 			}
 		}), TimerTick, true);
 	}
 }
 
-void APPEndingScreenBaseActor::VisibleCreditPanel()
+void APPEndingScreenBaseActor::ActivateCreditPanel()
 {
 	GetWorldTimerManager().SetTimer(FadeSequenceTimer, FTimerDelegate::CreateLambda([&]()
 		{
@@ -115,6 +115,7 @@ void APPEndingScreenBaseActor::ExitToLobby()
 {
 	GetWorldTimerManager().SetTimer(DelayTimer, FTimerDelegate::CreateLambda([&]()
 		{
+			// 로비로 돌아가는 딜레이 시간에 따라 조명 타이머가 유지된 채로 레벨이 넘어가 크래쉬 발생 가능
 			GetWorldTimerManager().ClearTimer(DelayTimer);
 			GetWorldTimerManager().ClearTimer(LightIntensityControlTimer);
 			UGameplayStatics::OpenLevel(this, "ExitToLobbyTest");
@@ -141,6 +142,7 @@ void APPEndingScreenBaseActor::ToggleLight(bool IsEnable)
 			{
 				ScreenLight->SetIntensity(LightMaxIntensity);
 				GetWorldTimerManager().ClearTimer(LightIntensityControlTimer);
+				// 엔딩 이미지 재생 시작.
 				FadeInOrOutScreenImage(true);
 			}
 		}), TimerTick, true);
