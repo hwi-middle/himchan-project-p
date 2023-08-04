@@ -26,41 +26,51 @@ protected:
 	virtual void BeginPlay() override;
 
 	void FadeInOrOutScreenImage(const bool IsFaded);
+
+	// 람다안의람다안의람다안의람다식으로 합치기 가능
 	void VisibleCreditPanel();
 	void MoveCreditPanel();
+	void ExitToLobby();
+	
 	void EnableAutoFadeTimer();
-	void EnableLight();
+	void ToggleLight(bool IsEnable);
+
+	// Variable Section
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = WidgetCompoent)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WidgetCompoent")
 	TObjectPtr<UWidgetComponent> EndingScreenWidgetComponent;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = WidgetCompoent)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WidgetCompoent")
 	TObjectPtr<UPPEndingUIWidget> EndingUIWidget;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = WidgetCompoent)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WidgetCompoent")
 	TObjectPtr<USpotLightComponent> ScreenLight;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ending Options")
 	float AutoFadeTime;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ending Options")
 	float ImageFadeSequenceTime;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ending Options")
 	float MaxCreditBottomPosition;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ending Options")
 	float CreditAddPositionValue;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ending Options")
 	float LightMaxIntensity;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ending Options")
 	float LightEnhanceIntensityPerTick;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float TimerTick;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ending Options")
+	float ExitToLobbyDelay;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ending Options")
+	float TimerTick;
+
+	// 동시에 돌아가는 타이머가 없다시피 해서 묶어버릴까 고민중
 	UPROPERTY(VisibleDefaultsOnly)
 	FTimerHandle FadeSequenceTimer;
 
@@ -68,7 +78,7 @@ protected:
 	FTimerHandle CreditMoveTimer;
 	
 	UPROPERTY(VisibleDefaultsOnly)
-	FTimerHandle AutoFadeDelayTimer;
+	FTimerHandle DelayTimer;
 
 	UPROPERTY(VisibleDefaultsOnly)
 	FTimerHandle LightIntensityControlTimer;

@@ -4,6 +4,7 @@
 #include "ProjectP/UI/Ending/PPEndingScreenBaseActor.h"
 
 #include "PPEndingUIWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APPEndingScreenBaseActor::APPEndingScreenBaseActor()
@@ -39,7 +40,7 @@ void APPEndingScreenBaseActor::BeginPlay()
 	}
 	
 	ScreenLight->SetIntensity(0.0f);
-	EnableLight();
+	ToggleLight(false);
 }
 
 void APPEndingScreenBaseActor::FadeInOrOutScreenImage(const bool IsFaded)
@@ -101,26 +102,39 @@ void APPEndingScreenBaseActor::MoveCreditPanel()
 	GetWorldTimerManager().SetTimer(CreditMoveTimer, FTimerDelegate::CreateLambda([&]()
 		{
 			float CreditPosition = EndingUIWidget->AddCreditPosition(-CreditAddPositionValue);
-			if(CreditPosition >= MaxCreditBottomPosition)
+			if(CreditPosition <= -MaxCreditBottomPosition)
 			{
-				CreditPosition = MaxCreditBottomPosition;
 				GetWorldTimerManager().ClearTimer(CreditMoveTimer);
+				ToggleLight(true);	
+				ExitToLobby();
 			}
 		}), 0.01f, true);
 }
 
+void APPEndingScreenBaseActor::ExitToLobby()
+{
+	GetWorldTimerManager().SetTimer(DelayTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			GetWorldTimerManager().ClearTimer(DelayTimer);
+			GetWorldTimerManager().ClearTimer(LightIntensityControlTimer);
+			UGameplayStatics::OpenLevel(this, "ExitToLobbyTest");
+		}), ExitToLobbyDelay, false);
+}
+
 void APPEndingScreenBaseActor::EnableAutoFadeTimer()
 {
-	GetWorldTimerManager().SetTimer(AutoFadeDelayTimer, FTimerDelegate::CreateLambda([&]()
+	GetWorldTimerManager().SetTimer(DelayTimer, FTimerDelegate::CreateLambda([&]()
 		{
 			FadeInOrOutScreenImage(false);
-			GetWorldTimerManager().ClearTimer(AutoFadeDelayTimer);
+			GetWorldTimerManager().ClearTimer(DelayTimer);
 		}), AutoFadeTime, false);
 }
 
-void APPEndingScreenBaseActor::EnableLight()
+void APPEndingScreenBaseActor::ToggleLight(bool IsEnable)
 {
-	GetWorldTimerManager().SetTimer(LightIntensityControlTimer, FTimerDelegate::CreateLambda([&]()
+	if(!IsEnable)
+	{
+		GetWorldTimerManager().SetTimer(LightIntensityControlTimer, FTimerDelegate::CreateLambda([&]()
 		{
 			ScreenLight->SetIntensity(ScreenLight->Intensity + LightEnhanceIntensityPerTick);
 			if(ScreenLight->Intensity >= LightMaxIntensity)
@@ -130,6 +144,19 @@ void APPEndingScreenBaseActor::EnableLight()
 				FadeInOrOutScreenImage(true);
 			}
 		}), TimerTick, true);
+	}
+	else
+	{
+		GetWorldTimerManager().SetTimer(LightIntensityControlTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			ScreenLight->SetIntensity(ScreenLight->Intensity - LightEnhanceIntensityPerTick);
+			if(ScreenLight->Intensity <= 0.0f)
+			{
+				ScreenLight->SetIntensity(0.0f);
+				GetWorldTimerManager().ClearTimer(LightIntensityControlTimer);
+			}
+		}), TimerTick, true);
+	}
 }
 
 
