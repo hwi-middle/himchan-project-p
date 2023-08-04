@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ProjectP/Grab/PPVRGrabComponent.h"
 #include "PPVRHand.generated.h"
 
 UCLASS()
@@ -42,7 +43,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UPPVRHandAnimInstance> AnimInstance;
 
+	UPROPERTY(EditAnywhere)
+	float GripRadius;
+
 public:
+	UPPVRGrabComponent* FindGrabComponentNearby();
+	void TryGrab();
 	void SetPoseAlphaGrasp(float Value);
 	void SetPoseAlphaIndexCurl(const float Value);
 	void SetPoseAlphaThumbUp(const float Value);
