@@ -24,7 +24,8 @@ public:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
 
-	void ActorEnterOrExitEvent(bool IsEnter);
+	void DisplayWidgetContents();
+	void HideWidgetBackground();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
