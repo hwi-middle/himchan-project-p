@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
+#include "ProjectP/UI/Tutorial/PPTutorialUIWidget.h"
 #include "GameFramework/Actor.h"
 #include "PPTriggerWidgetBase.generated.h"
 
@@ -29,11 +30,20 @@ protected:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TObjectPtr<UWidgetComponent> GuideWidgetComponent;
+	TObjectPtr<UWidgetComponent> TutorialWidgetComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TObjectPtr<UUserWidget> GuideWidget;
+	TObjectPtr<UPPTutorialUIWidget> TutorialWidget;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> TriggerBox;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
+	float WidgetOpacityAddValue;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
+	float WidgetAnimationTick;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+	FTimerHandle WidgetAnimationTimer;
 };
