@@ -16,7 +16,7 @@ APPVRHand::APPVRHand()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	GripRadius = 45.f;
+	GripRadius = 6.f;
 	MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionController"));
 	RootComponent = MotionController;
 	HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh"));
@@ -73,9 +73,20 @@ UPPVRGrabComponent* APPVRHand::FindGrabComponentNearby()
 	return GrabbedObject;
 }
 
-void APPVRHand::TryGrab()
+void APPVRHand::HandleGrab()
 {
-	FindGrabComponentNearby();
+	if (UPPVRGrabComponent* GrabComponent = FindGrabComponentNearby())
+	{
+		HeldComponent = GrabComponent->TryGrab(this) ? GrabComponent : nullptr;
+	}
+}
+
+void APPVRHand::HandleRelease()
+{
+	if (HeldComponent)
+	{
+		HeldComponent->TryRelease();
+	}
 }
 
 void APPVRHand::SetPoseAlphaGrasp(const float Value)

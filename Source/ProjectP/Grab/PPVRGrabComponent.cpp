@@ -2,6 +2,8 @@
 
 
 #include "PPVRGrabComponent.h"
+#include "ProjectP/Enumeration/PPVRGrabType.h"
+#include "ProjectP/Player/PPVRHand.h"
 
 // Sets default values for this component's properties
 UPPVRGrabComponent::UPPVRGrabComponent()
@@ -20,7 +22,7 @@ void UPPVRGrabComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
 }
 
 
@@ -32,3 +34,60 @@ void UPPVRGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	// ...
 }
 
+bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
+{
+	FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
+
+	switch (GrabType)
+	{
+	case EVRGrabType::Free:
+		{
+			const bool Result = GetAttachParent()->AttachToComponent(Cast<UPrimitiveComponent>(InHand->GetMotionController()), AttachmentTransformRules);
+			bHeld = Result;
+			GrabbingHand = Result ? InHand : nullptr;
+			break;
+		}
+	case EVRGrabType::ObjToHand:
+		break;
+	case EVRGrabType::HandToObj:
+		break;
+	default:
+		checkNoEntry();
+	}
+
+	return bHeld;
+}
+
+void UPPVRGrabComponent::TryRelease()
+{
+	FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, EDetachmentRule::KeepWorld, EDetachmentRule::KeepWorld, false);
+
+	if (GrabbingHand)
+	{
+		switch (GrabType)
+		{
+		case EVRGrabType::Free:
+			GetAttachParent()->DetachFromComponent(DetachmentTransformRules);
+			bHeld = false;
+			SetPrimitiveCompPhysics(bShouldSimulateOnDrop);
+			break;
+		case EVRGrabType::ObjToHand:
+			break;
+		case EVRGrabType::HandToObj:
+			break;
+		default:
+			checkNoEntry();
+		}
+		GrabbingHand = nullptr;
+	}
+}
+
+void UPPVRGrabComponent::SetPrimitiveCompPhysics(const bool bInSimulate)
+{
+	Cast<UPrimitiveComponent>(GetAttachParent())->SetSimulatePhysics(bInSimulate);
+}
+
+void UPPVRGrabComponent::SetShouldSimulateOnDrop()
+{
+	bShouldSimulateOnDrop = Cast<UPrimitiveComponent>(GetAttachParent())->IsAnySimulatingPhysics();
+}

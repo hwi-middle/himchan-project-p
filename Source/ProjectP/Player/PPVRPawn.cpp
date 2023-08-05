@@ -174,13 +174,13 @@ void APPVRPawn::Turn(const FInputActionValue& Value)
 void APPVRPawn::GrabLeft(const FInputActionValue& Value)
 {
 	LeftHand->SetPoseAlphaGrasp(Value.Get<float>());
-	LeftHand->TryGrab();
+	LeftHand->HandleGrab();
 }
 
 void APPVRPawn::GrabRight(const FInputActionValue& Value)
 {
 	RightHand->SetPoseAlphaGrasp(Value.Get<float>());
-	RightHand->TryGrab();
+	RightHand->HandleGrab();
 }
 
 void APPVRPawn::IndexCurlLeft(const FInputActionValue& Value)
@@ -230,11 +230,13 @@ void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 void APPVRPawn::CancelOrCompleteGrabLeft()
 {
 	LeftHand->SetPoseAlphaGrasp(0);
+	LeftHand->HandleRelease();
 }
 
 void APPVRPawn::CancelOrCompleteGrabRight()
 {
 	RightHand->SetPoseAlphaGrasp(0);
+	RightHand->HandleRelease();
 }
 
 void APPVRPawn::CancelOrCompleteIndexCurlLeft()
