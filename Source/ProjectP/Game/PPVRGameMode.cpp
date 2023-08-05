@@ -2,18 +2,12 @@
 
 
 #include "ProjectP/Game/PPVRGameMode.h"
+#include "ProjectP/Util/PPConstructorHelper.h"
 
-APPGameMode::APPGameMode()
+
+APPVRGameMode::APPVRGameMode()
 {
-	static ConstructorHelpers::FClassFinder<APawn> DefaultPawnClassRef(TEXT("/Script/ProjectP.PPCharacterPlayer"));
-	if (DefaultPawnClassRef.Class)
-	{
-		DefaultPawnClass = DefaultPawnClassRef.Class;
-	}
-
-	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerClassRef(TEXT("/Script/ProjectP.PPPlayerController"));
-	if (PlayerControllerClassRef.Class)
-	{
-		PlayerControllerClass = PlayerControllerClassRef.Class;
-	}
+	DefaultPawnClass = FPPConstructorHelper::FindAndGetClass<APawn>(TEXT("/Script/CoreUObject.Class'/Script/ProjectP.PPCharacterPlayer'"));
+	PlayerControllerClass = FPPConstructorHelper::FindAndGetClass<APlayerController>(TEXT("/Script/CoreUObject.Class'/Script/ProjectP.PPPlayerController'"));
 }
+

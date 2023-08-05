@@ -5,11 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
+#include "ProjectP/Enumeration/PPWidgetType.h"
 #include "PPLobbyUIBaseActor.generated.h"
-
-DECLARE_DELEGATE(FSettingButtonDelegate);
-DECLARE_DELEGATE(FHelpButtonDelegate);
-DECLARE_DELEGATE(FExitButtonDelegate);
 
 UCLASS()
 class PROJECTP_API APPLobbyUIBaseActor : public AActor
@@ -19,34 +16,24 @@ class PROJECTP_API APPLobbyUIBaseActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APPLobbyUIBaseActor();
-
-	FSettingButtonDelegate SettingDelegate;
-	FHelpButtonDelegate HelpDelegate;
-	FExitButtonDelegate ExitDelegate;
 	
 	UFUNCTION(BlueprintCallable)
-	void ToggleSettingWidgetVisible();
-
-	UFUNCTION(BlueprintCallable)
-	void ToggleHelpWidgetVisible();
+	void ToggleWidgetVisible(const EWidgetType WidgetType);
 	
-	UFUNCTION(BlueprintCallable)
-	void ToggleExitCheckWidgetVisible();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
 	TObjectPtr<UWidgetComponent> LobbyWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
 	TObjectPtr<UWidgetComponent> SettingWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
-	TObjectPtr<UWidgetComponent> HelpWidgetComponent;
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
+	TObjectPtr<UWidgetComponent> TutorialWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = WidgetCompnent)
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetCompnent")
 	TObjectPtr<UWidgetComponent> ExitCheckWidgetComponent;
-	
 };
