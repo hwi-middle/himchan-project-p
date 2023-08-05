@@ -56,7 +56,7 @@ UPPVRGrabComponent* APPVRHand::FindGrabComponentNearby()
 		ObjectTypes,
 		false,
 		ActorsToIgnore,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		OUT HitResult,
 		true,
 		FLinearColor::Red,

@@ -36,7 +36,7 @@ void UPPVRGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 {
-	FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
+	const FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
 
 	switch (GrabType)
 	{
@@ -48,36 +48,40 @@ bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 			break;
 		}
 	case EVRGrabType::ObjToHand:
-		break;
+		{
+			const bool Result = GetAttachParent()->AttachToComponent(Cast<UPrimitiveComponent>(InHand->GetMotionController()), AttachmentTransformRules);
+			bHeld = Result;
+			GrabbingHand = Result ? InHand : nullptr;
+
+			// 회전 보정
+			GetAttachParent()->SetRelativeRotation(GetRelativeRotation().GetInverse(), false, nullptr, ETeleportType::TeleportPhysics);
+
+			// 위치 보정
+			FVector ComponentToParentDir = GetAttachParent()->GetComponentLocation() - GetComponentLocation();
+			FVector NewLocation = GetComponentLocation() + ComponentToParentDir;
+			GetAttachParent()->SetWorldLocation(NewLocation, false, nullptr, ETeleportType::TeleportPhysics);
+
+			break;
+		}
 	case EVRGrabType::HandToObj:
 		break;
 	default:
 		checkNoEntry();
 	}
 
+	SetPrimitiveCompPhysics(false);
 	return bHeld;
 }
 
 void UPPVRGrabComponent::TryRelease()
 {
-	FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, EDetachmentRule::KeepWorld, EDetachmentRule::KeepWorld, false);
+	const FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, EDetachmentRule::KeepWorld, EDetachmentRule::KeepWorld, false);
 
 	if (GrabbingHand)
 	{
-		switch (GrabType)
-		{
-		case EVRGrabType::Free:
-			GetAttachParent()->DetachFromComponent(DetachmentTransformRules);
-			bHeld = false;
-			SetPrimitiveCompPhysics(bShouldSimulateOnDrop);
-			break;
-		case EVRGrabType::ObjToHand:
-			break;
-		case EVRGrabType::HandToObj:
-			break;
-		default:
-			checkNoEntry();
-		}
+		GetAttachParent()->DetachFromComponent(DetachmentTransformRules);
+		bHeld = false;
+		SetPrimitiveCompPhysics(bShouldSimulateOnDrop);
 		GrabbingHand = nullptr;
 	}
 }
