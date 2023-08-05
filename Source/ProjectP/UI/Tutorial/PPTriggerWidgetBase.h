@@ -23,7 +23,8 @@ public:
 	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
-	
+
+	void ActorEnterOrExitEvent(bool IsEnter);
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,6 +38,15 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> TriggerBox;
+
+	UPROPERTY()
+	TObjectPtr<AActor> OverlapActor;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
+	float WidgetHalfWidthValue;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
+	float WidgetWidthAddValue;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
 	float WidgetOpacityAddValue;
@@ -44,6 +54,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
 	float WidgetAnimationTick;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
+	float WidgetRotateDelay;
+	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
-	FTimerHandle WidgetAnimationTimer;
+	FTimerHandle BackgroundOpacityTimer;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+	FTimerHandle GuidePanelOpacityTimer;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+	FTimerHandle TurnToPlayerTimer;
 };
