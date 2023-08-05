@@ -50,6 +50,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UPPVRGrabComponent> HeldComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	FTransform InitHandMeshRelativeTransform;
+
 public:
 	UPPVRGrabComponent* FindGrabComponentNearby();
 	void HandleGrab();
@@ -59,7 +62,9 @@ public:
 	void SetPoseAlphaThumbUp(const float Value);
 	void SetPoseAlphaPoint(const float Value);
 	void InitHand();
+	void ResetHandMesh();
 
 public:
 	FORCEINLINE class UMotionControllerComponent* GetMotionController() const { return MotionController;}
+	FORCEINLINE class USkeletalMeshComponent* GetHandMesh() const { return HandMesh;}
 };

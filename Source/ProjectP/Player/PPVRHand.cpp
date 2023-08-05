@@ -18,6 +18,7 @@ APPVRHand::APPVRHand()
 
 	GripRadius = 6.f;
 	MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionController"));
+	MotionController->SetShowDeviceModel(true);
 	RootComponent = MotionController;
 	HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh"));
 	HandMesh->SetupAttachment(MotionController);
@@ -30,6 +31,7 @@ void APPVRHand::BeginPlay()
 {
 	Super::BeginPlay();
 	InitHand();
+	InitHandMeshRelativeTransform = HandMesh->GetRelativeTransform();
 }
 
 // Called every frame
@@ -42,7 +44,6 @@ void APPVRHand::Tick(float DeltaTime)
 UPPVRGrabComponent* APPVRHand::FindGrabComponentNearby()
 {
 	FVector GripPos = MotionController->GetComponentLocation();
-	UPPVRGrabComponent* GrabbedObject = nullptr;
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 	ObjectTypes.Emplace(UEngineTypes::ConvertToObjectType(ECC_GIMMICK));
 	TArray<AActor*> ActorsToIgnore;
@@ -64,13 +65,7 @@ UPPVRGrabComponent* APPVRHand::FindGrabComponentNearby()
 		1.f
 	);
 
-	if (Result)
-	{
-		GrabbedObject = HitResult.GetActor()->FindComponentByClass<UPPVRGrabComponent>();
-		UE_LOG(LogTemp, Log, TEXT("%s"), *GrabbedObject->GetName());
-	}
-
-	return GrabbedObject;
+	return Result ? HitResult.GetActor()->FindComponentByClass<UPPVRGrabComponent>() : nullptr;
 }
 
 void APPVRHand::HandleGrab()
@@ -134,4 +129,10 @@ void APPVRHand::InitHand()
 	HandMesh->SetSkeletalMesh(HandMeshObject);
 	AnimInstance = Cast<UPPVRHandAnimInstance>(HandMesh->GetAnimInstance());
 	AnimInstance->SetIsMirror(HandType == EControllerHand::Left);
+}
+
+void APPVRHand::ResetHandMesh()
+{
+	HandMesh->AttachToComponent(MotionController, FAttachmentTransformRules::KeepWorldTransform);
+	HandMesh->SetRelativeTransform(InitHandMeshRelativeTransform, false, nullptr, ETeleportType::TeleportPhysics);
 }

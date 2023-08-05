@@ -22,7 +22,6 @@ void UPPVRGrabComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-
 }
 
 
@@ -36,20 +35,18 @@ void UPPVRGrabComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 {
-	const FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, EAttachmentRule::KeepWorld, false);
-
 	switch (GrabType)
 	{
 	case EVRGrabType::Free:
 		{
-			const bool Result = GetAttachParent()->AttachToComponent(Cast<UPrimitiveComponent>(InHand->GetMotionController()), AttachmentTransformRules);
+			const bool Result = GetAttachParent()->AttachToComponent(Cast<UPrimitiveComponent>(InHand->GetMotionController()), FAttachmentTransformRules::KeepWorldTransform);
 			bHeld = Result;
 			GrabbingHand = Result ? InHand : nullptr;
 			break;
 		}
 	case EVRGrabType::ObjToHand:
 		{
-			const bool Result = GetAttachParent()->AttachToComponent(Cast<UPrimitiveComponent>(InHand->GetMotionController()), AttachmentTransformRules);
+			const bool Result = GetAttachParent()->AttachToComponent(Cast<UPrimitiveComponent>(InHand->GetMotionController()), FAttachmentTransformRules::KeepWorldTransform);
 			bHeld = Result;
 			GrabbingHand = Result ? InHand : nullptr;
 
@@ -60,11 +57,16 @@ bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 			FVector ComponentToParentDir = GetAttachParent()->GetComponentLocation() - GetComponentLocation();
 			FVector NewLocation = GetComponentLocation() + ComponentToParentDir;
 			GetAttachParent()->SetWorldLocation(NewLocation, false, nullptr, ETeleportType::TeleportPhysics);
-
 			break;
 		}
 	case EVRGrabType::HandToObj:
-		break;
+		{
+			const bool Result = InHand->GetHandMesh()->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform);
+			bHeld = Result;
+			GrabbingHand = Result ? InHand : nullptr;
+			InHand->GetHandMesh()->SetRelativeLocationAndRotation(FVector(0.f, 0.f, 0.f), FRotator(0.f, 0.f, 90.f));
+			break;
+		}
 	default:
 		checkNoEntry();
 	}
@@ -75,15 +77,23 @@ bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 
 void UPPVRGrabComponent::TryRelease()
 {
-	const FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, EDetachmentRule::KeepWorld, EDetachmentRule::KeepWorld, false);
-
-	if (GrabbingHand)
+	if (!GrabbingHand)
 	{
-		GetAttachParent()->DetachFromComponent(DetachmentTransformRules);
-		bHeld = false;
-		SetPrimitiveCompPhysics(bShouldSimulateOnDrop);
-		GrabbingHand = nullptr;
+		return;
 	}
+
+	if (GrabType == EVRGrabType::HandToObj)
+	{
+		GrabbingHand->ResetHandMesh();
+	}
+	else
+	{
+		GetAttachParent()->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	}
+
+	bHeld = false;
+	SetPrimitiveCompPhysics(bShouldSimulateOnDrop);
+	GrabbingHand = nullptr;
 }
 
 void UPPVRGrabComponent::SetPrimitiveCompPhysics(const bool bInSimulate)
