@@ -7,5 +7,9 @@
 UPPGameInstance::UPPGameInstance()
 {
 	SaveSettingOption = CastChecked<UPPSaveSettingOption>(UGameplayStatics::CreateSaveGameObject(UPPSaveSettingOption::StaticClass()));
-	SaveSettingOption = CastChecked<UPPSaveSettingOption>(UGameplayStatics::LoadGameFromSlot(SaveSettingOption->SaveFileName, 0));
+	TObjectPtr<UPPSaveSettingOption> SavedOption= Cast<UPPSaveSettingOption>(UGameplayStatics::LoadGameFromSlot(SaveSettingOption->SaveFileName, 0));
+	if(SavedOption)
+	{
+		SaveSettingOption = SavedOption;
+	}
 }
