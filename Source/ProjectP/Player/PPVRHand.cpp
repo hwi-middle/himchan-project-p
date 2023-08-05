@@ -18,7 +18,6 @@ APPVRHand::APPVRHand()
 
 	GripRadius = 6.f;
 	MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionController"));
-	MotionController->SetShowDeviceModel(true);
 	RootComponent = MotionController;
 	HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh"));
 	HandMesh->SetupAttachment(MotionController);

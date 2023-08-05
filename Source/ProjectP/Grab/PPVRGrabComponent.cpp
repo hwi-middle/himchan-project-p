@@ -38,39 +38,29 @@ bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 	switch (GrabType)
 	{
 	case EVRGrabType::Free:
-		{
-			const bool Result = GetAttachParent()->AttachToComponent(Cast<UPrimitiveComponent>(InHand->GetMotionController()), FAttachmentTransformRules::KeepWorldTransform);
-			bHeld = Result;
-			GrabbingHand = Result ? InHand : nullptr;
-			break;
-		}
+		TryAttachComponentToHand(InHand);
+		break;
 	case EVRGrabType::ObjToHand:
 		{
-			const bool Result = GetAttachParent()->AttachToComponent(Cast<UPrimitiveComponent>(InHand->GetMotionController()), FAttachmentTransformRules::KeepWorldTransform);
-			bHeld = Result;
-			GrabbingHand = Result ? InHand : nullptr;
+			TryAttachComponentToHand(InHand);
 
 			// 회전 보정
 			GetAttachParent()->SetRelativeRotation(GetRelativeRotation().GetInverse(), false, nullptr, ETeleportType::TeleportPhysics);
 
 			// 위치 보정
-			FVector ComponentToParentDir = GetAttachParent()->GetComponentLocation() - GetComponentLocation();
-			FVector NewLocation = GetComponentLocation() + ComponentToParentDir;
+			const FVector ComponentToParentDir = GetAttachParent()->GetComponentLocation() - GetComponentLocation();
+			const FVector NewLocation = GetComponentLocation() + ComponentToParentDir;
 			GetAttachParent()->SetWorldLocation(NewLocation, false, nullptr, ETeleportType::TeleportPhysics);
 			break;
 		}
 	case EVRGrabType::HandToObj:
-		{
-			const bool Result = InHand->GetHandMesh()->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform);
-			bHeld = Result;
-			GrabbingHand = Result ? InHand : nullptr;
-			InHand->GetHandMesh()->SetRelativeLocationAndRotation(FVector(0.f, 0.f, 0.f), FRotator(0.f, 0.f, 90.f));
-			break;
-		}
+		TryAttachHandToComponent(InHand);
+		break;
 	default:
 		checkNoEntry();
 	}
 
+	// 물체를 잡는 동안은 물리 적용 해제
 	SetPrimitiveCompPhysics(false);
 	return bHeld;
 }
@@ -104,4 +94,17 @@ void UPPVRGrabComponent::SetPrimitiveCompPhysics(const bool bInSimulate)
 void UPPVRGrabComponent::SetShouldSimulateOnDrop()
 {
 	bShouldSimulateOnDrop = Cast<UPrimitiveComponent>(GetAttachParent())->IsAnySimulatingPhysics();
+}
+
+void UPPVRGrabComponent::TryAttachComponentToHand(APPVRHand* InHand)
+{
+	bHeld = GetAttachParent()->AttachToComponent(Cast<UPrimitiveComponent>(InHand->GetMotionController()), FAttachmentTransformRules::KeepWorldTransform);
+	GrabbingHand = bHeld ? InHand : nullptr;
+}
+
+void UPPVRGrabComponent::TryAttachHandToComponent(APPVRHand* InHand)
+{
+	bHeld = InHand->GetHandMesh()->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform);
+	GrabbingHand = bHeld ? InHand : nullptr;
+	InHand->GetHandMesh()->SetRelativeLocationAndRotation(FVector(0.f, 0.f, 0.f), FRotator(0.f, 0.f, 90.f));
 }

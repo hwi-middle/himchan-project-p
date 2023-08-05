@@ -42,4 +42,8 @@ public:
 	void TryRelease();
 	void SetPrimitiveCompPhysics(bool bInSimulate);
 	void SetShouldSimulateOnDrop();
+
+private:
+	void TryAttachComponentToHand(APPVRHand* InHand);
+	void TryAttachHandToComponent(APPVRHand* InHand);
 };
