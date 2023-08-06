@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/GridPanel.h"
 #include "Engine/PostProcessVolume.h"
 #include "ProjectP/Enumeration/PPWidgetType.h"
 #include "Sound/SoundClass.h"
@@ -49,7 +50,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<APostProcessVolume> PostProcessVolume;
-	// Generate Default Widget Section
+	// Default Widget Section
 protected:
 	virtual void NativeConstruct() override;
 
@@ -59,15 +60,25 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> ExitSettingUIButton;
 
-	/*
-	 * Sound Option Function Section
-	 * UI 종류마다 함수를 하나로 통일하고 싶었는데...
-	 * 대충 찾아본 바로는 그렇게 하는거나 함수 여러개 만드는거나 가독성이나 복잡도는 비슷해보여서
-	 * (Template Class랑 Enum 만들고 바인딩 할 '때' 마다 람다식 만들어야 함)
-	 * https://forums.unrealengine.com/t/dynamic-multicast-delegate-how-to-bind-lambda/140046/13
-	 * (또는 엔진 내 UMG Delegate 뜯어 고치는건데 프로젝트 관리에 매우 좋지 못함)
-	 * 구현 편한 함수 여러개 선언하는 방식으로 대체. 어쩌피 여기말곤 쓰는 곳도 없어서 오히려 공수만 들고 작업속도 지연될것 같기도
-	*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UGridPanel> SelectSettingPanel;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UGridPanel> SoundSettingPanel;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UGridPanel> DisplaySettingPanel;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UGridPanel> GraphicSettingPanel;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UGridPanel> AccessibilitySettingPanel;
+
+	UPROPERTY()
+	uint32 bSubWidgetOpened : 1;
+	
+	// Sound Option Function Section
 public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void ApplyMasterSliderValue(const float Value) { MasterSoundClass->Properties.Volume = Value; }

@@ -7,7 +7,7 @@
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
 #include "Engine/Font.h"
-#include "PPSubtitleSettingUIWidget.generated.h"
+#include "PPSubtitleSettingWidget.generated.h"
 
 UENUM()
 enum class ESubtitleFontSize : uint8
@@ -21,7 +21,7 @@ enum class ESubtitleFontSize : uint8
  * 
  */
 UCLASS()
-class PROJECTP_API UPPSubtitleSettingUIWidget : public UUserWidget
+class PROJECTP_API UPPSubtitleSettingWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
