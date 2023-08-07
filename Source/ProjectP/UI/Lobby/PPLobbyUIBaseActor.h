@@ -27,13 +27,4 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
 	TObjectPtr<UWidgetComponent> LobbyWidgetComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
-	TObjectPtr<UWidgetComponent> SettingWidgetComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
-	TObjectPtr<UWidgetComponent> TutorialWidgetComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "WidgetCompnent")
-	TObjectPtr<UWidgetComponent> ExitCheckWidgetComponent;
 };

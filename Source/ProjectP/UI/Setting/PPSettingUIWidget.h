@@ -56,10 +56,10 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void ExitSettingUI();
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> ExitSettingUIButton;
-
+	/*
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UGridPanel> SelectSettingPanel;
 	
@@ -74,7 +74,7 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UGridPanel> AccessibilitySettingPanel;
-
+	*/
 	UPROPERTY()
 	uint32 bSubWidgetOpened : 1;
 	

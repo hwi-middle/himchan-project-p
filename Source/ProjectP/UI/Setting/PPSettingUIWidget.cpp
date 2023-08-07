@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectP/UI/PPSettingUIWidget.h"
+#include "ProjectP/UI/Setting/PPSettingUIWidget.h"
 #include "Components/CheckBox.h"
 #include "Components/Slider.h"
 #include "Engine/PostProcessVolume.h"
@@ -47,7 +47,6 @@ void UPPSettingUIWidget::NativeConstruct()
 
 	LeftHandedSettingToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyLeftHandedSettingToggle);
 	ControllerVibrationToggle->OnCheckStateChanged.AddDynamic(this, &UPPSettingUIWidget::ApplyControllerVibrationToggle);
-
 	// VRPawn 관련 작업 끝난 뒤 적용 예정
 	//CameraTurnValueLowButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValueLow);
 	//CameraTurnValueMiddleButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ApplyCameraTurnValueMiddle);
@@ -61,7 +60,6 @@ void UPPSettingUIWidget::NativeConstruct()
 void UPPSettingUIWidget::SaveSettingData()
 {
 	TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-
 	// 만약 게임 플레이 내용 저장/불러오기 기능을 구현한다고 해도 설정은 여러개 저장 할 일이 없기 때문에 인덱스 0 고정
 	// 파일 이름 또한 마찬가지로 생성자에서 설정한 초기 값 사용
 	if(CurrentGI->SaveSettingOption)

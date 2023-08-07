@@ -18,7 +18,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	FString SaveFileName;
-	
+
+	// SoundOption
+public:
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float MasterSoundVolumeSliderValue;
 
@@ -36,13 +38,28 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	uint32 bSFXSoundToggle : 1;
-	
+
+	// DisplayOption
+public:
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float DisplayBrightnessValue;
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float DisplayVignettingValue;
+
+	// GraphicOption
+public:
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 TextureQualityValue;
+
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 ShadowQualityValue;
+
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 AAQualityValue;
 	
+	// AccessibilityOption
+public:
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float PauseInterfaceDistanceValue;
 
