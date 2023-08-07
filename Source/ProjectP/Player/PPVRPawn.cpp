@@ -173,14 +173,34 @@ void APPVRPawn::Turn(const FInputActionValue& Value)
 
 void APPVRPawn::GrabLeft(const FInputActionValue& Value)
 {
-	LeftHand->SetPoseAlphaGrasp(Value.Get<float>());
-	LeftHand->HandleGrab();
+	const float Alpha = Value.Get<float>();
+	static constexpr float GrabThreshold = 0.2f;
+	LeftHand->SetPoseAlphaGrasp(Alpha);
+
+	if (LeftHand->GetHeldComponent() && Alpha < GrabThreshold)
+	{
+		LeftHand->HandleRelease();
+	}
+	else if (!LeftHand->GetHeldComponent() && Alpha > 0.2f)
+	{
+		LeftHand->HandleGrab();
+	}
 }
 
 void APPVRPawn::GrabRight(const FInputActionValue& Value)
 {
-	RightHand->SetPoseAlphaGrasp(Value.Get<float>());
-	RightHand->HandleGrab();
+	const float Alpha = Value.Get<float>();
+	static constexpr float GrabThreshold = 0.2f;
+	RightHand->SetPoseAlphaGrasp(Alpha);
+
+	if (RightHand->GetHeldComponent() && Alpha < GrabThreshold)
+	{
+		RightHand->HandleRelease();
+	}
+	else if (!RightHand->GetHeldComponent() && Alpha > 0.2f)
+	{
+		RightHand->HandleGrab();
+	}
 }
 
 void APPVRPawn::IndexCurlLeft(const FInputActionValue& Value)
