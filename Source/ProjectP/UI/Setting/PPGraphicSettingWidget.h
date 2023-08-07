@@ -9,6 +9,13 @@
 #include "PPGraphicSettingWidget.generated.h"
 
 UENUM()
+enum class EAAType : uint8
+{
+	FXAA = 1,
+	TAA = 2
+};
+
+UENUM()
 enum class EGraphicQuality : uint8
 {
 	Low = 0,
@@ -26,8 +33,8 @@ class PROJECTP_API UPPGraphicSettingWidget : public UUserWidget, public ISetting
 
 public:
 	virtual void NativeConstruct() override;
-	virtual void LoadSettingData(UPPSaveSettingOption* SettingOption) override;
 	virtual void SaveSettingData(UPPSaveSettingOption* SettingOption) override;
+	virtual void LoadSettingData(UPPSaveSettingOption* SettingOption) override;
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -48,6 +55,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ApplyShadowQualityHigh(bool IsChecked);
 
+	UFUNCTION(BlueprintCallable)
+	void SetCurrenAAToFXAA(bool IsChecked);
+
+	UFUNCTION(BlueprintCallable)
+	void SetCurrenAAToTAA(bool IsChecked);
+	
 	UFUNCTION(BlueprintCallable)
 	void ApplyAAQualityLow(bool IsChecked);
 
@@ -76,6 +89,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UCheckBox> ShadowQualityHighButton;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCheckBox> EnableFXAAButton;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCheckBox> EnableTAAButton;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UCheckBox> AAQualityLowButton;
 

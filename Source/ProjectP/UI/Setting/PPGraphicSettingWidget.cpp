@@ -15,10 +15,20 @@ void UPPGraphicSettingWidget::NativeConstruct()
 	ShadowQualityMiddleButton->OnCheckStateChanged.AddDynamic(this, &UPPGraphicSettingWidget::ApplyShadowQualityMiddle);
 	ShadowQualityHighButton->OnCheckStateChanged.AddDynamic(this, &UPPGraphicSettingWidget::ApplyShadowQualityHigh);
 
+	EnableFXAAButton->OnCheckStateChanged.AddDynamic(this, &UPPGraphicSettingWidget::SetCurrenAAToFXAA);
 	AAQualityLowButton->OnCheckStateChanged.AddDynamic(this, &UPPGraphicSettingWidget::ApplyAAQualityLow);
 	AAQualityLowButton->OnCheckStateChanged.AddDynamic(this, &UPPGraphicSettingWidget::ApplyAAQualityMiddle);
 	AAQualityLowButton->OnCheckStateChanged.AddDynamic(this, &UPPGraphicSettingWidget::ApplyAAQualityHigh);
 }
+
+void UPPGraphicSettingWidget::SaveSettingData(UPPSaveSettingOption* SettingOption)
+{
+	const Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
+	SettingOption->TextureQualityValue = QualityLevels.TextureQuality;
+	SettingOption->ShadowQualityValue = QualityLevels.ShadowQuality;
+	SettingOption->AAQualityValue = QualityLevels.AntiAliasingQuality;
+}
+
 
 void UPPGraphicSettingWidget::LoadSettingData(UPPSaveSettingOption* SettingOption)
 {
@@ -58,6 +68,20 @@ void UPPGraphicSettingWidget::LoadSettingData(UPPSaveSettingOption* SettingOptio
 		checkNoEntry();
 	}
 	
+	switch (SettingOption->AAType)
+	{
+	case EAAType::FXAA:
+		EnableFXAAButton->SetIsChecked(true);
+		EnableFXAAButton->OnCheckStateChanged.Broadcast(true);
+		break;
+	case EAAType::TAA:
+		EnableTAAButton->SetIsChecked(true);
+		EnableTAAButton->OnCheckStateChanged.Broadcast(true);
+		break;
+	default:
+		checkNoEntry();
+	}
+	
 	switch (SettingOption->AAQualityValue)
 	{
 	case EGraphicQuality::Low:
@@ -77,91 +101,128 @@ void UPPGraphicSettingWidget::LoadSettingData(UPPSaveSettingOption* SettingOptio
 	}
 }
 
-void UPPGraphicSettingWidget::SaveSettingData(UPPSaveSettingOption* SettingOption)
-{
-	const Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
-	SettingOption->TextureQualityValue = QualityLevels.TextureQuality;
-	SettingOption->ShadowQualityValue = QualityLevels.ShadowQuality;
-	SettingOption->AAQualityValue = QualityLevels.AntiAliasingQuality;
-}
-
 void UPPGraphicSettingWidget::ApplyTextureQualityLow(bool IsChecked)
 {
-	TextureQualityMiddleButton->SetIsChecked(false);
-	TextureQualityHighButton->SetIsChecked(false);
-	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
-	QualityLevels.TextureQuality = static_cast<int32>(EGraphicQuality::Low);
-	SetQualityLevels(QualityLevels);
+	if(IsChecked)
+	{
+		TextureQualityMiddleButton->SetIsChecked(false);
+		TextureQualityHighButton->SetIsChecked(false);
+		Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
+		QualityLevels.TextureQuality = static_cast<int32>(EGraphicQuality::Low);
+		SetQualityLevels(QualityLevels);
+	}
 }
 
 void UPPGraphicSettingWidget::ApplyTextureQualityMiddle(bool IsChecked)
 {
-	TextureQualityLowButton->SetIsChecked(false);
-	TextureQualityHighButton->SetIsChecked(false);
-	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
-	QualityLevels.TextureQuality = static_cast<int32>(EGraphicQuality::Middle);
-	SetQualityLevels(QualityLevels);
+	if(IsChecked)
+	{
+		TextureQualityLowButton->SetIsChecked(false);
+		TextureQualityHighButton->SetIsChecked(false);
+		Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
+		QualityLevels.TextureQuality = static_cast<int32>(EGraphicQuality::Middle);
+		SetQualityLevels(QualityLevels);
+	}
 }
 
 void UPPGraphicSettingWidget::ApplyTextureQualityHigh(bool IsChecked)
 {
-	TextureQualityLowButton->SetIsChecked(false);
-	TextureQualityMiddleButton->SetIsChecked(false);
-	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
-	QualityLevels.TextureQuality = static_cast<int32>(EGraphicQuality::High);
-	SetQualityLevels(QualityLevels);
+	if(IsChecked)
+	{
+		TextureQualityLowButton->SetIsChecked(false);
+		TextureQualityMiddleButton->SetIsChecked(false);
+		Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
+		QualityLevels.TextureQuality = static_cast<int32>(EGraphicQuality::High);
+		SetQualityLevels(QualityLevels);
+	}
 }
 
 void UPPGraphicSettingWidget::ApplyShadowQualityLow(bool IsChecked)
 {
-	ShadowQualityMiddleButton->SetIsChecked(false);
-	ShadowQualityHighButton->SetIsChecked(false);
-	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
-	QualityLevels.ShadowQuality = static_cast<int32>(EGraphicQuality::Low);
-	SetQualityLevels(QualityLevels);
+	if(IsChecked)
+	{
+		ShadowQualityMiddleButton->SetIsChecked(false);
+		ShadowQualityHighButton->SetIsChecked(false);
+		Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
+		QualityLevels.ShadowQuality = static_cast<int32>(EGraphicQuality::Low);
+		SetQualityLevels(QualityLevels);
+	}
 }
 
 void UPPGraphicSettingWidget::ApplyShadowQualityMiddle(bool IsChecked)
 {
-	ShadowQualityLowButton->SetIsChecked(false);
-	ShadowQualityHighButton->SetIsChecked(false);
-	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
-	QualityLevels.ShadowQuality = static_cast<int32>(EGraphicQuality::Middle);
-	SetQualityLevels(QualityLevels);
+	if(IsChecked)
+	{
+		ShadowQualityLowButton->SetIsChecked(false);
+		ShadowQualityHighButton->SetIsChecked(false);
+		Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
+		QualityLevels.ShadowQuality = static_cast<int32>(EGraphicQuality::Middle);
+		SetQualityLevels(QualityLevels);
+	}
 }
 
 void UPPGraphicSettingWidget::ApplyShadowQualityHigh(bool IsChecked)
 {
-	ShadowQualityLowButton->SetIsChecked(false);
-	ShadowQualityMiddleButton->SetIsChecked(false);
-	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
-	QualityLevels.ShadowQuality = static_cast<int32>(EGraphicQuality::High);
-	SetQualityLevels(QualityLevels);
+	if(IsChecked)
+	{
+		ShadowQualityLowButton->SetIsChecked(false);
+		ShadowQualityMiddleButton->SetIsChecked(false);
+		Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
+		QualityLevels.ShadowQuality = static_cast<int32>(EGraphicQuality::High);
+		SetQualityLevels(QualityLevels);
+	}
+}
+
+void UPPGraphicSettingWidget::SetCurrenAAToFXAA(bool IsChecked)
+{
+	if(IsChecked)
+	{
+		GEngine->Exec(GetWorld(), TEXT("r.DefaultFeature.AntiAliasing 1"));
+		EnableTAAButton->SetIsChecked(false);
+	}
+}
+
+void UPPGraphicSettingWidget::SetCurrenAAToTAA(bool IsChecked)
+{
+	if(IsChecked)
+	{
+		GEngine->Exec(GetWorld(), TEXT("r.DefaultFeature.AntiAliasing 2"));
+		EnableFXAAButton->SetIsChecked(false);
+	}
 }
 
 void UPPGraphicSettingWidget::ApplyAAQualityLow(bool IsChecked)
 {
-	AAQualityMiddleButton->SetIsChecked(false);
-	AAQualityHighButton->SetIsChecked(false);
-	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
-	QualityLevels.AntiAliasingQuality = static_cast<int32>(EGraphicQuality::Low);
-	SetQualityLevels(QualityLevels);
+	if(IsChecked)
+	{
+		AAQualityMiddleButton->SetIsChecked(false);
+		AAQualityHighButton->SetIsChecked(false);
+		Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
+		QualityLevels.AntiAliasingQuality = static_cast<int32>(EGraphicQuality::Low);
+		SetQualityLevels(QualityLevels);
+	}
 }
 
 void UPPGraphicSettingWidget::ApplyAAQualityMiddle(bool IsChecked)
 {
-	AAQualityLowButton->SetIsChecked(false);
-	AAQualityHighButton->SetIsChecked(false);
-	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
-	QualityLevels.AntiAliasingQuality = static_cast<int32>(EGraphicQuality::Middle);
-	SetQualityLevels(QualityLevels);
+	if(IsChecked)
+	{
+		AAQualityLowButton->SetIsChecked(false);
+		AAQualityHighButton->SetIsChecked(false);
+		Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
+		QualityLevels.AntiAliasingQuality = static_cast<int32>(EGraphicQuality::Middle);
+		SetQualityLevels(QualityLevels);
+	}
 }
 
 void UPPGraphicSettingWidget::ApplyAAQualityHigh(bool IsChecked)
 {
-	AAQualityLowButton->SetIsChecked(false);
-	AAQualityMiddleButton->SetIsChecked(false);
-	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
-	QualityLevels.AntiAliasingQuality = static_cast<int32>(EGraphicQuality::High);
-	SetQualityLevels(QualityLevels);
+	if(IsChecked)
+	{
+		AAQualityLowButton->SetIsChecked(false);
+		AAQualityMiddleButton->SetIsChecked(false);
+		Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
+		QualityLevels.AntiAliasingQuality = static_cast<int32>(EGraphicQuality::High);
+		SetQualityLevels(QualityLevels);
+	}
 }

@@ -56,6 +56,9 @@ public:
 	uint32 ShadowQualityValue;
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 AAType;
+	
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	uint32 AAQualityValue;
 	
 	// AccessibilityOption
