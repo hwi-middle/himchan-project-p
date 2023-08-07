@@ -15,6 +15,7 @@
 #include "EnhancedInput/Public/EnhancedInputComponent.h"
 #include "EnhancedInput/Public/InputMappingContext.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "ProjectP/Prop/Weapon/PPGunBase.h"
 
 #include "ProjectP/Util/PPConstructorHelper.h"
 
@@ -70,7 +71,6 @@ void APPVRPawn::Tick(float DeltaTime)
 void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 	const APlayerController* PlayerController = CastChecked<APlayerController>(GetController());
 	UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
 	SubSystem->ClearAllMappings();
@@ -174,14 +174,15 @@ void APPVRPawn::Turn(const FInputActionValue& Value)
 void APPVRPawn::GrabLeft(const FInputActionValue& Value)
 {
 	const float Alpha = Value.Get<float>();
-	static constexpr float GrabThreshold = 0.2f;
 	LeftHand->SetPoseAlphaGrasp(Alpha);
 
-	if (LeftHand->GetHeldComponent() && Alpha < GrabThreshold)
+	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
+	static constexpr float GrabThreshold = 0.2f;
+	if (HeldComponent && Alpha < GrabThreshold)
 	{
 		LeftHand->HandleRelease();
 	}
-	else if (!LeftHand->GetHeldComponent() && Alpha > 0.2f)
+	else if (!HeldComponent && Alpha > GrabThreshold)
 	{
 		LeftHand->HandleGrab();
 	}
@@ -190,14 +191,15 @@ void APPVRPawn::GrabLeft(const FInputActionValue& Value)
 void APPVRPawn::GrabRight(const FInputActionValue& Value)
 {
 	const float Alpha = Value.Get<float>();
-	static constexpr float GrabThreshold = 0.2f;
 	RightHand->SetPoseAlphaGrasp(Alpha);
 
-	if (RightHand->GetHeldComponent() && Alpha < GrabThreshold)
+	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
+	static constexpr float GrabThreshold = 0.2f;
+	if (HeldComponent && Alpha < GrabThreshold)
 	{
 		RightHand->HandleRelease();
 	}
-	else if (!RightHand->GetHeldComponent() && Alpha > 0.2f)
+	else if (!HeldComponent && Alpha > GrabThreshold)
 	{
 		RightHand->HandleGrab();
 	}
@@ -205,13 +207,28 @@ void APPVRPawn::GrabRight(const FInputActionValue& Value)
 
 void APPVRPawn::IndexCurlLeft(const FInputActionValue& Value)
 {
-	LeftHand->SetPoseAlphaIndexCurl(Value.Get<float>());
+	const float Alpha = Value.Get<float>();
+	LeftHand->SetPoseAlphaIndexCurl(Alpha);
+	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
+	APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent);
+	if (Weapon)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Hello"));
+		Weapon->OnFire();
+	}
 }
 
 void APPVRPawn::IndexCurlRight(const FInputActionValue& Value)
 {
-	RightHand->SetPoseAlphaIndexCurl(Value.Get<float>());
-
+	const float Alpha = Value.Get<float>();
+	RightHand->SetPoseAlphaIndexCurl(Alpha);
+	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
+	APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
+	if (Weapon)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Hello"));
+		Weapon->OnFire();
+	}
 }
 
 void APPVRPawn::PointLeft(const FInputActionValue& Value)

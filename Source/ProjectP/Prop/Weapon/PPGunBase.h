@@ -6,6 +6,7 @@
 #include "ProjectP/Enumeration/PPGunState.h"
 #include "ProjectP/Prop/Weapon/PPWeaponData.h"
 #include "GameFramework/Actor.h"
+#include "InputActionValue.h"
 #include "PPGunBase.generated.h"
 
 UCLASS()
@@ -13,26 +14,31 @@ class PROJECTP_API APPGunBase : public AActor
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this actor's properties
 	APPGunBase();
 
 protected:
-	virtual void SetupWeaponData(UPPWeaponData* WeaponData);
-	
-	void PressTrigger();
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 	void OnFire();
-	void ReloadMagazine();
-	void GrabOnHand();
-	void RemoveOnHand();
+
+protected:
+	void SetupWeaponData(UPPWeaponData* WeaponData);
+
+	void PressTrigger();
+	void GrabOnHand(class APPVRHand* InHand);
+	void ReleaseOnHand(class APPVRHand* InHand);
 	void ToggleLaserPoint();
 	void ToggleFlashlight();
 
-	FORCEINLINE void SetGunState(const EGunState EState) { CurrentState = EState; }
-	FORCEINLINE EGunState GetGunState() const { return CurrentState; }
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	TObjectPtr<class USkeletalMeshComponent> BaseWeaponMesh;
+	TObjectPtr<class USkeletalMeshComponent> WeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 	TObjectPtr<class USceneComponent> MuzzlePosition;
@@ -45,32 +51,49 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
 	TObjectPtr<class USceneComponent> GripPosition;
+
+	UPROPERTY(EditDefaultsOnly, Category = Mesh)
+	TObjectPtr<class USceneComponent> GrabComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	uint32 NormalShotDamageMin;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	uint32 NormalShotDamageMax;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	uint32 HeadShotDamageMin;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	uint32 HeadShotDamageMax;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	uint32 MaxOverheat;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	float UnavailableTime;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> LeftShootAction;
 	
-	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	uint32 MagazineAmmo;
+	UPROPERTY()
+	TObjectPtr<class UInputAction> RightShootAction;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	float FireRate;
+	UPROPERTY()
+	TObjectPtr<class UEnhancedInputLocalPlayerSubsystem> PlayerSubSystem;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	float ReloadDelay;
-	
-	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	uint32 BodyDamageMin;
+	UPROPERTY()
+	TObjectPtr<class UInputMappingContext> LeftHandInputMappingContext;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	uint32 BodyDamageMax;
+	UPROPERTY()
+	TObjectPtr<class UInputMappingContext> RightHandInputMappingContext;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	uint32 HeadDamageMin;
+	UPROPERTY()
+	TObjectPtr<class AActor> AimingActor;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = WeaponData)
-	uint32 HeadDamageMax;
-
-	UPROPERTY(EditAnywhere, Category = WeaponStatus)
-	EGunState CurrentState;
-	
 	uint32 bIsLaserPointEnable : 1;
 	uint32 bIsFlashlightEnable : 1;
-	uint32 bIsGrabbed : 1;
+
+private:
+	void SetupInputMappingContextByHandType(const EControllerHand InHandType);
 };
