@@ -7,9 +7,46 @@ void UPPSubtitleSettingWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	SubtitleSmallFontSizeButton->OnClicked.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeSmall);
-	SubtitleNormalFontSizeButton->OnClicked.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeNormal);
-	SubtitleLargeFontSizeButton->OnClicked.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeLarge);
+	SubtitleSmallFontSizeButton->OnCheckStateChanged.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeSmall);
+	SubtitleNormalFontSizeButton->OnCheckStateChanged.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeNormal);
+	SubtitleLargeFontSizeButton->OnCheckStateChanged.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeLarge);
 
 	UE_LOG(LogTemp, Log, TEXT("Current Font Size: %f"), GEngine->GetSubtitleFont()->GetFontScalingFactor());
+}
+
+void UPPSubtitleSettingWidget::SaveSettingData(UPPSaveSettingOption* SettingOption)
+{
+	
+}
+
+void UPPSubtitleSettingWidget::LoadSettingData(UPPSaveSettingOption* SettingOption)
+{
+	
+}
+
+void UPPSubtitleSettingWidget::ApplySubtitleFontSizeSmall(const bool IsChecked)
+{
+	if(IsChecked)
+	{
+		SubtitleNormalFontSizeButton->SetIsChecked(false);
+		SubtitleLargeFontSizeButton->SetIsChecked(false);
+	}
+}
+
+void UPPSubtitleSettingWidget::ApplySubtitleFontSizeNormal(const bool IsChecked)
+{
+	if(IsChecked)
+	{
+		SubtitleNormalFontSizeButton->SetIsChecked(false);
+		SubtitleLargeFontSizeButton->SetIsChecked(false);
+	}
+}
+
+void UPPSubtitleSettingWidget::ApplySubtitleFontSizeLarge(const bool IsChecked)
+{
+	if(IsChecked)
+	{
+		SubtitleNormalFontSizeButton->SetIsChecked(false);
+		SubtitleLargeFontSizeButton->SetIsChecked(false);
+	}
 }

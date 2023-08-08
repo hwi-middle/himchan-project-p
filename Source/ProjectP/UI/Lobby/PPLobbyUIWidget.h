@@ -6,8 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "PPLobbyUIWidget.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FLobbyButtonDelegate, EWidgetType);
-
 /**
  * 
  */
@@ -16,8 +14,6 @@ class PROJECTP_API UPPLobbyUIWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	FLobbyButtonDelegate LobbyButtonDelegate;
-	
 	UFUNCTION(BlueprintCallable)
 	void EntryMainLevel();
 	// 

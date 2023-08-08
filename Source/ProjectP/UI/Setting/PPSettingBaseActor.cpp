@@ -15,7 +15,8 @@ APPSettingBaseActor::APPSettingBaseActor()
 void APPSettingBaseActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SettingWidget = CastChecked<UPPSettingUIWidget>(SettingWidgetComponent->GetUserWidgetObject());
+	SettingWidget->PassSubWidgetTypeDelegate.AddUFunction(this, )
 }
 
 // Called every frame

@@ -21,11 +21,6 @@ void APPLobbyUIBaseActor::BeginPlay()
 	
 }
 
-void APPLobbyUIBaseActor::ToggleWidgetVisible(const EWidgetType WidgetType)
-{
-	
-}
-
 
 
 

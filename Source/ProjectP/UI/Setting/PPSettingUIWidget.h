@@ -5,10 +5,18 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
-#include "Engine/PostProcessVolume.h"
-#include "ProjectP/Enumeration/PPWidgetType.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
+#include "ProjectP/Enumeration/PPSubWidgetType.h"
+#include "ProjectP/UI/Setting/PPSoundSettingWidget.h"
+#include "ProjectP/UI/Setting/PPGraphicSettingWidget.h"
+#include "ProjectP/UI/Setting/PPDisplaySettingWidget.h"
+#include "ProjectP/UI/Setting/PPSubtitleSettingWidget.h"
+#include "ProjectP/UI/Setting/PPAccessibilitySettingWidget.h"
 #include "PPSettingUIWidget.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FLoadMainWidgetDelegate);
+DECLARE_MULTICAST_DELEGATE_OneParam(FPassSubWidgetTypeDelegate, ESubWidgetType);
 /*
  * 
  */
@@ -18,34 +26,87 @@ class PROJECTP_API UPPSettingUIWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	virtual void NativeConstruct() override;
 	void SaveSettingData();
 	void LoadSettingData();
 	
+	FORCEINLINE void SetSubWidgetHeight(const float Height) { SubWidgetPanel->SetSize(FVector2d(SubWidgetPanel->GetSize().X, Height)); }
+	FORCEINLINE float GetSubWidgetHeight() const { return SubWidgetPanel->GetSize().X; }
+	void EnableSubWidgetContent();
+	void DisableSubWidgetContent();
+	
+	FLoadMainWidgetDelegate MainWidgetDelegate;
+	FPassSubWidgetTypeDelegate PassSubWidgetTypeDelegate;
+	// Widget Animation
+protected:
+	UFUNCTION(BlueprintCallable)
+	void ActivateSoundSettingWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void ActivateDisplaySettingWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void ActivateGraphicSettingWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void ActivateAccessibilitySettingWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void ActivateSubtitleSettingWidget();
+	
 	// Default Widget Section
 protected:
-	virtual void NativeConstruct() override;
 
 	UFUNCTION(BlueprintCallable)
 	void ExitSettingUI();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCanvasPanel> SettingPanel;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UButton> OpenSoundSettingWidgetButton;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UButton> OpenDisplaySettingWidgetButton;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UButton> OpenGraphicSettingWidgetButton;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UButton> OpenAccessibilitySettingWidgetButton;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UButton> OpenSubtitleSettingWidgetButton;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> ExitSettingUIButton;
-	/*
+	
+	// SubWidgets;
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UGridPanel> SelectSettingPanel;
+	TObjectPtr<UCanvasPanelSlot> SubWidgetPanel; 
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UGridPanel> SoundSettingPanel;
+	TObjectPtr<UPPSoundSettingWidget> SoundSettingWidget;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UGridPanel> DisplaySettingPanel;
+	TObjectPtr<UPPDisplaySettingWidget> DisplaySettingWidget;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UGridPanel> GraphicSettingPanel;
+	TObjectPtr<UPPGraphicSettingWidget> GraphicSettingWidget;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UGridPanel> AccessibilitySettingPanel;
-	*/
+	TObjectPtr<UPPAccessibilitySettingWidget> AccessibilitySettingWidget;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UPPSubtitleSettingWidget> SubtitleSettingWidget;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TObjectPtr<UUserWidget> EnabledSubWidget;
+	
 	UPROPERTY()
-	uint32 bSubWidgetOpened : 1;
+	ESubWidgetType EnabledSubWidgetType;
+
+	UPROPERTY()
+	uint32 bIsSubWidgetFirstOpen : 1;
 };

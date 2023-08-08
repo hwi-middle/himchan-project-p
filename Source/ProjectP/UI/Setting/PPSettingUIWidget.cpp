@@ -2,19 +2,33 @@
 
 
 #include "ProjectP/UI/Setting/PPSettingUIWidget.h"
-#include "Components/CheckBox.h"
-#include "Components/Slider.h"
-#include "Engine/PostProcessVolume.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPSaveSettingOption.h"
-#include "Sound/SoundClass.h"
+
 
 void UPPSettingUIWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+
+	OpenSoundSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateSoundSettingWidget);
+	OpenDisplaySettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateDisplaySettingWidget);
+	OpenGraphicSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateGraphicSettingWidget);
+	OpenAccessibilitySettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateAccessibilitySettingWidget);
+	OpenSubtitleSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateSubtitleSettingWidget);
 	ExitSettingUIButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ExitSettingUI);
+
+	SoundSettingWidget->SetIsEnabled(false);
+	SoundSettingWidget->SetRenderOpacity(0.0f);
+	DisplaySettingWidget->SetIsEnabled(false);
+	DisplaySettingWidget->SetRenderOpacity(0.0f);
+	GraphicSettingWidget->SetIsEnabled(false);
+	GraphicSettingWidget->SetRenderOpacity(0.0f);
+	AccessibilitySettingWidget->SetIsEnabled(false);
+	AccessibilitySettingWidget->SetRenderOpacity(0.0f);
+	SubtitleSettingWidget->SetIsEnabled(false);
+	SubtitleSettingWidget->SetRenderOpacity(0.0f);
+	EnabledSubWidgetType = ESubWidgetType::None;
 	LoadSettingData();
 }
 
@@ -26,6 +40,11 @@ void UPPSettingUIWidget::SaveSettingData()
 	if(CurrentGI->SaveSettingOption)
 	{
 		// 서브위젯으로 세이브 전달
+		SoundSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
+		DisplaySettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
+		GraphicSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
+		AccessibilitySettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
+		SubtitleSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
 		UGameplayStatics::SaveGameToSlot(CurrentGI->SaveSettingOption, CurrentGI->SaveSettingOption->SaveFileName, 0);
 		UE_LOG(LogTemp, Log, TEXT("Save SettingOption Data Completed"));
 	}
@@ -41,13 +60,59 @@ void UPPSettingUIWidget::LoadSettingData()
 	
 	if(CurrentGI->SaveSettingOption)
 	{
-		// 서브위젯으로 세이브 전달
+		SoundSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
+		DisplaySettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
+		GraphicSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
+		AccessibilitySettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
+		SubtitleSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
 		UE_LOG(LogTemp, Log, TEXT("Load Setting Option SaveFile Completed"));
 	}
 	else
 	{
 		UE_LOG(LogTemp, Log, TEXT("Load Setting Option SaveFile Failed"));
 	}
+}
+
+void UPPSettingUIWidget::EnableSubWidgetContent()
+{
+	EnabledSubWidget->SetIsEnabled(true);
+	EnabledSubWidget->SetRenderOpacity(1.0f);
+}
+
+void UPPSettingUIWidget::DisableSubWidgetContent()
+{
+	EnabledSubWidget->SetIsEnabled(false);
+	EnabledSubWidget->SetRenderOpacity(0.0f);
+}
+
+void UPPSettingUIWidget::ActivateSoundSettingWidget()
+{
+	EnabledSubWidget = SoundSettingWidget;
+	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Sound);
+}
+
+void UPPSettingUIWidget::ActivateDisplaySettingWidget()
+{
+	EnabledSubWidget = DisplaySettingWidget;
+	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Display);
+}
+
+void UPPSettingUIWidget::ActivateGraphicSettingWidget()
+{
+	EnabledSubWidget = GraphicSettingWidget;
+	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Graphic);
+}
+
+void UPPSettingUIWidget::ActivateAccessibilitySettingWidget()
+{
+	EnabledSubWidget = AccessibilitySettingWidget;
+	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Accessibility);
+}
+
+void UPPSettingUIWidget::ActivateSubtitleSettingWidget()
+{
+	EnabledSubWidget = SubtitleSettingWidget;
+	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Subtitle);
 }
 
 void UPPSettingUIWidget::ExitSettingUI()
