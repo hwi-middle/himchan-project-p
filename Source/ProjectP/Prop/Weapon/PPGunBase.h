@@ -26,10 +26,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void OnFire();
-
+	void StopFire();
 protected:
+	void ProcessFire();
 	void SetupWeaponData(UPPWeaponData* WeaponData);
-
 	void PressTrigger();
 	void GrabOnHand(class APPVRHand* InHand);
 	void ReleaseOnHand(class APPVRHand* InHand);
@@ -68,11 +68,36 @@ private:
 	uint32 HeadShotDamageMax;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	uint32 CurrentOverheat;
+	
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	uint32 OverheatAmountPerSingleShoot;
+	
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
 	uint32 MaxOverheat;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
 	float UnavailableTime;
 
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	float ShootPerSecond;
+
+	UPROPERTY()
+	float ShootDelayPerShoot;
+	
+	UPROPERTY()
+	uint32 OverheatCoolDownPerSecond;
+
+	UPROPERTY()
+	float ElapsedTimeAfterLastShoot;
+
+	// UPROPERTY()
+	// uint32 bIsOverheated : 1;
+
+	UPROPERTY()
+	uint32 bIsUnavailable : 1;
+
+private:
 	UPROPERTY()
 	TObjectPtr<class UInputAction> LeftShootAction;
 	
@@ -94,6 +119,13 @@ private:
 	uint32 bIsLaserPointEnable : 1;
 	uint32 bIsFlashlightEnable : 1;
 
+	UPROPERTY()
+	FTimerHandle BlockShootTimerHandle;
+	
+	UPROPERTY()
+	FTimerHandle OverheatCoolDownTimerHandle;
+
 private:
 	void SetupInputMappingContextByHandType(const EControllerHand InHandType);
+	
 };

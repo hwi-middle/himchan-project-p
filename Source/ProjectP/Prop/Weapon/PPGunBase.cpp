@@ -39,6 +39,9 @@ APPGunBase::APPGunBase()
 	RightShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootRight.IA_VRShootRight'"), EAssertionLevel::Check);
 	LeftHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Left.IMC_Weapon_Left'"), EAssertionLevel::Check);
 	RightHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Right.IMC_Weapon_Right'"), EAssertionLevel::Check);
+
+	bIsUnavailable = false;
+	CurrentOverheat = 0;
 }
 
 void APPGunBase::BeginPlay()
@@ -52,7 +55,7 @@ void APPGunBase::BeginPlay()
 void APPGunBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	float Distance = 1000.f;
 	FVector StartLocation = MuzzlePosition->GetComponentLocation();
 	FVector ForwardVector = MuzzlePosition->GetForwardVector();
@@ -91,8 +94,18 @@ void APPGunBase::Tick(float DeltaTime)
 
 void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
 {
-	NormalShotDamageMin = WeaponData->NormalShotDamageMin;
 	WeaponMesh->SetSkeletalMesh(WeaponData->WeaponMesh);
+	NormalShotDamageMin = WeaponData->NormalShotDamageMin;
+	NormalShotDamageMax = WeaponData->NormalShotDamageMax;
+	HeadShotDamageMin = WeaponData->HeadShotDamageMin;
+	HeadShotDamageMax = WeaponData->HeadShotDamageMax;
+	MaxOverheat = WeaponData->MaxOverheat;
+	UnavailableTime = WeaponData->UnavailableTime;
+	OverheatAmountPerSingleShoot = WeaponData->OverheatAmountPerSingleShoot;
+	ShootPerSecond = WeaponData->ShootPerSecond;
+	ShootDelayPerShoot = 1.0f / ShootPerSecond;
+	OverheatCoolDownPerSecond = WeaponData->OverheatCoolDownPerSecond;
+	ElapsedTimeAfterLastShoot = ShootDelayPerShoot; // 첫 발사 시에는 바로 발사부터 되도록
 }
 
 void APPGunBase::PressTrigger()
@@ -107,12 +120,74 @@ void APPGunBase::PressTrigger()
 
 void APPGunBase::OnFire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
+	const float DeltaTime = GetWorld()->DeltaTimeSeconds;
+
+	// 게이지가 0인 상태에서 발사할 때 부터 게이지 감소가 시작
+	if (CurrentOverheat == 0)
+	{
+		GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			// 언더플로 방지
+			if(CurrentOverheat > OverheatCoolDownPerSecond)
+			{
+				CurrentOverheat -= OverheatCoolDownPerSecond;
+			}
+			else
+			{
+				CurrentOverheat = 0;
+			}
+			
+			UE_LOG(LogTemp, Log, TEXT("Cooldowned: %u"), CurrentOverheat);
+			if (CurrentOverheat == 0)
+			{
+				UE_LOG(LogTemp, Log, TEXT("No more overheat now"));
+				CurrentOverheat = 0;
+				GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
+			}
+		}), 1.f, true);
+	}
+
+	ElapsedTimeAfterLastShoot += DeltaTime;
+	if (ElapsedTimeAfterLastShoot >= ShootDelayPerShoot)
+	{
+		ElapsedTimeAfterLastShoot = 0.f;
+
+		if (bIsUnavailable)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Unavailable!"));
+			return;
+		}
+
+		CurrentOverheat += OverheatAmountPerSingleShoot;
+
+		if (AimingActor)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Hit Nowhere"));
+		}
+	}
+
+	if (CurrentOverheat > MaxOverheat)
+	{
+		bIsUnavailable = true;
+		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			bIsUnavailable = false;
+		}), UnavailableTime, false);
+	}
+}
+
+void APPGunBase::StopFire()
+{
+	ElapsedTimeAfterLastShoot = ShootDelayPerShoot;
 }
 
 void APPGunBase::GrabOnHand(APPVRHand* InHand)
 {
-	UE_LOG(LogTemp, Log, TEXT("OnGrab"));
+	//UE_LOG(LogTemp, Log, TEXT("OnGrab"));
 	//SetupInputMappingContextByHandType(InHand->GetHandType());
 }
 

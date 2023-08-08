@@ -13,6 +13,7 @@ UCLASS()
 class PROJECTP_API UPPWeaponData : public UDataAsset
 {
 	GENERATED_BODY()
+
 public:
 	UPPWeaponData();
 
@@ -30,12 +31,22 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
 	uint32 HeadShotDamageMax;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
 	uint32 MaxOverheat;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	uint32 OverheatCoolDownPerSecond;
+
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
 	float UnavailableTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	float OverheatAmountPerSingleShoot;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	float ShootPerSecond;
+
 
 	// UPROPERTY(EditDefaultsOnly, Category = Sound)
 	// TObjectPtr<class USoundBase> ReloadSound;

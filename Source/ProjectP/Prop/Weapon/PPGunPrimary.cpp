@@ -12,7 +12,7 @@ APPGunPrimary::APPGunPrimary()
 	FPPConstructorHelper::FindObjectAndInitialize<UPPWeaponData>(TEXT("/Script/ProjectP.PPWeaponData'/Game/DataAssets/Weapon/PrimaryWeaponData.PrimaryWeaponData'"), [&](UPPWeaponData* Data)
 	{
 		SetupWeaponData(Data);
-	}, EAssertionLevel::None);
+	}, EAssertionLevel::Check);
 }
 
 void APPGunPrimary::Tick(float DeltaTime)

@@ -210,11 +210,13 @@ void APPVRPawn::IndexCurlLeft(const FInputActionValue& Value)
 	const float Alpha = Value.Get<float>();
 	LeftHand->SetPoseAlphaIndexCurl(Alpha);
 	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
-	APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent);
-	if (Weapon)
+	if (HeldComponent)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Hello"));
-		Weapon->OnFire();
+		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
+		if (Weapon)
+		{
+			Weapon->OnFire();
+		}
 	}
 }
 
@@ -223,11 +225,15 @@ void APPVRPawn::IndexCurlRight(const FInputActionValue& Value)
 	const float Alpha = Value.Get<float>();
 	RightHand->SetPoseAlphaIndexCurl(Alpha);
 	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
-	APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
-	if (Weapon)
+
+	static constexpr float ShootThreshold = 0.2f;
+	if (HeldComponent)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Hello"));
-		Weapon->OnFire();
+		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
+		if (Weapon && Alpha > ShootThreshold)
+		{
+			Weapon->OnFire();
+		}
 	}
 }
 
@@ -279,11 +285,31 @@ void APPVRPawn::CancelOrCompleteGrabRight()
 void APPVRPawn::CancelOrCompleteIndexCurlLeft()
 {
 	LeftHand->SetPoseAlphaIndexCurl(0);
+	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
+
+	if (HeldComponent)
+	{
+		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
+		if (Weapon)
+		{
+			Weapon->StopFire();
+		}
+	}
 }
 
 void APPVRPawn::CancelOrCompleteIndexCurlRight()
 {
 	RightHand->SetPoseAlphaIndexCurl(0);
+	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
+
+	if (HeldComponent)
+	{
+		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
+		if (Weapon)
+		{
+			Weapon->StopFire();
+		}
+	}
 }
 
 void APPVRPawn::CompletePointLeft()
