@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ProjectP/Grab/PPVRGrabComponent.h"
+#include "MotionControllerComponent.h"
 #include "PPVRHand.generated.h"
 
 UCLASS()
@@ -34,7 +36,7 @@ private:
 	TObjectPtr<class USkeletalMeshComponent> HandMesh;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<class UMotionControllerComponent> MotionController;
+	TObjectPtr<UMotionControllerComponent> MotionController;
 
 	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<class UPPVRHandAnimInstance> HandAnimInstanceClass;
@@ -42,10 +44,27 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UPPVRHandAnimInstance> AnimInstance;
 
+	UPROPERTY(EditAnywhere)
+	float GripRadius;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UPPVRGrabComponent> HeldComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	FTransform InitHandMeshRelativeTransform;
+
 public:
+	UPPVRGrabComponent* FindGrabComponentNearby();
+	void HandleGrab();
+	void HandleRelease();
 	void SetPoseAlphaGrasp(float Value);
 	void SetPoseAlphaIndexCurl(const float Value);
 	void SetPoseAlphaThumbUp(const float Value);
 	void SetPoseAlphaPoint(const float Value);
 	void InitHand();
+	void ResetHandMesh();
+
+public:
+	FORCEINLINE class UMotionControllerComponent* GetMotionController() const { return MotionController;}
+	FORCEINLINE class USkeletalMeshComponent* GetHandMesh() const { return HandMesh;}
 };
