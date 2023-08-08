@@ -74,4 +74,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	uint32 bUseControllerVibration : 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	float CameraTurnValue;
 };

@@ -22,4 +22,5 @@ UPPSaveSettingOption::UPPSaveSettingOption()
 	PauseInterfaceHeightValue = 0.5f;
 	bUseLeftHandedSetting = false;
 	bUseControllerVibration = true;
+	CameraTurnValue = 30.0f;
 }

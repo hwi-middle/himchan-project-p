@@ -6,7 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Slider.h"
 #include "Components/CheckBox.h"
-#include "Components/Button.h"
 #include "ProjectP/Interface/SettingSubWidgetInterface.h"
 #include "PPAccessibilitySettingWidget.generated.h"
 
@@ -18,17 +17,10 @@ enum class ECameraTurnValue : uint8
 	High = 60
 };
 
-UENUM()
-enum class EAccessibilityOption : uint8
-{
-	LeftHanded,
-	Vibration,
-	CameraTurn
-};
-
 // VRPawn 작업 끝난 뒤에 VRPawn에 함수 만들어서 아래 두 델리게이트에 바인딩 할 예정
 DECLARE_MULTICAST_DELEGATE_OneParam(FCameraTurnValueSettingDelegate, float);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FAccessibilityOptionDelegate, EAccessibilityOption, bool);
+DECLARE_MULTICAST_DELEGATE_OneParam(FVibrationOptionDelegate, bool);
+DECLARE_MULTICAST_DELEGATE_OneParam(FLeftHandedOptionDelegate, bool);
 
 /**
  * 
@@ -45,7 +37,8 @@ public:
 	virtual void LoadSettingData(UPPSaveSettingOption* SettingOption) override;
 
 	FCameraTurnValueSettingDelegate CameraTurnValueSettingDelegate;
-	FAccessibilityOptionDelegate AccessibilityOptionDelegate;
+	FVibrationOptionDelegate VibrationOptionDelegate;
+	FLeftHandedOptionDelegate LeftHandedOptionDelegate;
 	
 	// Accessibility Option Function Section
 public:
@@ -56,19 +49,22 @@ public:
 	void ApplyPauseInterfaceHeightSliderValue(float Value);
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ApplyLeftHandedSettingToggle(const bool IsChecked) { AccessibilityOptionDelegate.Broadcast(EAccessibilityOption::LeftHanded, IsChecked); }
+	void ApplyLeftHandedSetting(const bool IsChecked);
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyRightHandedSetting(const bool IsChecked);
 	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ApplyControllerVibrationToggle(const bool IsChecked) { AccessibilityOptionDelegate.Broadcast(EAccessibilityOption::Vibration, IsChecked); }
+	FORCEINLINE void ApplyControllerVibrationToggle(const bool IsChecked) { VibrationOptionDelegate.Broadcast(IsChecked); }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ApplyCameraTurnValueLow() { CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::Low)); }
+	void ApplyCameraTurnValueLow(const bool IsChecked);
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ApplyCameraTurnValueMiddle() { CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::Middle)); }
+	void ApplyCameraTurnValueMiddle(const bool IsChecked);
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ApplyCameraTurnValueHigh() { CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::High)); }
+	void ApplyCameraTurnValueHigh(const bool IsChecked);
 	
 	// Accessibility Option Widget Section
 protected:
@@ -79,18 +75,24 @@ protected:
 	TObjectPtr<USlider> PauseInterfaceHeightSlider;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> LeftHandedSettingToggle;
+	TObjectPtr<UCheckBox> LeftHandedSettingButton;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCheckBox> RightHandedSettingButton;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UCheckBox> ControllerVibrationToggle;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, *meta = (BindWidget)*/)
-	TObjectPtr<UButton> CameraTurnValueLowButton;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCheckBox> CameraTurnValueLowButton;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, *meta = (BindWidget)*/)
-	TObjectPtr<UButton> CameraTurnValueMiddleButton;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCheckBox> CameraTurnValueMiddleButton;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, *meta = (BindWidget)*/)
-	TObjectPtr<UButton> CameraTurnValueHighButton;
-	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCheckBox> CameraTurnValueHighButton;
+
+protected:
+	UPROPERTY()
+	float NewCameraTurnValue;
 };
