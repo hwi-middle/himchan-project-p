@@ -7,9 +7,9 @@ void UPPSubtitleSettingWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	SubtitleSmallFontSizeButton->OnCheckStateChanged.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeSmall);
-	SubtitleNormalFontSizeButton->OnCheckStateChanged.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeNormal);
-	SubtitleLargeFontSizeButton->OnCheckStateChanged.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeLarge);
+	SubtitleSmallFontSizeButton->OnClicked.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeSmall);
+	SubtitleNormalFontSizeButton->OnClicked.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeNormal);
+	SubtitleLargeFontSizeButton->OnClicked.AddDynamic(this, &UPPSubtitleSettingWidget::ApplySubtitleFontSizeLarge);
 
 	UE_LOG(LogTemp, Log, TEXT("Current Font Size: %f"), GEngine->GetSubtitleFont()->GetFontScalingFactor());
 }
@@ -24,29 +24,23 @@ void UPPSubtitleSettingWidget::LoadSettingData(UPPSaveSettingOption* SettingOpti
 	
 }
 
-void UPPSubtitleSettingWidget::ApplySubtitleFontSizeSmall(const bool IsChecked)
+void UPPSubtitleSettingWidget::ApplySubtitleFontSizeSmall()
 {
-	if(IsChecked)
-	{
-		SubtitleNormalFontSizeButton->SetIsChecked(false);
-		SubtitleLargeFontSizeButton->SetIsChecked(false);
-	}
+	SubtitleSmallFontSizeButton->SetIsEnabled(false);
+	SubtitleNormalFontSizeButton->SetIsEnabled(true);
+	SubtitleLargeFontSizeButton->SetIsEnabled(true);
 }
 
-void UPPSubtitleSettingWidget::ApplySubtitleFontSizeNormal(const bool IsChecked)
+void UPPSubtitleSettingWidget::ApplySubtitleFontSizeNormal()
 {
-	if(IsChecked)
-	{
-		SubtitleNormalFontSizeButton->SetIsChecked(false);
-		SubtitleLargeFontSizeButton->SetIsChecked(false);
-	}
+	SubtitleSmallFontSizeButton->SetIsEnabled(true);
+	SubtitleNormalFontSizeButton->SetIsEnabled(false);
+	SubtitleLargeFontSizeButton->SetIsEnabled(true);
 }
 
-void UPPSubtitleSettingWidget::ApplySubtitleFontSizeLarge(const bool IsChecked)
+void UPPSubtitleSettingWidget::ApplySubtitleFontSizeLarge()
 {
-	if(IsChecked)
-	{
-		SubtitleNormalFontSizeButton->SetIsChecked(false);
-		SubtitleLargeFontSizeButton->SetIsChecked(false);
-	}
+	SubtitleSmallFontSizeButton->SetIsEnabled(true);
+	SubtitleNormalFontSizeButton->SetIsEnabled(true);
+	SubtitleLargeFontSizeButton->SetIsEnabled(false);
 }

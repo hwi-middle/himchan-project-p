@@ -23,4 +23,6 @@ UPPSaveSettingOption::UPPSaveSettingOption()
 	bUseLeftHandedSetting = false;
 	bUseControllerVibration = true;
 	CameraTurnValue = 30.0f;
+	SubtitleFontSize = 30;
+	bUseSubtitle = true;
 }

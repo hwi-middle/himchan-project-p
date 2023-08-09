@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Slider.h"
 #include "Components/CheckBox.h"
+#include "Components/Button.h"
 #include "ProjectP/Interface/SettingSubWidgetInterface.h"
 #include "PPAccessibilitySettingWidget.generated.h"
 
@@ -49,22 +50,22 @@ public:
 	void ApplyPauseInterfaceHeightSliderValue(float Value);
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyLeftHandedSetting(const bool IsChecked);
+	void ApplyLeftHandedSetting();
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyRightHandedSetting(const bool IsChecked);
+	void ApplyRightHandedSetting();
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void ApplyControllerVibrationToggle(const bool IsChecked) { VibrationOptionDelegate.Broadcast(IsChecked); }
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyCameraTurnValueLow(const bool IsChecked);
+	void ApplyCameraTurnValueLow();
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyCameraTurnValueMiddle(const bool IsChecked);
+	void ApplyCameraTurnValueMiddle();
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyCameraTurnValueHigh(const bool IsChecked);
+	void ApplyCameraTurnValueHigh();
 	
 	// Accessibility Option Widget Section
 protected:
@@ -75,24 +76,27 @@ protected:
 	TObjectPtr<USlider> PauseInterfaceHeightSlider;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> LeftHandedSettingButton;
+	TObjectPtr<UButton> LeftHandedSettingButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> RightHandedSettingButton;
+	TObjectPtr<UButton> RightHandedSettingButton;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UCheckBox> ControllerVibrationToggle;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> CameraTurnValueLowButton;
+	TObjectPtr<UButton> CameraTurnValueLowButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> CameraTurnValueMiddleButton;
+	TObjectPtr<UButton> CameraTurnValueMiddleButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> CameraTurnValueHighButton;
+	TObjectPtr<UButton> CameraTurnValueHighButton;
 
 protected:
 	UPROPERTY()
 	float NewCameraTurnValue;
+
+	UPROPERTY()
+	uint32 bUseLeftHandedSetting : 1;
 };

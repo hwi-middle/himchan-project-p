@@ -77,4 +77,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float CameraTurnValue;
+
+	// Subtitle Section
+public:
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 SubtitleFontSize;
+
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 bUseSubtitle : 1;
 };

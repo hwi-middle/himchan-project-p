@@ -14,21 +14,27 @@ void UPPSettingUIWidget::NativeConstruct()
 	OpenSoundSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateSoundSettingWidget);
 	OpenDisplaySettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateDisplaySettingWidget);
 	OpenGraphicSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateGraphicSettingWidget);
+	/*
 	OpenAccessibilitySettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateAccessibilitySettingWidget);
 	OpenSubtitleSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateSubtitleSettingWidget);
+	*/
 	ExitSettingUIButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ExitSettingUI);
-
+	SubWidgetPanelSlot = CastChecked<UCanvasPanelSlot>(SubWidgetPanel->Slot);
+	
 	SoundSettingWidget->SetIsEnabled(false);
 	SoundSettingWidget->SetRenderOpacity(0.0f);
 	DisplaySettingWidget->SetIsEnabled(false);
 	DisplaySettingWidget->SetRenderOpacity(0.0f);
 	GraphicSettingWidget->SetIsEnabled(false);
 	GraphicSettingWidget->SetRenderOpacity(0.0f);
+	/*
 	AccessibilitySettingWidget->SetIsEnabled(false);
 	AccessibilitySettingWidget->SetRenderOpacity(0.0f);
 	SubtitleSettingWidget->SetIsEnabled(false);
 	SubtitleSettingWidget->SetRenderOpacity(0.0f);
+	*/
 	EnabledSubWidgetType = ESubWidgetType::None;
+	bSubWidgetAnimationWork = false;
 	LoadSettingData();
 }
 
@@ -43,8 +49,10 @@ void UPPSettingUIWidget::SaveSettingData()
 		SoundSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
 		DisplaySettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
 		GraphicSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
+		/*
 		AccessibilitySettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
 		SubtitleSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
+		*/
 		UGameplayStatics::SaveGameToSlot(CurrentGI->SaveSettingOption, CurrentGI->SaveSettingOption->SaveFileName, 0);
 		UE_LOG(LogTemp, Log, TEXT("Save SettingOption Data Completed"));
 	}
@@ -63,8 +71,10 @@ void UPPSettingUIWidget::LoadSettingData()
 		SoundSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
 		DisplaySettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
 		GraphicSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
+		/*
 		AccessibilitySettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
 		SubtitleSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
+		*/
 		UE_LOG(LogTemp, Log, TEXT("Load Setting Option SaveFile Completed"));
 	}
 	else
@@ -87,10 +97,10 @@ void UPPSettingUIWidget::SetSubWidgetContent(ESubWidgetType SubWidget)
 		EnabledSubWidget = GraphicSettingWidget;
 		break;
 	case  ESubWidgetType::Accessibility:
-		EnabledSubWidget = AccessibilitySettingWidget;
+		// EnabledSubWidget = AccessibilitySettingWidget;
 		break;
 	case  ESubWidgetType::Subtitle:
-		EnabledSubWidget = SubtitleSettingWidget;
+		// EnabledSubWidget = SubtitleSettingWidget;
 		break;
 	default:
 		checkNoEntry();
@@ -113,27 +123,42 @@ void UPPSettingUIWidget::SetSubWidgetContentVisible(const bool IsActivate)
 
 void UPPSettingUIWidget::ActivateSoundSettingWidget()
 {
-	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Sound);
+	if(!bSubWidgetAnimationWork)
+	{
+		PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Sound);
+	}
 }
 
 void UPPSettingUIWidget::ActivateDisplaySettingWidget()
 {
-	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Display);
+	if(!bSubWidgetAnimationWork)
+	{
+		PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Display);
+	}
 }
 
 void UPPSettingUIWidget::ActivateGraphicSettingWidget()
 {
-	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Graphic);
+	if(!bSubWidgetAnimationWork)
+	{
+		PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Graphic);
+	}
 }
 
 void UPPSettingUIWidget::ActivateAccessibilitySettingWidget()
 {
-	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Accessibility);
+	if(!bSubWidgetAnimationWork)
+	{
+		PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Accessibility);
+	}
 }
 
 void UPPSettingUIWidget::ActivateSubtitleSettingWidget()
 {
-	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Subtitle);
+	if(!bSubWidgetAnimationWork)
+	{
+		PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Subtitle);
+	}
 }
 
 void UPPSettingUIWidget::ExitSettingUI()

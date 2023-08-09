@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/CheckBox.h"
+#include "Components/Button.h"
 #include "ProjectP/Interface/SettingSubWidgetInterface.h"
 #include "PPGraphicSettingWidget.generated.h"
 
@@ -38,70 +38,70 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ApplyTextureQualityLow(bool IsChecked);
+	void ApplyTextureQualityLow();
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyTextureQualityMiddle(bool IsChecked);
+	void ApplyTextureQualityMiddle();
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyTextureQualityHigh(bool IsChecked);
+	void ApplyTextureQualityHigh();
 	
 	UFUNCTION(BlueprintCallable)
-	void ApplyShadowQualityLow(bool IsChecked);
+	void ApplyShadowQualityLow();
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyShadowQualityMiddle(bool IsChecked);
+	void ApplyShadowQualityMiddle();
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyShadowQualityHigh(bool IsChecked);
+	void ApplyShadowQualityHigh();
 
 	UFUNCTION(BlueprintCallable)
-	void SetCurrenAAToFXAA(bool IsChecked);
+	void SetCurrenAAToFXAA();
 
 	UFUNCTION(BlueprintCallable)
-	void SetCurrenAAToTAA(bool IsChecked);
+	void SetCurrenAAToTAA();
 	
 	UFUNCTION(BlueprintCallable)
-	void ApplyAAQualityLow(bool IsChecked);
+	void ApplyAAQualityLow();
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyAAQualityMiddle(bool IsChecked);
+	void ApplyAAQualityMiddle();
 
 	UFUNCTION(BlueprintCallable)
-	void ApplyAAQualityHigh(bool IsChecked);
+	void ApplyAAQualityHigh();
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> TextureQualityLowButton;
+	TObjectPtr<UButton> TextureQualityLowButton;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> TextureQualityMiddleButton;
+	TObjectPtr<UButton> TextureQualityMiddleButton;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> TextureQualityHighButton;
+	TObjectPtr<UButton> TextureQualityHighButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> ShadowQualityLowButton;
+	TObjectPtr<UButton> ShadowQualityLowButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> ShadowQualityMiddleButton;
+	TObjectPtr<UButton> ShadowQualityMiddleButton;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> ShadowQualityHighButton;
+	TObjectPtr<UButton> ShadowQualityHighButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> EnableFXAAButton;
+	TObjectPtr<UButton> EnableFXAAButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> EnableTAAButton;
+	TObjectPtr<UButton> EnableTAAButton;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> AAQualityLowButton;
+	TObjectPtr<UButton> AAQualityLowButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> AAQualityMiddleButton;
+	TObjectPtr<UButton> AAQualityMiddleButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> AAQualityHighButton;
+	TObjectPtr<UButton> AAQualityHighButton;
 
 };

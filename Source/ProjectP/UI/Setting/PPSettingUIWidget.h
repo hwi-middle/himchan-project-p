@@ -30,15 +30,17 @@ public:
 	void SaveSettingData();
 	void LoadSettingData();
 	
-	FORCEINLINE void AddSubWidgetHeight(const float Height) { SubWidgetPanel->SetOffsets(FMargin(SubWidgetPanel->GetOffsets().Left, SubWidgetPanel->GetOffsets().Top + Height, SubWidgetPanel->GetOffsets().Right, SubWidgetPanel->GetOffsets().Bottom + Height)); }
+	FORCEINLINE void AddSubWidgetHeightOffset(const float Height) { SubWidgetPanelSlot->SetOffsets(FMargin(SubWidgetPanelSlot->GetOffsets().Left, SubWidgetPanelSlot->GetOffsets().Top + Height, SubWidgetPanelSlot->GetOffsets().Right, SubWidgetPanelSlot->GetOffsets().Bottom + Height)); }
 	
-	FORCEINLINE void SetSubWidgetHeight(const float Height) { SubWidgetPanel->SetOffsets(FMargin(SubWidgetPanel->GetOffsets().Left, Height, SubWidgetPanel->GetOffsets().Right, Height)); }
+	FORCEINLINE void SetSubWidgetHeightOffset(const float Height) { SubWidgetPanelSlot->SetOffsets(FMargin(SubWidgetPanelSlot->GetOffsets().Left, Height, SubWidgetPanelSlot->GetOffsets().Right, Height)); }
 	
-	FORCEINLINE float GetSubWidgetHeight() const { return SubWidgetPanel->GetOffsets().Top; }
+	FORCEINLINE float GetSubWidgetHeight() const { return SubWidgetPanelSlot->GetOffsets().Top; }
 
 	void SetSubWidgetContent(ESubWidgetType SubWidget);
 	void SetSubWidgetContentVisible(const bool IsActivate);
-
+	FORCEINLINE void SetSubWidgetPanelVisible(const bool Visible) { Visible == true ? SubWidgetPanel->SetRenderOpacity(1.0f) : SubWidgetPanel->SetRenderOpacity(0.0f); }
+	FORCEINLINE void SetSubWidgetAnimationWorking(const bool Work) { Work == true? bSubWidgetAnimationWork = true : bSubWidgetAnimationWork = false; }
+	
 	FLoadMainWidgetDelegate LoadMainWidgetDelegate;
 	FPassSubWidgetTypeDelegate PassSubWidgetTypeDelegate;
 	
@@ -69,6 +71,9 @@ protected:
 	TObjectPtr<UCanvasPanel> SettingPanel;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UCanvasPanel> SubWidgetPanel;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> OpenSoundSettingWidgetButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
@@ -76,20 +81,20 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> OpenGraphicSettingWidgetButton;
-
+	/*
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> OpenAccessibilitySettingWidgetButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> OpenSubtitleSettingWidgetButton;
-	
+	*/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> ExitSettingUIButton;
 	
 	// SubWidgets;
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCanvasPanelSlot> SubWidgetPanel; 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	TObjectPtr<UCanvasPanelSlot> SubWidgetPanelSlot; 
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UPPSoundSettingWidget> SoundSettingWidget;
@@ -99,16 +104,18 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UPPGraphicSettingWidget> GraphicSettingWidget;
-	
+	/*
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UPPAccessibilitySettingWidget> AccessibilitySettingWidget;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UPPSubtitleSettingWidget> SubtitleSettingWidget;
-
+	*/
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UUserWidget> EnabledSubWidget;
-	
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	uint32 bSubWidgetAnimationWork : 1;
 	UPROPERTY()
 	ESubWidgetType EnabledSubWidgetType;
 };

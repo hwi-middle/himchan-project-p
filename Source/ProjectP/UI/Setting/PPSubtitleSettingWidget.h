@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
-#include "Components/CheckBox.h"
 #include "Engine/Font.h"
 #include "ProjectP/Interface/SettingSubWidgetInterface.h"
 #include "PPSubtitleSettingWidget.generated.h"
@@ -33,11 +32,11 @@ public:
 	// Subtitle Option Function Section
 public:
 	UFUNCTION(BlueprintCallable)
-	void ApplySubtitleFontSizeSmall(const bool IsChecked);
+	void ApplySubtitleFontSizeSmall();
 	UFUNCTION(BlueprintCallable)
-	void ApplySubtitleFontSizeNormal(const bool IsChecked);
+	void ApplySubtitleFontSizeNormal();
 	UFUNCTION(BlueprintCallable)
-	void ApplySubtitleFontSizeLarge(const bool IsChecked);
+	void ApplySubtitleFontSizeLarge();
 
 protected:
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -46,14 +45,14 @@ protected:
 	// Subtitle Option Widget Section
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> SubtitleToggle;
+	TObjectPtr<UButton> SubtitleToggle;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> SubtitleSmallFontSizeButton;
+	TObjectPtr<UButton> SubtitleSmallFontSizeButton;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> SubtitleNormalFontSizeButton;
+	TObjectPtr<UButton> SubtitleNormalFontSizeButton;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<UCheckBox> SubtitleLargeFontSizeButton;
+	TObjectPtr<UButton> SubtitleLargeFontSizeButton;
 };
