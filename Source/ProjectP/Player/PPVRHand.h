@@ -65,6 +65,8 @@ public:
 	void ResetHandMesh();
 
 public:
-	FORCEINLINE class UMotionControllerComponent* GetMotionController() const { return MotionController;}
-	FORCEINLINE class USkeletalMeshComponent* GetHandMesh() const { return HandMesh;}
+	FORCEINLINE class UMotionControllerComponent* GetMotionController() const { return MotionController; }
+	FORCEINLINE class USkeletalMeshComponent* GetHandMesh() const { return HandMesh; }
+	FORCEINLINE EControllerHand GetHandType() const { return HandType; }
+	FORCEINLINE class UPPVRGrabComponent* GetHeldComponent() const { return HeldComponent; }
 };

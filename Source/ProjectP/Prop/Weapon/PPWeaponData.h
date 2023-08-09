@@ -13,40 +13,47 @@ UCLASS()
 class PROJECTP_API UPPWeaponData : public UDataAsset
 {
 	GENERATED_BODY()
+
 public:
 	UPPWeaponData();
 
 	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	TObjectPtr<class USkeletalMeshComponent> WeaponMesh;
-
-	UPROPERTY(EditDefaultsOnly, Category = Sound)
-	TObjectPtr<class USoundBase> ReloadSound;
-	
-	UPROPERTY(EditDefaultsOnly, Category = Sound)
-	TObjectPtr<class USoundBase> FireSound;
-
-	// 애님 몽타주와 시퀀스중 어떤 것을 사용할지는 나중에 결정
-	UPROPERTY(EditDefaultsOnly, Category = Animation)
-	TObjectPtr<class UAnimMontage> FireAnimation;
+	TObjectPtr<class USkeletalMesh> WeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 MagazineAmmo;
+	uint32 NormalShotDamageMin;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	float FireRate;
+	uint32 NormalShotDamageMax;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	float ReloadDelay;
-	
-	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 BodyDamageMin;
+	uint32 HeadShotDamageMin;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 BodyDamageMax;
+	uint32 HeadShotDamageMax;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 HeadDamageMin;
+	uint32 MaxOverheat;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 HeadDamageMax;
+	uint32 OverheatCoolDownPerSecond;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	float UnavailableTime;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	float OverheatAmountPerSingleShoot;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	float ShootPerSecond;
+
+
+	// UPROPERTY(EditDefaultsOnly, Category = Sound)
+	// TObjectPtr<class USoundBase> ReloadSound;
+	//
+	// UPROPERTY(EditDefaultsOnly, Category = Sound)
+	// TObjectPtr<class USoundBase> FireSound;
+	//
+	// UPROPERTY(EditDefaultsOnly, Category = Animation)
+	// TObjectPtr<class UAnimMontage> FireAnimation;
 };
