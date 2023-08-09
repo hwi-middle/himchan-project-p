@@ -73,49 +73,71 @@ void UPPSettingUIWidget::LoadSettingData()
 	}
 }
 
-void UPPSettingUIWidget::EnableSubWidgetContent()
+void UPPSettingUIWidget::SetSubWidgetContent(ESubWidgetType SubWidget)
 {
-	EnabledSubWidget->SetIsEnabled(true);
-	EnabledSubWidget->SetRenderOpacity(1.0f);
+	switch (SubWidget)
+	{
+	case ESubWidgetType::Sound:
+		EnabledSubWidget = SoundSettingWidget;
+		break;
+	case  ESubWidgetType::Display:
+		EnabledSubWidget = DisplaySettingWidget;
+		break;
+	case  ESubWidgetType::Graphic:
+		EnabledSubWidget = GraphicSettingWidget;
+		break;
+	case  ESubWidgetType::Accessibility:
+		EnabledSubWidget = AccessibilitySettingWidget;
+		break;
+	case  ESubWidgetType::Subtitle:
+		EnabledSubWidget = SubtitleSettingWidget;
+		break;
+	default:
+		checkNoEntry();
+	}
 }
 
-void UPPSettingUIWidget::DisableSubWidgetContent()
+void UPPSettingUIWidget::SetSubWidgetContentVisible(const bool IsActivate)
 {
-	EnabledSubWidget->SetIsEnabled(false);
-	EnabledSubWidget->SetRenderOpacity(0.0f);
+	if(IsActivate)
+	{
+		EnabledSubWidget->SetIsEnabled(true);
+		EnabledSubWidget->SetRenderOpacity(1.0f);
+	}
+	else
+	{
+		EnabledSubWidget->SetIsEnabled(false);
+		EnabledSubWidget->SetRenderOpacity(0.0f);
+	}
 }
 
 void UPPSettingUIWidget::ActivateSoundSettingWidget()
 {
-	EnabledSubWidget = SoundSettingWidget;
 	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Sound);
 }
 
 void UPPSettingUIWidget::ActivateDisplaySettingWidget()
 {
-	EnabledSubWidget = DisplaySettingWidget;
 	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Display);
 }
 
 void UPPSettingUIWidget::ActivateGraphicSettingWidget()
 {
-	EnabledSubWidget = GraphicSettingWidget;
 	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Graphic);
 }
 
 void UPPSettingUIWidget::ActivateAccessibilitySettingWidget()
 {
-	EnabledSubWidget = AccessibilitySettingWidget;
 	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Accessibility);
 }
 
 void UPPSettingUIWidget::ActivateSubtitleSettingWidget()
 {
-	EnabledSubWidget = SubtitleSettingWidget;
 	PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Subtitle);
 }
 
 void UPPSettingUIWidget::ExitSettingUI()
 {
 	SaveSettingData();
+	LoadMainWidgetDelegate.Broadcast();
 }

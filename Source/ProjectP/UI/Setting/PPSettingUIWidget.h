@@ -30,13 +30,18 @@ public:
 	void SaveSettingData();
 	void LoadSettingData();
 	
-	FORCEINLINE void SetSubWidgetHeight(const float Height) { SubWidgetPanel->SetSize(FVector2d(SubWidgetPanel->GetSize().X, Height)); }
-	FORCEINLINE float GetSubWidgetHeight() const { return SubWidgetPanel->GetSize().X; }
-	void EnableSubWidgetContent();
-	void DisableSubWidgetContent();
+	FORCEINLINE void AddSubWidgetHeight(const float Height) { SubWidgetPanel->SetOffsets(FMargin(SubWidgetPanel->GetOffsets().Left, SubWidgetPanel->GetOffsets().Top + Height, SubWidgetPanel->GetOffsets().Right, SubWidgetPanel->GetOffsets().Bottom + Height)); }
 	
-	FLoadMainWidgetDelegate MainWidgetDelegate;
+	FORCEINLINE void SetSubWidgetHeight(const float Height) { SubWidgetPanel->SetOffsets(FMargin(SubWidgetPanel->GetOffsets().Left, Height, SubWidgetPanel->GetOffsets().Right, Height)); }
+	
+	FORCEINLINE float GetSubWidgetHeight() const { return SubWidgetPanel->GetOffsets().Top; }
+
+	void SetSubWidgetContent(ESubWidgetType SubWidget);
+	void SetSubWidgetContentVisible(const bool IsActivate);
+
+	FLoadMainWidgetDelegate LoadMainWidgetDelegate;
 	FPassSubWidgetTypeDelegate PassSubWidgetTypeDelegate;
+	
 	// Widget Animation
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -101,12 +106,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UPPSubtitleSettingWidget> SubtitleSettingWidget;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UUserWidget> EnabledSubWidget;
 	
 	UPROPERTY()
 	ESubWidgetType EnabledSubWidgetType;
-
-	UPROPERTY()
-	uint32 bIsSubWidgetFirstOpen : 1;
 };

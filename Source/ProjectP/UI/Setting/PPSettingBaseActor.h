@@ -23,16 +23,36 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void OpenSubWidget(ESubWidgetType SubWidget);
+	void ToggleSubWidgetPanel(const bool IsOpened, ESubWidgetType SwapSubWidget = ESubWidgetType::None);
+	
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UWidgetComponent> SettingWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UPPSettingUIWidget> SettingWidget;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	FTimerHandle SubWidgetControlTimer;
-	
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+	/*
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	FTimerHandle SubWidgetContentOpacityTimer;
+	*/
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	float WidgetAnimationTick;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	float WidgetHeightAddValue;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	float WidgetHalfHeightValue;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	uint32 bSubWidgetOpened : 1;
+	/*
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+	float WidgetAddOpacityValue;
+	*/
 };
