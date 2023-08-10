@@ -51,5 +51,7 @@ public:
 	void SetPoseAlphaIndexCurl(const float Value);
 	void SetPoseAlphaThumbUp(const float Value);
 	void SetPoseAlphaPoint(const float Value);
+	void WidgetInteractionToggle(const float Value);
+	FORCEINLINE void WidgetInteractionDisable() { HandWidgetInteraction->InteractionDistance = 0.0f; };
 	void InitHand();
 };

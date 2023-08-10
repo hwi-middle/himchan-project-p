@@ -87,13 +87,19 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UInputAction> ThumbUpRightAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> LeftXButtonPressAction;
 	
 	UPROPERTY()
 	float SnapTurnDegrees;
 
 	UPROPERTY()
 	float MoveSpeed;
-
+	
+	UPROPERTY()
+	float WidgetInteractionDistance;
+	
 private:
 	void Move(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
@@ -107,7 +113,7 @@ private:
 	void ThumbUpRight(const FInputActionValue& Value);
 	void DisableSprint(const FInputActionValue& Value);
 	void ToggleSprint(const FInputActionValue& Value);
-
+	void ToggleWidgetInteraction(const FInputActionValue& Value);
 private:
 	void CancelOrCompleteGrabLeft();
 	void CancelOrCompleteGrabRight();

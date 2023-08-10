@@ -22,6 +22,7 @@ APPVRHand::APPVRHand()
 	HandMesh->SetAnimInstanceClass(HandAnimInstanceClass);
 	HandWidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteraction"));
 	HandWidgetInteraction->SetupAttachment(MotionController);
+	
 	// 코드에서 3D Widget 전용 Trace Channel 설정 불가능. 수정해야 할 경우 BP에서 수정
 	HandWidgetInteraction->TraceChannel = ECollisionChannel::ECC_Visibility;
 	HandWidgetInteraction->InteractionDistance = 300.0f;
@@ -51,7 +52,7 @@ void APPVRHand::SetPoseAlphaGrasp(const float Value)
 void APPVRHand::SetPoseAlphaIndexCurl(const float Value)
 {
 	AnimInstance->SetPoseAlphaIndexCurl(Value);
-	Value != 0 ? HandWidgetInteraction->PressPointerKey(TEXT("LeftMouseButton")) : HandWidgetInteraction->ReleasePointerKey(TEXT("LeftMouseButton"));
+	Value > 0 ? HandWidgetInteraction->PressPointerKey(TEXT("LeftMouseButton")) : HandWidgetInteraction->ReleasePointerKey(TEXT("LeftMouseButton"));
 }
 
 void APPVRHand::SetPoseAlphaThumbUp(const float Value)
@@ -62,6 +63,12 @@ void APPVRHand::SetPoseAlphaThumbUp(const float Value)
 void APPVRHand::SetPoseAlphaPoint(const float Value)
 {
 	AnimInstance->SetPoseAlphaPoint(Value);
+}
+
+void APPVRHand::WidgetInteractionToggle(const float Value)
+{
+	// SetActive로 제어하려니 작동이 제대로 안되서 크기 조정으로 대체
+	HandWidgetInteraction->InteractionDistance == Value ? HandWidgetInteraction->InteractionDistance = 0.0f : HandWidgetInteraction->InteractionDistance = Value;
 }
 
 void APPVRHand::InitHand()
