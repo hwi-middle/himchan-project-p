@@ -25,6 +25,19 @@ public:
 	
 protected:
 	UPROPERTY()
-	TObjectPtr<class UStaticMeshComponent> Mesh;
+	float Opacity;
+
+private:
+	UPROPERTY()
+	float Alpha;
 	
+protected:
+	UPROPERTY()
+	TObjectPtr<class UStaticMeshComponent> Mesh;
+
+	UPROPERTY()
+	FTimerHandle FadeTimerHandle;
+
+	UPROPERTY()
+	float FadeTimerRate;
 };
