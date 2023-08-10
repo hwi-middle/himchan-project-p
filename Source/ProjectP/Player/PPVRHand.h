@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/WidgetInteractionComponent.h"
 #include "GameFramework/Actor.h"
 #include "PPVRHand.generated.h"
 
@@ -36,6 +37,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UMotionControllerComponent> MotionController;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetInteractionComponent> HandWidgetInteraction;
+	
 	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<class UPPVRHandAnimInstance> HandAnimInstanceClass;
 

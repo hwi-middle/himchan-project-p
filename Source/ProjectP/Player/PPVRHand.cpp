@@ -20,6 +20,13 @@ APPVRHand::APPVRHand()
 	HandMesh->SetupAttachment(MotionController);
 	HandAnimInstanceClass = FPPConstructorHelper::FindAndGetClass<UPPVRHandAnimInstance>(TEXT("/Game/15-Basic-Movement/Animation/Hand/ABP_VRHand.ABP_VRHand_C"), EAssertionLevel::Check);
 	HandMesh->SetAnimInstanceClass(HandAnimInstanceClass);
+	HandWidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteraction"));
+	HandWidgetInteraction->SetupAttachment(MotionController);
+	// 코드에서 3D Widget 전용 Trace Channel 설정 불가능. 수정해야 할 경우 BP에서 수정
+	HandWidgetInteraction->TraceChannel = ECollisionChannel::ECC_Visibility;
+	HandWidgetInteraction->InteractionDistance = 300.0f;
+	HandWidgetInteraction->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+	HandWidgetInteraction->bShowDebug = true;
 }
 
 // Called when the game starts or when spawned
@@ -44,6 +51,7 @@ void APPVRHand::SetPoseAlphaGrasp(const float Value)
 void APPVRHand::SetPoseAlphaIndexCurl(const float Value)
 {
 	AnimInstance->SetPoseAlphaIndexCurl(Value);
+	Value != 0 ? HandWidgetInteraction->PressPointerKey(TEXT("LeftMouseButton")) : HandWidgetInteraction->ReleasePointerKey(TEXT("LeftMouseButton"));
 }
 
 void APPVRHand::SetPoseAlphaThumbUp(const float Value)
