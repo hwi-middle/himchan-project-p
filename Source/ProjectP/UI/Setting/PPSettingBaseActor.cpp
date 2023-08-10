@@ -43,6 +43,7 @@ void APPSettingBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 	{
 		SwapSubWidget = SubWidget;
 		UE_LOG(LogTemp, Log, TEXT("PassSubWidgetTypeDelegate Worked And Toggle. %d"), SwapSubWidget);
+		SettingWidget->SaveSettingData();
 		CloseSubWidgetPanel();
 	}
 	else

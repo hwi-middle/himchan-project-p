@@ -113,11 +113,13 @@ void UPPSettingUIWidget::SetSubWidgetContentVisible(const bool IsActivate)
 	{
 		EnabledSubWidget->SetIsEnabled(true);
 		EnabledSubWidget->SetRenderOpacity(1.0f);
+		Cast<UCanvasPanelSlot>(EnabledSubWidget->Slot)->SetZOrder(1);
 	}
 	else
 	{
 		EnabledSubWidget->SetIsEnabled(false);
 		EnabledSubWidget->SetRenderOpacity(0.0f);
+		Cast<UCanvasPanelSlot>(EnabledSubWidget->Slot)->SetZOrder(0);
 	}
 }
 
