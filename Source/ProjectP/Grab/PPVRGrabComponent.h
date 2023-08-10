@@ -7,6 +7,9 @@
 #include "ProjectP/Enumeration/PPVRGrabType.h"
 #include "PPVRGrabComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(OnGrabEvent, class APPVRHand* hand)
+DECLARE_MULTICAST_DELEGATE_OneParam(OnReleaseEvent, class APPVRHand* hand)
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTP_API UPPVRGrabComponent : public USceneComponent
 {
@@ -46,4 +49,8 @@ public:
 private:
 	void TryAttachComponentToHand(APPVRHand* InHand);
 	void TryAttachHandToComponent(APPVRHand* InHand);
+
+public:
+	OnGrabEvent OnGrab;
+	OnReleaseEvent OnRelease;
 };

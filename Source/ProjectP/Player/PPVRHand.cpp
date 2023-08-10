@@ -80,6 +80,7 @@ void APPVRHand::HandleRelease()
 	if (HeldComponent)
 	{
 		HeldComponent->TryRelease();
+		HeldComponent = nullptr;
 	}
 }
 

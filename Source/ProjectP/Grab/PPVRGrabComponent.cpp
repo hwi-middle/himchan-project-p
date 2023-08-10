@@ -60,6 +60,11 @@ bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 		checkNoEntry();
 	}
 
+	if(bHeld)
+	{
+		OnGrab.Broadcast(GrabbingHand);
+	}
+	
 	// 물체를 잡는 동안은 물리 적용 해제
 	SetPrimitiveCompPhysics(false);
 	return bHeld;
@@ -71,6 +76,8 @@ void UPPVRGrabComponent::TryRelease()
 	{
 		return;
 	}
+
+	OnRelease.Broadcast(GrabbingHand);
 
 	if (GrabType == EVRGrabType::HandToObj)
 	{
