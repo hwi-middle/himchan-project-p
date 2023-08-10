@@ -17,17 +17,16 @@ class PROJECTP_API APPCharacterBoss : public APPCharacterEnemy, public ICharacte
 	GENERATED_BODY()
 public:
 	APPCharacterBoss();
-
+	virtual void IncreaseHealth(const float Value) override;
+	virtual void DecreaseHealth(const float Value) override;
 	
 protected:
 	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
 	
 	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
 	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
-
-	virtual void IncreaseHealth(const float Value) override;
-	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	uint32 Health;
