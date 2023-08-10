@@ -41,11 +41,11 @@ void UPPAccessibilitySettingWidget::LoadSettingData(UPPSaveSettingOption* Settin
 	if(SettingOption->bUseControllerVibration)
 	{
 		//ControllerVibrationToggle->SetIsChecked(true);
-		//ControllerVibrationToggle->OnCheckStateChanged.Broadcast(true);
+		//ApplyControllerVibrationToggle(true);
 	}
 	
 	NewCameraTurnValue = SettingOption->CameraTurnValue;
-	switch (static_cast<uint8>(NewCameraTurnValue))
+	switch (static_cast<uint32>(NewCameraTurnValue))
 	{
 	case ECameraTurnValue::Low:
 		ApplyCameraTurnValueLow();
@@ -92,6 +92,7 @@ void UPPAccessibilitySettingWidget::ApplyCameraTurnValueLow()
 	CameraTurnValueLowButton->SetIsEnabled(false);
 	CameraTurnValueMiddleButton->SetIsEnabled(true);
 	CameraTurnValueHighButton->SetIsEnabled(true);
+	NewCameraTurnValue = static_cast<float>(ECameraTurnValue::Low);
 	
 	CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::Low));
 }
@@ -101,6 +102,7 @@ void UPPAccessibilitySettingWidget::ApplyCameraTurnValueMiddle()
 	CameraTurnValueLowButton->SetIsEnabled(true);
 	CameraTurnValueMiddleButton->SetIsEnabled(false);
 	CameraTurnValueHighButton->SetIsEnabled(true);
+	NewCameraTurnValue = static_cast<float>(ECameraTurnValue::Middle);
 	
 	CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::Middle));
 }
@@ -110,6 +112,7 @@ void UPPAccessibilitySettingWidget::ApplyCameraTurnValueHigh()
 	CameraTurnValueLowButton->SetIsEnabled(true);
 	CameraTurnValueMiddleButton->SetIsEnabled(true);
 	CameraTurnValueHighButton->SetIsEnabled(false);
+	NewCameraTurnValue = static_cast<float>(ECameraTurnValue::High);
 	
 	CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::High));
 }
