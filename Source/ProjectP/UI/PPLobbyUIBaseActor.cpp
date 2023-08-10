@@ -3,7 +3,6 @@
 
 
 #include "ProjectP/UI/PPLobbyUIBaseActor.h"
-#include "PPTutorialUIWidget.h"
 #include "PPSettingUIWidget.h"
 #include "PPExitCheckUIWidget.h"
 #include "PPLobbyUIWidget.h"
@@ -24,7 +23,6 @@ APPLobbyUIBaseActor::APPLobbyUIBaseActor()
 	SettingWidgetComponent->SetupAttachment(LobbyWidgetComponent);
 
 	TutorialWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("TutorialUIWidget"));
-	TutorialWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPTutorialUIWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/16-Lobby-UI/Blueprints/TutorialWidgetBlueprint.TutorialWidgetBlueprint_C'")));
 	TutorialWidgetComponent->SetupAttachment(LobbyWidgetComponent);
 
 	ExitCheckWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("ExitCheckUIWidget"));
@@ -54,11 +52,6 @@ void APPLobbyUIBaseActor::BeginPlay()
 	if(SettingUIWidget)
 	{
 		SettingUIWidget->SettingButtonDelegate.AddUObject(this, &APPLobbyUIBaseActor::ToggleWidgetVisible);
-	}
-	TObjectPtr<UPPTutorialUIWidget> TutorialUIWidget = Cast<UPPTutorialUIWidget>(TutorialWidgetComponent->GetUserWidgetObject());
-	if(TutorialUIWidget)
-	{
-		TutorialUIWidget->TutorialButtonDelegate.AddUObject(this, &APPLobbyUIBaseActor::ToggleWidgetVisible);
 	}
 }
 
