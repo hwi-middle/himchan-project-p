@@ -9,9 +9,13 @@
 
 #include "InputCoreTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectP/Character/PPCharacterBase.h"
+#include "ProjectP/Character/PPCharacterBoss.h"
+#include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Grab/PPVRGrabComponent.h"
 #include "ProjectP/Player/PPVRHand.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
+#include "Math/UnrealMathUtility.h"
 
 // Sets default values
 APPGunBase::APPGunBase()
@@ -121,30 +125,22 @@ void APPGunBase::PressTrigger()
 void APPGunBase::OnFire()
 {
 	const float DeltaTime = GetWorld()->DeltaTimeSeconds;
+	constexpr float TimerRate = 0.01f;
 
 	// 게이지가 0인 상태에서 발사할 때 부터 게이지 감소가 시작
-	if (CurrentOverheat == 0)
+	if (CurrentOverheat <= KINDA_SMALL_NUMBER)
 	{
 		GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
-			// 언더플로 방지
-			if(CurrentOverheat > OverheatCoolDownPerSecond)
-			{
-				CurrentOverheat -= OverheatCoolDownPerSecond;
-			}
-			else
-			{
-				CurrentOverheat = 0;
-			}
-			
-			UE_LOG(LogTemp, Log, TEXT("Cooldowned: %u"), CurrentOverheat);
-			if (CurrentOverheat == 0)
+			CurrentOverheat -= OverheatCoolDownPerSecond / TimerRate;
+			UE_LOG(LogTemp, Log, TEXT("Cooldowned: %f"), CurrentOverheat);
+			if (CurrentOverheat < KINDA_SMALL_NUMBER)
 			{
 				UE_LOG(LogTemp, Log, TEXT("No more overheat now"));
-				CurrentOverheat = 0;
+				CurrentOverheat = 0.f;
 				GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
 			}
-		}), 1.f, true);
+		}), TimerRate, true);
 	}
 
 	ElapsedTimeAfterLastShoot += DeltaTime;
@@ -162,7 +158,14 @@ void APPGunBase::OnFire()
 
 		if (AimingActor)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
+			if (APPCharacterBoss* Enemy = Cast<APPCharacterBoss>(AimingActor))
+			{
+				const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
+				
+				Enemy->DecreaseHealth(Damage);
+				UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), Damage);
+				UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
+			}
 		}
 		else
 		{

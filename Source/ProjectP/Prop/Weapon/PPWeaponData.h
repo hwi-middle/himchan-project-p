@@ -21,22 +21,22 @@ public:
 	TObjectPtr<class USkeletalMesh> WeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 NormalShotDamageMin;
+	float NormalShotDamageMin;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 NormalShotDamageMax;
+	float NormalShotDamageMax;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 HeadShotDamageMin;
+	float HeadShotDamageMin;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 HeadShotDamageMax;
+	float HeadShotDamageMax;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 MaxOverheat;
+	float MaxOverheat;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 OverheatCoolDownPerSecond;
+	float OverheatCoolDownPerSecond;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
 	float UnavailableTime;

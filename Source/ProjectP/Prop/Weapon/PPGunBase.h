@@ -28,7 +28,6 @@ public:
 	void OnFire();
 	void StopFire();
 protected:
-	void ProcessFire();
 	void SetupWeaponData(UPPWeaponData* WeaponData);
 	void PressTrigger();
 	void GrabOnHand(class APPVRHand* InHand);
@@ -56,25 +55,25 @@ private:
 	TObjectPtr<class USceneComponent> GrabComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 NormalShotDamageMin;
+	float NormalShotDamageMin;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 NormalShotDamageMax;
+	float NormalShotDamageMax;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 HeadShotDamageMin;
+	float HeadShotDamageMin;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 HeadShotDamageMax;
+	float HeadShotDamageMax;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 CurrentOverheat;
+	float CurrentOverheat;
 	
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 OverheatAmountPerSingleShoot;
+	float OverheatAmountPerSingleShoot;
 	
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
-	uint32 MaxOverheat;
+	float MaxOverheat;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
 	float UnavailableTime;
@@ -86,7 +85,7 @@ private:
 	float ShootDelayPerShoot;
 	
 	UPROPERTY()
-	uint32 OverheatCoolDownPerSecond;
+	float OverheatCoolDownPerSecond;
 
 	UPROPERTY()
 	float ElapsedTimeAfterLastShoot;
