@@ -132,7 +132,7 @@ void APPGunBase::OnFire()
 	{
 		GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
-			CurrentOverheat -= OverheatCoolDownPerSecond / TimerRate;
+			CurrentOverheat -= OverheatCoolDownPerSecond * TimerRate;
 			UE_LOG(LogTemp, Log, TEXT("Cooldowned: %f"), CurrentOverheat);
 			if (CurrentOverheat < KINDA_SMALL_NUMBER)
 			{
