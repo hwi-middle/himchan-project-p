@@ -27,6 +27,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	FORCEINLINE void SetTurnDegrees(const float Degrees) { SnapTurnDegrees = Degrees; }
 private:
 	void InitVROrigin();
 	void InitVRHands();
@@ -113,7 +115,6 @@ private:
 	void ThumbUpRight(const FInputActionValue& Value);
 	void DisableSprint(const FInputActionValue& Value);
 	void ToggleSprint(const FInputActionValue& Value);
-	void ToggleWidgetInteraction(const FInputActionValue& Value);
 private:
 	void CancelOrCompleteGrabLeft();
 	void CancelOrCompleteGrabRight();
@@ -123,4 +124,6 @@ private:
 	void CompletePointRight();
 	void CompleteThumbUpLeft();
 	void CompleteThumbUpRight();
+private:
+	void ToggleWidgetInteraction(const FInputActionValue& Value);
 };

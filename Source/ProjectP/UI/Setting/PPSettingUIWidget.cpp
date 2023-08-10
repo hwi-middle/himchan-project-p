@@ -14,8 +14,9 @@ void UPPSettingUIWidget::NativeConstruct()
 	OpenSoundSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateSoundSettingWidget);
 	OpenDisplaySettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateDisplaySettingWidget);
 	OpenGraphicSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateGraphicSettingWidget);
-	/*
+	
 	OpenAccessibilitySettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateAccessibilitySettingWidget);
+	/*
 	OpenSubtitleSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateSubtitleSettingWidget);
 	*/
 	ExitSettingUIButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ExitSettingUI);
@@ -27,9 +28,9 @@ void UPPSettingUIWidget::NativeConstruct()
 	DisplaySettingWidget->SetRenderOpacity(0.0f);
 	GraphicSettingWidget->SetIsEnabled(false);
 	GraphicSettingWidget->SetRenderOpacity(0.0f);
-	/*
 	AccessibilitySettingWidget->SetIsEnabled(false);
 	AccessibilitySettingWidget->SetRenderOpacity(0.0f);
+	/*
 	SubtitleSettingWidget->SetIsEnabled(false);
 	SubtitleSettingWidget->SetRenderOpacity(0.0f);
 	*/
@@ -49,8 +50,8 @@ void UPPSettingUIWidget::SaveSettingData()
 		SoundSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
 		DisplaySettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
 		GraphicSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
-		/*
 		AccessibilitySettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
+		/*
 		SubtitleSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
 		*/
 		UGameplayStatics::SaveGameToSlot(CurrentGI->SaveSettingOption, CurrentGI->SaveSettingOption->SaveFileName, 0);
@@ -71,8 +72,8 @@ void UPPSettingUIWidget::LoadSettingData()
 		SoundSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
 		DisplaySettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
 		GraphicSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
-		/*
 		AccessibilitySettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
+		/*
 		SubtitleSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
 		*/
 		UE_LOG(LogTemp, Log, TEXT("Load Setting Option SaveFile Completed"));
@@ -97,7 +98,7 @@ void UPPSettingUIWidget::SetSubWidgetContent(ESubWidgetType SubWidget)
 		EnabledSubWidget = GraphicSettingWidget;
 		break;
 	case  ESubWidgetType::Accessibility:
-		// EnabledSubWidget = AccessibilitySettingWidget;
+		EnabledSubWidget = AccessibilitySettingWidget;
 		break;
 	case  ESubWidgetType::Subtitle:
 		// EnabledSubWidget = SubtitleSettingWidget;

@@ -56,7 +56,7 @@ public:
 	void ApplyRightHandedSetting();
 	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ApplyControllerVibrationToggle(const bool IsChecked) { VibrationOptionDelegate.Broadcast(IsChecked); }
+	FORCEINLINE void ApplyControllerVibrationToggle(const bool IsChecked) { VibrationOptionDelegate.Broadcast(!IsChecked); }
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyCameraTurnValueLow();
@@ -69,21 +69,21 @@ public:
 	
 	// Accessibility Option Widget Section
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
 	TObjectPtr<USlider> PauseInterfaceDistanceSlider;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
 	TObjectPtr<USlider> PauseInterfaceHeightSlider;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
 	TObjectPtr<UButton> LeftHandedSettingButton;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
 	TObjectPtr<UButton> RightHandedSettingButton;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
 	TObjectPtr<UCheckBox> ControllerVibrationToggle;
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> CameraTurnValueLowButton;
 

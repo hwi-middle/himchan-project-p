@@ -81,10 +81,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> OpenGraphicSettingWidgetButton;
-	/*
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> OpenAccessibilitySettingWidgetButton;
-
+	/*
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> OpenSubtitleSettingWidgetButton;
 	*/
@@ -104,10 +104,10 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UPPGraphicSettingWidget> GraphicSettingWidget;
-	/*
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UPPAccessibilitySettingWidget> AccessibilitySettingWidget;
-
+	/*
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UPPSubtitleSettingWidget> SubtitleSettingWidget;
 	*/

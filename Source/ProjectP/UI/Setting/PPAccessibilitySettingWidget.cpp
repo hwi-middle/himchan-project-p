@@ -2,13 +2,13 @@
 
 
 #include "ProjectP/UI/Setting/PPAccessibilitySettingWidget.h"
-
+#include "ProjectP/Player/PPVRPawn.h"
 void UPPAccessibilitySettingWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	LeftHandedSettingButton->OnClicked.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyLeftHandedSetting);
-	RightHandedSettingButton->OnClicked.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyRightHandedSetting);
-	ControllerVibrationToggle->OnCheckStateChanged.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyControllerVibrationToggle);
+	//LeftHandedSettingButton->OnClicked.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyLeftHandedSetting);
+	//RightHandedSettingButton->OnClicked.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyRightHandedSetting);
+	//ControllerVibrationToggle->OnCheckStateChanged.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyControllerVibrationToggle);
 	// VRPawn 관련 작업 끝난 뒤 적용 예정
 	CameraTurnValueLowButton->OnClicked.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyCameraTurnValueLow);
 	CameraTurnValueMiddleButton->OnClicked.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyCameraTurnValueMiddle);
@@ -18,23 +18,30 @@ void UPPAccessibilitySettingWidget::NativeConstruct()
 	/*
 	 * Delegate에 VRPawn 함수 바인딩
 	 */
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if(PlayerController)
+	{
+		APPVRPawn* VRPawn = Cast<APPVRPawn>(PlayerController->GetPawn());
+		CameraTurnValueSettingDelegate.AddUObject(VRPawn, &APPVRPawn::SetTurnDegrees);
+		VibrationOptionDelegate.AddUObject(PlayerController, &APlayerController::SetDisableHaptics);
+	}
 }
 
 void UPPAccessibilitySettingWidget::SaveSettingData(UPPSaveSettingOption* SettingOption)
 {
-	SettingOption->bUseLeftHandedSetting = bUseLeftHandedSetting;
-	SettingOption->bUseControllerVibration = ControllerVibrationToggle->IsChecked();
+	//SettingOption->bUseLeftHandedSetting = bUseLeftHandedSetting;
+	//SettingOption->bUseControllerVibration = ControllerVibrationToggle->IsChecked();
 	SettingOption->CameraTurnValue = NewCameraTurnValue;
 }
 
 void UPPAccessibilitySettingWidget::LoadSettingData(UPPSaveSettingOption* SettingOption)
 {
-	SettingOption->bUseLeftHandedSetting == true ? ApplyLeftHandedSetting() : ApplyRightHandedSetting();
+	//SettingOption->bUseLeftHandedSetting == true ? ApplyLeftHandedSetting() : ApplyRightHandedSetting();
 	
 	if(SettingOption->bUseControllerVibration)
 	{
-		ControllerVibrationToggle->SetIsChecked(true);
-		ControllerVibrationToggle->OnCheckStateChanged.Broadcast(true);
+		//ControllerVibrationToggle->SetIsChecked(true);
+		//ControllerVibrationToggle->OnCheckStateChanged.Broadcast(true);
 	}
 	
 	NewCameraTurnValue = SettingOption->CameraTurnValue;
