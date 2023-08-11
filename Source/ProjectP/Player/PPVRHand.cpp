@@ -26,8 +26,7 @@ APPVRHand::APPVRHand()
 	HandWidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteraction"));
 	HandWidgetInteraction->SetupAttachment(MotionController);
 	
-	// 코드에서 3D Widget 전용 Trace Channel 설정 불가능. 수정해야 할 경우 BP에서 수정
-	HandWidgetInteraction->TraceChannel = ECollisionChannel::ECC_Visibility;
+	HandWidgetInteraction->TraceChannel = ECC_Visibility;
 	HandWidgetInteraction->InteractionDistance = 300.0f;
 	HandWidgetInteraction->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	HandWidgetInteraction->bShowDebug = true;
