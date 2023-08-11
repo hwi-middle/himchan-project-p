@@ -25,7 +25,7 @@ public:
 	// Display Option Function Section
 public:
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ApplyDisplayBrightnessSliderValue(const float Value) {  PostProcessVolume->Settings.AutoExposureBias = Value; }
+	FORCEINLINE void ApplyDisplayBrightnessSliderValue(const float Value) { PostProcessVolume->Settings.AutoExposureBias = Value; }
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void ApplyDisplayVignettingSliderValue(const float Value) { PostProcessVolume->Settings.VignetteIntensity = Value; }

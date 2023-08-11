@@ -52,6 +52,6 @@ public:
 	void SetPoseAlphaThumbUp(const float Value);
 	void SetPoseAlphaPoint(const float Value);
 	void WidgetInteractionToggle(const float Value);
-	FORCEINLINE void WidgetInteractionDisable() { HandWidgetInteraction->InteractionDistance = 0.0f; };
+	FORCEINLINE void DisableWidgetInteraction() { HandWidgetInteraction->InteractionDistance = 0.0f; };
 	void InitHand();
 };

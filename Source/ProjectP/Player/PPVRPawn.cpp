@@ -129,7 +129,7 @@ void APPVRPawn::InitVRHands()
 	LeftHand->SetHandType(EControllerHand::Left);
 	LeftHand->FinishSpawning(IdentityTransform);
 	LeftHand->AttachToComponent(VROrigin, AttachRule);
-	LeftHand->WidgetInteractionDisable();
+	LeftHand->DisableWidgetInteraction();
 	
 	RightHand = GetWorld()->SpawnActorDeferred<APPVRHand>(APPVRHand::StaticClass(), IdentityTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	ensure(RightHand);

@@ -68,7 +68,8 @@ void APPVRHand::SetPoseAlphaPoint(const float Value)
 void APPVRHand::WidgetInteractionToggle(const float Value)
 {
 	// SetActive로 제어하려니 작동이 제대로 안되서 크기 조정으로 대체
-	HandWidgetInteraction->InteractionDistance == Value ? HandWidgetInteraction->InteractionDistance = 0.0f : HandWidgetInteraction->InteractionDistance = Value;
+	bool bIsActivated = abs( HandWidgetInteraction->InteractionDistance - Value) <= KINDA_SMALL_NUMBER;
+	HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;
 }
 
 void APPVRHand::InitHand()
