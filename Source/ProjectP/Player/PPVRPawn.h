@@ -115,6 +115,7 @@ private:
 	void ThumbUpRight(const FInputActionValue& Value);
 	void DisableSprint(const FInputActionValue& Value);
 	void ToggleSprint(const FInputActionValue& Value);
+
 private:
 	void CancelOrCompleteGrabLeft();
 	void CancelOrCompleteGrabRight();

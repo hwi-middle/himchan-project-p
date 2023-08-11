@@ -16,10 +16,13 @@ class PROJECTP_API APPGunPrimary : public APPGunBase
 	GENERATED_BODY()
 public:
 	APPGunPrimary();
-	
 protected:
-	virtual void SetupWeaponData(UPPWeaponData* WeaponData) override;
-	
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 private:
 	UPROPERTY(EditDefaultsOnly, Category = DataAsset)
 	TObjectPtr<class UPPWeaponData> PrimaryWeaponData;
