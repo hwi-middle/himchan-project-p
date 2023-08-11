@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
-#include "ProjectP/Enumeration/PPWidgetType.h"
 #include "PPLobbyUIBaseActor.generated.h"
 
 UCLASS()
@@ -16,10 +15,7 @@ class PROJECTP_API APPLobbyUIBaseActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APPLobbyUIBaseActor();
-	
-	UFUNCTION(BlueprintCallable)
-	void ToggleWidgetVisible(const EWidgetType WidgetType);
-	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,13 +23,4 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
 	TObjectPtr<UWidgetComponent> LobbyWidgetComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
-	TObjectPtr<UWidgetComponent> SettingWidgetComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
-	TObjectPtr<UWidgetComponent> TutorialWidgetComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "WidgetCompnent")
-	TObjectPtr<UWidgetComponent> ExitCheckWidgetComponent;
 };
