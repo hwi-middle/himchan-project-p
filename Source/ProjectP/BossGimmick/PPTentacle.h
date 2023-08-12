@@ -30,13 +30,19 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	TObjectPtr<class USkeletalMeshComponent> TentacleMesh;
 
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	UPROPERTY()
 	FTimerHandle WarningTimerHandle;
+
+	UPROPERTY()
+	FTimerHandle HitPlayerTimerHandle;
 
 	UPROPERTY()
 	float FadeOutDuration;
 
+	UPROPERTY()
+	float Damage;
+
 public:
-	void ShowWarningSign(float InFadeInDuration, float InDelay, float InFadeOutDuration);
+	void ShowWarningSign(float InFadeInDuration, float InDelay, float InFadeOutDuration, float InDamage);
 	void HideWarningSignAndAttack(float InFadeOutDuration);
 };

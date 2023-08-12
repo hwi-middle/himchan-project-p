@@ -15,6 +15,9 @@ class PROJECTP_API UPPBGVineGardenData : public UPrimaryDataAsset
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float Damage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	uint32 TentacleNum;
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)

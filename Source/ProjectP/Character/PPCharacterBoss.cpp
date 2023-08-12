@@ -17,7 +17,8 @@ APPCharacterBoss::APPCharacterBoss()
 	GetMesh()->SetSkeletalMesh(MeshObj);
 
 	VineGardenData = FPPConstructorHelper::FindAndGetObject<UPPBGVineGardenData>(TEXT("/Script/ProjectP.PPBGVineGardenData'/Game/DataAssets/Boss/GimmickVineGardenData.GimmickVineGardenData'"));
-	
+
+	VineGardenDamage = VineGardenData->Damage;
 	TentacleNum = VineGardenData->TentacleNum;
 	MinDistance = VineGardenData->MinDistance;
 	MaxDistance = VineGardenData->MaxDistance;
@@ -73,7 +74,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 
 		// 액터 스폰
 		APPTentacle* SpawnedActor = GetWorld()->SpawnActor<APPTentacle>(SpawnLocation, FRotator::ZeroRotator);
-		SpawnedActor->ShowWarningSign(WarningFadeInDuration, WarningDuration, WarningFadeOutDuration);
+		SpawnedActor->ShowWarningSign(WarningFadeInDuration, WarningDuration, WarningFadeOutDuration, VineGardenDamage);
 
 		++GeneratedNum;
 	}
