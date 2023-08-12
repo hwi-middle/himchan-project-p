@@ -32,9 +32,10 @@ void APPTentacle::ShowWarningSign(float InFadeInDuration, float InDelay, float I
 {
 	WarningZone = GetWorld()->SpawnActor<APPWarningZoneCylinder>(GetActorLocation(), FRotator::ZeroRotator);
 	WarningZone->Show(InFadeInDuration);
+	FadeOutDuration = InFadeOutDuration;
 	GetWorldTimerManager().SetTimer(WarningTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
-		HideWarningSignAndAttack(InFadeOutDuration);
+		HideWarningSignAndAttack(FadeOutDuration);
 		GetWorldTimerManager().ClearTimer(WarningTimerHandle);
 	}), InDelay, false);
 }

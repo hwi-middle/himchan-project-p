@@ -48,6 +48,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 		RandomPont *= Distance;
 
 		FVector SpawnLocation = FVector(RandomPont.X, RandomPont.Y, 0.f) + GetActorLocation();
+		SpawnLocation.Z = 0.f;
 
 		// 환경과 충돌이 있는지 검사
 		FHitResult HitResult;

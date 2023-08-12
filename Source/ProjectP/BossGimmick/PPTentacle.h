@@ -33,6 +33,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	FTimerHandle WarningTimerHandle;
 
+	UPROPERTY()
+	float FadeOutDuration;
+
 public:
 	void ShowWarningSign(float InFadeInDuration, float InDelay, float InFadeOutDuration);
 	void HideWarningSignAndAttack(float InFadeOutDuration);

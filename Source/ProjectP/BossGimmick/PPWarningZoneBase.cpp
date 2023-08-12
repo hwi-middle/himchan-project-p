@@ -51,6 +51,7 @@ void APPWarningZoneBase::HideAndDestroy(float InDuration)
 	FadeTimerRate = 0.01f;
 	Duration = InDuration;
 
+	GetWorldTimerManager().ClearTimer(FadeTimerHandle);
 	GetWorldTimerManager().SetTimer(FadeTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
 		Alpha -= 1 / Duration * FadeTimerRate;
