@@ -6,34 +6,33 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
-
 #include "InputCoreTypes.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Grab/PPVRGrabComponent.h"
 #include "ProjectP/Player/PPVRHand.h"
+#include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
 APPGunBase::APPGunBase()
 {
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-
-	// TODO: Socket으로 분리
-	MuzzlePosition = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzlePosition"));
-	MuzzlePosition->SetupAttachment(WeaponMesh);
-
-	LaserPosition = CreateDefaultSubobject<USceneComponent>(TEXT("LaserPosition"));
-	LaserPosition->SetupAttachment(WeaponMesh);
-
-	FlashPosition = CreateDefaultSubobject<USceneComponent>(TEXT("FlashPosition"));
-	FlashPosition->SetupAttachment(WeaponMesh);
-
-	GripPosition = CreateDefaultSubobject<USceneComponent>(TEXT("GripPosition"));
-	GripPosition->SetupAttachment(WeaponMesh);
-
+	WeaponMesh->SetCollisionObjectType(ECC_GIMMICK);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	
+	CrossHairPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrossHairPlane"));
+	DefaultCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/73-CrossHair/CrossHair/CrossHair.CrossHair'"), EAssertionLevel::Check);
+	DetectedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/73-CrossHair/CrossHair/CrossHair_Detect.CrossHair_Detect'"), EAssertionLevel::Check);
+	CrossHairPlane->SetStaticMesh(DefaultCrossHair);
+	CrossHairPlane->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CrossHairPlane->SetCollisionObjectType(ECC_WorldStatic);
+	CrossHairPlane->SetRelativeRotation(FRotator(90.0f,0.0f,0.0f));
+	CrossHairPlane->SetCastShadow(false);
+	CrossHairPlane->SetVisibility(false);
+	CrossHairPlane->SetupAttachment(WeaponMesh);
+	
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
-	GrabComponent->SetRelativeLocation(GripPosition->GetRelativeLocation());
 
 	LeftShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootLeft.IA_VRShootLeft'"), EAssertionLevel::Check);
 	RightShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootRight.IA_VRShootRight'"), EAssertionLevel::Check);
@@ -41,6 +40,7 @@ APPGunBase::APPGunBase()
 	RightHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Right.IMC_Weapon_Right'"), EAssertionLevel::Check);
 
 	bIsUnavailable = false;
+	bHeld = false;
 	CurrentOverheat = 0;
 }
 
@@ -50,6 +50,7 @@ void APPGunBase::BeginPlay()
 	UPPVRGrabComponent* GrabComponentCasted = Cast<UPPVRGrabComponent>(GrabComponent);
 	GrabComponentCasted->OnGrab.AddUObject(this, &APPGunBase::GrabOnHand);
 	GrabComponentCasted->OnRelease.AddUObject(this, &APPGunBase::ReleaseOnHand);
+	GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_GRIP));
 }
 
 void APPGunBase::Tick(float DeltaTime)
@@ -57,8 +58,8 @@ void APPGunBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	float Distance = 1000.f;
-	FVector StartLocation = MuzzlePosition->GetComponentLocation();
-	FVector ForwardVector = MuzzlePosition->GetForwardVector();
+	FVector StartLocation = WeaponMesh->GetSocketLocation(GUN_MUZZLE);
+	FVector ForwardVector = WeaponMesh->GetSocketTransform(GUN_MUZZLE).GetUnitAxis(EAxis::X);
 	FVector EndLocation = StartLocation + ForwardVector * Distance;
 
 	FHitResult HitResult;
@@ -72,23 +73,44 @@ void APPGunBase::Tick(float DeltaTime)
 		ECC_Visibility,
 		CollisionParams
 	);
-
 	if (bHit)
 	{
 		AimingActor = HitResult.GetActor();
 		if (AimingActor)
 		{
+			if(AimingActor->Tags.Contains("DestroyObject"))
+			{
+				if(CrossHairPlane->GetStaticMesh() != DetectedCrossHair)
+				{
+					CrossHairPlane->SetStaticMesh(DetectedCrossHair);
+				}
+				DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, FColor::Red, false, 0.03f, 0, 1.0f);
+			}
+			else
+			{
+				if(CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
+				{
+					CrossHairPlane->SetStaticMesh(DefaultCrossHair);
+				}
+				DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, FColor::Green, false, 0.03f, 0, 1.0f);
+			}
 			FString HitActorName = AimingActor->GetName();
 			FVector HitLocation = HitResult.ImpactPoint;
+			CrossHairPlane->SetWorldLocation(HitLocation);
 			// UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *HitActorName, *HitLocation.ToString());
+			
 		}
-		DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, FColor::Red, false, 0.03f, 0, 1.0f);
 	}
 	else
 	{
 		AimingActor = nullptr;
 		// UE_LOG(LogTemp, Warning, TEXT("Nothing hit along the raycast path"));
-		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 0.03f, 0, 1.0f);
+		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Green, false, 0.03f, 0, 1.0f);
+	}
+	
+	if(bHeld)
+	{
+
 	}
 }
 
@@ -187,31 +209,17 @@ void APPGunBase::StopFire()
 
 void APPGunBase::GrabOnHand(APPVRHand* InHand)
 {
+	CrossHairPlane->SetVisibility(true);
+	bHeld = true;
+	
 	//UE_LOG(LogTemp, Log, TEXT("OnGrab"));
 	//SetupInputMappingContextByHandType(InHand->GetHandType());
 }
 
 void APPGunBase::ReleaseOnHand(APPVRHand* InHand)
 {
-
-}
-
-void APPGunBase::ToggleLaserPoint()
-{
-	if (!bIsLaserPointEnable)
-	{
-		/*
-		 * Do something
-		 */
-		bIsLaserPointEnable = true;
-	}
-	else
-	{
-		/*
-		 * Do something
-		 */
-		bIsLaserPointEnable = false;
-	}
+	CrossHairPlane->SetVisibility(false);
+	bHeld = false;
 }
 
 void APPGunBase::SetupInputMappingContextByHandType(const EControllerHand InHandType)

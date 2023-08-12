@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "ProjectP/Enumeration/PPGunState.h"
 #include "ProjectP/Prop/Weapon/PPWeaponData.h"
+#include "ProjectP/Constant/PPSkeletalMeshSocketName.h"
 #include "GameFramework/Actor.h"
 #include "InputActionValue.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "PPGunBase.generated.h"
 
 UCLASS()
@@ -33,56 +35,46 @@ protected:
 	void PressTrigger();
 	void GrabOnHand(class APPVRHand* InHand);
 	void ReleaseOnHand(class APPVRHand* InHand);
-	void ToggleLaserPoint();
 	void ToggleFlashlight();
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = Mesh)
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
 	TObjectPtr<class USkeletalMeshComponent> WeaponMesh;
 
-	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	TObjectPtr<class USceneComponent> MuzzlePosition;
-
-	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	TObjectPtr<class USceneComponent> LaserPosition;
-
-	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	TObjectPtr<class USceneComponent> FlashPosition;
-
-	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	TObjectPtr<class USceneComponent> GripPosition;
-
-	UPROPERTY(EditDefaultsOnly, Category = Mesh)
-	TObjectPtr<class USceneComponent> GrabComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	TObjectPtr<class UStaticMeshComponent> CrossHairPlane;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	TObjectPtr<class UPPVRGrabComponent> GrabComponent;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	uint32 NormalShotDamageMin;
 
-	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	uint32 NormalShotDamageMax;
 
-	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	uint32 HeadShotDamageMin;
 
-	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	uint32 HeadShotDamageMax;
 
-	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	uint32 CurrentOverheat;
 	
-	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	uint32 OverheatAmountPerSingleShoot;
 	
-	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	uint32 MaxOverheat;
 
-	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	float UnavailableTime;
 
-	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	float ShootPerSecond;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	float ShootDelayPerShoot;
 	
 	UPROPERTY()
@@ -97,6 +89,16 @@ private:
 	UPROPERTY()
 	uint32 bIsUnavailable : 1;
 
+	UPROPERTY()
+	uint32 bHeld : 1;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "CrossHair")
+	TObjectPtr<class UStaticMesh> DefaultCrossHair;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "CrossHair")
+	TObjectPtr<class UStaticMesh> DetectedCrossHair;
+	
 private:
 	UPROPERTY()
 	TObjectPtr<class UInputAction> LeftShootAction;
@@ -115,8 +117,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class AActor> AimingActor;
-
-	uint32 bIsLaserPointEnable : 1;
+	
 	uint32 bIsFlashlightEnable : 1;
 
 	UPROPERTY()
