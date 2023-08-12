@@ -18,8 +18,7 @@ APPGunBase::APPGunBase()
 {
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	WeaponMesh->SetCollisionObjectType(ECC_GIMMICK);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	
+
 	CrossHairPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrossHairPlane"));
 	DefaultCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/73-CrossHair/CrossHair/CrossHair.CrossHair'"), EAssertionLevel::Check);
 	DetectedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/73-CrossHair/CrossHair/CrossHair_Detect.CrossHair_Detect'"), EAssertionLevel::Check);
@@ -30,6 +29,11 @@ APPGunBase::APPGunBase()
 	CrossHairPlane->SetCastShadow(false);
 	CrossHairPlane->SetVisibility(false);
 	CrossHairPlane->SetupAttachment(WeaponMesh);
+
+	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
+	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
+	Flashlight->SetupAttachment(WeaponMesh);
+	Flashlight->SetVisibility(false);
 	
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
@@ -39,6 +43,7 @@ APPGunBase::APPGunBase()
 	LeftHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Left.IMC_Weapon_Left'"), EAssertionLevel::Check);
 	RightHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Right.IMC_Weapon_Right'"), EAssertionLevel::Check);
 
+	bIsFlashlightEnable = false;
 	bIsUnavailable = false;
 	bHeld = false;
 	CurrentOverheat = 0;
@@ -51,6 +56,9 @@ void APPGunBase::BeginPlay()
 	GrabComponentCasted->OnGrab.AddUObject(this, &APPGunBase::GrabOnHand);
 	GrabComponentCasted->OnRelease.AddUObject(this, &APPGunBase::ReleaseOnHand);
 	GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_GRIP));
+
+	Flashlight->SetWorldLocation(WeaponMesh->GetSocketLocation(GUN_FLASH));
+	Flashlight->SetWorldRotation(WeaponMesh->GetSocketRotation(GUN_FLASH));
 }
 
 void APPGunBase::Tick(float DeltaTime)
@@ -73,44 +81,49 @@ void APPGunBase::Tick(float DeltaTime)
 		ECC_Visibility,
 		CollisionParams
 	);
-	if (bHit)
-	{
-		AimingActor = HitResult.GetActor();
-		if (AimingActor)
-		{
-			if(AimingActor->Tags.Contains("DestroyObject"))
-			{
-				if(CrossHairPlane->GetStaticMesh() != DetectedCrossHair)
-				{
-					CrossHairPlane->SetStaticMesh(DetectedCrossHair);
-				}
-				DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, FColor::Red, false, 0.03f, 0, 1.0f);
-			}
-			else
-			{
-				if(CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
-				{
-					CrossHairPlane->SetStaticMesh(DefaultCrossHair);
-				}
-				DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, FColor::Green, false, 0.03f, 0, 1.0f);
-			}
-			FString HitActorName = AimingActor->GetName();
-			FVector HitLocation = HitResult.ImpactPoint;
-			CrossHairPlane->SetWorldLocation(HitLocation);
-			// UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *HitActorName, *HitLocation.ToString());
-			
-		}
-	}
-	else
-	{
-		AimingActor = nullptr;
-		// UE_LOG(LogTemp, Warning, TEXT("Nothing hit along the raycast path"));
-		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Green, false, 0.03f, 0, 1.0f);
-	}
+	FColor LineColor = FColor::Green;
 	
 	if(bHeld)
 	{
-
+		if (bHit)
+		{
+			AimingActor = HitResult.GetActor();
+			if (AimingActor)
+			{
+				// 테스트용 태그. 나중에 태그 모음집 헤더파일 만들어서 관리하기?
+				if(AimingActor->Tags.Contains("DestructibleObject"))
+				{
+					if(CrossHairPlane->GetStaticMesh() != DetectedCrossHair)
+					{
+						CrossHairPlane->SetStaticMesh(DetectedCrossHair);
+					}
+					LineColor = FColor::Red;
+				}
+				else
+				{
+					if(CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
+					{
+						CrossHairPlane->SetStaticMesh(DefaultCrossHair);
+					}
+				}
+				FString HitActorName = AimingActor->GetName();
+				FVector HitLocation = HitResult.ImpactPoint;
+				CrossHairPlane->SetWorldLocation(HitLocation);
+				// UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *HitActorName, *HitLocation.ToString());
+			
+			}
+			DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, 0.03f, 0, 1.0f);
+		}
+		else
+		{
+			AimingActor = nullptr;
+			// UE_LOG(LogTemp, Warning, TEXT("Nothing hit along the raycast path"));
+			if(CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
+			{
+				CrossHairPlane->SetStaticMesh(DefaultCrossHair);
+			}
+			DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, 0.03f, 0, 1.0f);
+		}
 	}
 }
 
@@ -210,6 +223,7 @@ void APPGunBase::StopFire()
 void APPGunBase::GrabOnHand(APPVRHand* InHand)
 {
 	CrossHairPlane->SetVisibility(true);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	bHeld = true;
 	
 	//UE_LOG(LogTemp, Log, TEXT("OnGrab"));
@@ -219,6 +233,7 @@ void APPGunBase::GrabOnHand(APPVRHand* InHand)
 void APPGunBase::ReleaseOnHand(APPVRHand* InHand)
 {
 	CrossHairPlane->SetVisibility(false);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	bHeld = false;
 }
 
@@ -254,20 +269,17 @@ void APPGunBase::SetupInputMappingContextByHandType(const EControllerHand InHand
 	// check(FinalInputMappingContext);
 }
 
-void APPGunBase::ToggleFlashlight()
+void APPGunBase::ToggleFlash()
 {
 	if (!bIsFlashlightEnable)
 	{
-		/*
-		 * Do something
-		 */
+		Flashlight->SetVisibility(true);
 		bIsFlashlightEnable = true;
 	}
 	else
 	{
-		/*
-		 * Do something
-		 */
+
+		Flashlight->SetVisibility(false);
 		bIsFlashlightEnable = false;
 	}
 }

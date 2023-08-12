@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ProjectP/Enumeration/PPGunState.h"
 #include "ProjectP/Prop/Weapon/PPWeaponData.h"
+#include "Components/SpotLightComponent.h"
 #include "ProjectP/Constant/PPSkeletalMeshSocketName.h"
 #include "GameFramework/Actor.h"
 #include "InputActionValue.h"
@@ -29,22 +30,25 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void OnFire();
 	void StopFire();
+	void ToggleFlash();
 protected:
 	void ProcessFire();
 	void SetupWeaponData(UPPWeaponData* WeaponData);
 	void PressTrigger();
 	void GrabOnHand(class APPVRHand* InHand);
 	void ReleaseOnHand(class APPVRHand* InHand);
-	void ToggleFlashlight();
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TObjectPtr<class USkeletalMeshComponent> WeaponMesh;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TObjectPtr<class UStaticMeshComponent> CrossHairPlane;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TObjectPtr<USpotLightComponent> Flashlight;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Mesh")
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TObjectPtr<class UPPVRGrabComponent> GrabComponent;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
