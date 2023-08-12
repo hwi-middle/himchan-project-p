@@ -27,8 +27,8 @@ protected:
 	// StatusInterface override
 protected:
 	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
-	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
-	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
+//	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
+//	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
 
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;

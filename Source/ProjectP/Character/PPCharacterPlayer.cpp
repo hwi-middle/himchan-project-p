@@ -33,6 +33,7 @@ void APPCharacterPlayer::BeginPlay()
 
 float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	// TODO: ECharacterState 걷어내기
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Health -= DamageAmount;
 	if(Health <= 0)
@@ -48,7 +49,7 @@ float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 		
 		GetWorldTimerManager().SetTimer(HitCheckTimer, FTimerDelegate::CreateLambda([&]()
 		{
-			SetCharacterState(ECharacterState::Idle);
+			//SetCharacterState(ECharacterState::Idle);
 			GetWorldTimerManager().ClearTimer(HitCheckTimer);
 			EnableRecoveryHealthTimer();
 		}), ReturnToIdleStateTime, false);

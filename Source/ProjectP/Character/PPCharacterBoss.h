@@ -35,11 +35,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	float Health;
 	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	ECharacterState CurrentState;
+	// UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	// ECharacterState CurrentState;
 
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	TMap<EBossPattern, uint32> BossPatternDamage;
+	// UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	// TMap<EBossPattern, uint32> BossPatternDamage;
 	
 	UPROPERTY()
 	TSet<class APPTentacle*> Tentacles;

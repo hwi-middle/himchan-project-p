@@ -16,13 +16,4 @@ class PROJECTP_API UPPVRBossData : public UPrimaryDataAsset
 
 	UPROPERTY(EditDefaultsOnly, Category = BossData)
 	uint32 MaxHP;
-	
-	UPROPERTY(EditDefaultsOnly, Category = BossData)
-	uint32 DamageMul;
-
-	UPROPERTY(EditDefaultsOnly, Category = BossData)
-	float ParalysisTime;
-
-	UPROPERTY(EditDefaultsOnly, Category = BossData)
-	float RespawnTimer;
 };
