@@ -25,7 +25,7 @@ APPGunBase::APPGunBase()
 	CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 	CrossHairPlane->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CrossHairPlane->SetCollisionObjectType(ECC_WorldStatic);
-	CrossHairPlane->SetRelativeRotation(FRotator(90.0f,0.0f,0.0f));
+	CrossHairPlane->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f));
 	CrossHairPlane->SetCastShadow(false);
 	CrossHairPlane->SetVisibility(false);
 	CrossHairPlane->SetupAttachment(WeaponMesh);
@@ -34,7 +34,7 @@ APPGunBase::APPGunBase()
 	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
 	Flashlight->SetupAttachment(WeaponMesh);
 	Flashlight->SetVisibility(false);
-	
+
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
 
@@ -65,6 +65,11 @@ void APPGunBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!bHeld)
+	{
+		return;
+	}
+	
 	float Distance = 1000.f;
 	FVector StartLocation = WeaponMesh->GetSocketLocation(GUN_MUZZLE);
 	FVector ForwardVector = WeaponMesh->GetSocketTransform(GUN_MUZZLE).GetUnitAxis(EAxis::X);
@@ -82,49 +87,48 @@ void APPGunBase::Tick(float DeltaTime)
 		CollisionParams
 	);
 	FColor LineColor = FColor::Green;
-	
-	if(bHeld)
+
+	if (!bHit)
 	{
-		if (bHit)
+		AimingActor = nullptr;
+		// UE_LOG(LogTemp, Warning, TEXT("Nothing hit along the raycast path"));
+		if (CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
 		{
-			AimingActor = HitResult.GetActor();
-			if (AimingActor)
-			{
-				// 테스트용 태그. 나중에 태그 모음집 헤더파일 만들어서 관리하기?
-				if(AimingActor->Tags.Contains("DestructibleObject"))
-				{
-					if(CrossHairPlane->GetStaticMesh() != DetectedCrossHair)
-					{
-						CrossHairPlane->SetStaticMesh(DetectedCrossHair);
-					}
-					LineColor = FColor::Red;
-				}
-				else
-				{
-					if(CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
-					{
-						CrossHairPlane->SetStaticMesh(DefaultCrossHair);
-					}
-				}
-				FString HitActorName = AimingActor->GetName();
-				FVector HitLocation = HitResult.ImpactPoint;
-				CrossHairPlane->SetWorldLocation(HitLocation);
-				// UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *HitActorName, *HitLocation.ToString());
-			
-			}
-			DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, 0.03f, 0, 1.0f);
+			CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 		}
-		else
+		DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, 0.03f, 0, 1.0f);
+		return;
+	}
+
+	DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, 0.03f, 0, 1.0f);
+	AimingActor = HitResult.GetActor();
+
+	if (!AimingActor)
+	{
+		return;
+	}
+
+	// 테스트용 태그. 나중에 태그 모음집 헤더파일 만들어서 관리하기?
+	if (AimingActor->Tags.Contains("DestructibleObject"))
+	{
+		if (CrossHairPlane->GetStaticMesh() != DetectedCrossHair)
 		{
-			AimingActor = nullptr;
-			// UE_LOG(LogTemp, Warning, TEXT("Nothing hit along the raycast path"));
-			if(CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
-			{
-				CrossHairPlane->SetStaticMesh(DefaultCrossHair);
-			}
-			DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, 0.03f, 0, 1.0f);
+			CrossHairPlane->SetStaticMesh(DetectedCrossHair);
+		}
+		LineColor = FColor::Red;
+	}
+	else
+	{
+		if (CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
+		{
+			CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 		}
 	}
+	
+	FString HitActorName = AimingActor->GetName();
+	FVector HitLocation = HitResult.ImpactPoint;
+	CrossHairPlane->SetWorldLocation(HitLocation);
+	// UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *HitActorName, *HitLocation.ToString());
 }
 
 void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
@@ -163,7 +167,7 @@ void APPGunBase::OnFire()
 		GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
 			// 언더플로 방지
-			if(CurrentOverheat > OverheatCoolDownPerSecond)
+			if (CurrentOverheat > OverheatCoolDownPerSecond)
 			{
 				CurrentOverheat -= OverheatCoolDownPerSecond;
 			}
@@ -171,7 +175,7 @@ void APPGunBase::OnFire()
 			{
 				CurrentOverheat = 0;
 			}
-			
+
 			UE_LOG(LogTemp, Log, TEXT("Cooldowned: %u"), CurrentOverheat);
 			if (CurrentOverheat == 0)
 			{
@@ -225,7 +229,7 @@ void APPGunBase::GrabOnHand(APPVRHand* InHand)
 	CrossHairPlane->SetVisibility(true);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	bHeld = true;
-	
+
 	//UE_LOG(LogTemp, Log, TEXT("OnGrab"));
 	//SetupInputMappingContextByHandType(InHand->GetHandType());
 }
