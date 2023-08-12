@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WarningZoneBase.generated.h"
+#include "PPWarningZoneBase.generated.h"
 
 UCLASS()
-class PROJECTP_API AWarningZoneBase : public AActor
+class PROJECTP_API APPWarningZoneBase : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AWarningZoneBase();
+	APPWarningZoneBase();
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,6 +27,13 @@ protected:
 	UPROPERTY()
 	float Opacity;
 
+	UPROPERTY()
+	float Duration;
+
+public:
+	void Show(float InDuration);
+	void Hide(float InDuration);
+	
 private:
 	UPROPERTY()
 	float Alpha;

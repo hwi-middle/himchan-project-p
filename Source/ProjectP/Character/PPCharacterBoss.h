@@ -22,27 +22,25 @@ public:
 	
 protected:
 	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
+	virtual void BeginPlay() override;
 	
 	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
 	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	
 private:
+	void GenerateRandomTentacles(uint32 InNum);
+	
+private:
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 Health;
+	float Health;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	ECharacterState CurrentState;
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	TMap<EBossPattern, uint32> BossPatternDamage;
-
-	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	float GenerateWeakPointTime;
 	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	uint32 RequiredWeakPointDestructionCount;
-	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	float NeutralizeTime;
+	UPROPERTY()
+	TSet<class APPTentacle*> Tentacles;
 };

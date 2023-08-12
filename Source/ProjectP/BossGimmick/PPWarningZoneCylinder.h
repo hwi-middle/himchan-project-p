@@ -3,20 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WarningZoneBase.h"
-#include "WarningZoneBase.h"
-#include "WarningZoneCylinder.generated.h"
+#include "PPWarningZoneBase.h"
+#include "PPWarningZoneBase.h"
+#include "PPWarningZoneCylinder.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTP_API AWarningZoneCylinder : public AWarningZoneBase
+class PROJECTP_API APPWarningZoneCylinder : public APPWarningZoneBase
 {
 	GENERATED_BODY()
 	
 public:
-	AWarningZoneCylinder();
+	APPWarningZoneCylinder();
 
 protected:
 	virtual void BeginPlay() override;
