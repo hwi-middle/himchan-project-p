@@ -24,10 +24,10 @@ void APPCharacterBoss::SetupCharacterStatusData(UDataAsset* CharacterStatusData)
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
-	GenerateRandomTentacles(5);
+	GenerateTentaclesOnRandomLocation(5);
 }
 
-void APPCharacterBoss::GenerateRandomTentacles(uint32 InNum)
+void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 {
 	const float MinDistance = 500.0f;
 	const float MaxDistance = 1000.0f;

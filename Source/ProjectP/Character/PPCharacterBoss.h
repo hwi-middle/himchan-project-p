@@ -29,7 +29,7 @@ protected:
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	
 private:
-	void GenerateRandomTentacles(uint32 InNum);
+	void GenerateTentaclesOnRandomLocation(uint32 InNum);
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
