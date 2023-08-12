@@ -14,8 +14,15 @@ UPPSaveSettingOption::UPPSaveSettingOption()
 	bSFXSoundToggle = false;
 	DisplayBrightnessValue = 0.5f;
 	DisplayVignettingValue = 0.0f;
+	TextureQualityValue = 2;
+	ShadowQualityValue = 2;
+	AAType = 1;
+	AAQualityValue = 2;
 	PauseInterfaceDistanceValue = 0.5f;
 	PauseInterfaceHeightValue = 0.5f;
 	bUseLeftHandedSetting = false;
 	bUseControllerVibration = true;
+	CameraTurnValue = 30.0f;
+	SubtitleFontSize = 30;
+	bUseSubtitle = true;
 }

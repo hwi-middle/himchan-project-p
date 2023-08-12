@@ -18,7 +18,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	FString SaveFileName;
-	
+
+	// SoundOption
+public:
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float MasterSoundVolumeSliderValue;
 
@@ -36,13 +38,31 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	uint32 bSFXSoundToggle : 1;
-	
+
+	// DisplayOption
+public:
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float DisplayBrightnessValue;
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float DisplayVignettingValue;
+
+	// GraphicOption
+public:
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 TextureQualityValue;
+
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 ShadowQualityValue;
+
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 AAType;
 	
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 AAQualityValue;
+	
+	// AccessibilityOption
+public:
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float PauseInterfaceDistanceValue;
 
@@ -54,4 +74,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	uint32 bUseControllerVibration : 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	float CameraTurnValue;
+
+	// Subtitle Section
+public:
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 SubtitleFontSize;
+
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	uint32 bUseSubtitle : 1;
 };
