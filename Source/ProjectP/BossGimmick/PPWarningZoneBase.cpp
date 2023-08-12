@@ -31,7 +31,7 @@ void APPWarningZoneBase::Show(float InDuration)
 {
 	Alpha = 0.f;
 	FadeTimerRate = 0.01f;
-	Duration = 1.0f;
+	Duration = InDuration;
 	
 	GetWorldTimerManager().SetTimer(FadeTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
@@ -45,19 +45,21 @@ void APPWarningZoneBase::Show(float InDuration)
 	}), FadeTimerRate, true);
 }
 
-void APPWarningZoneBase::Hide(float InDuration)
+void APPWarningZoneBase::HideAndDestroy(float InDuration)
 {
 	Alpha = 1.f;
 	FadeTimerRate = 0.01f;
+	Duration = InDuration;
 
 	GetWorldTimerManager().SetTimer(FadeTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
-		Alpha -= 1 / InDuration * FadeTimerRate;
+		Alpha -= 1 / Duration * FadeTimerRate;
 		Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), Alpha);
 		if (Alpha <= KINDA_SMALL_NUMBER)
 		{
 			Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), 0.f);
 			GetWorldTimerManager().ClearTimer(FadeTimerHandle);
+			Destroy();
 		}
 	}), FadeTimerRate, true);
 }

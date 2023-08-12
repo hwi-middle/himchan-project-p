@@ -27,10 +27,13 @@ private:
 	UPROPERTY()
 	TObjectPtr<class APPWarningZoneCylinder> WarningZone;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	TObjectPtr<class USkeletalMeshComponent> TentacleMesh;
 
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	FTimerHandle WarningTimerHandle;
+
 public:
-	void ShowWarningSign();
-	void HideWarningSignAndAttack();
+	void ShowWarningSign(float InFadeInDuration, float InDelay, float InFadeOutDuration);
+	void HideWarningSignAndAttack(float InFadeOutDuration);
 };

@@ -32,7 +32,7 @@ protected:
 
 public:
 	void Show(float InDuration);
-	void Hide(float InDuration);
+	void HideAndDestroy(float InDuration);
 	
 private:
 	UPROPERTY()

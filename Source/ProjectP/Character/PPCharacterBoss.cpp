@@ -5,6 +5,7 @@
 #include "ProjectP/AI/Boss/PPBossAIController.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "Math/UnrealMathUtility.h"
+#include "ProjectP/BossGimmick/PPBGVineGardenData.h"
 #include "ProjectP/BossGimmick/PPTentacle.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 
@@ -14,6 +15,15 @@ APPCharacterBoss::APPCharacterBoss()
 
 	USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Engine/EditorMeshes/SkeletalMesh/DefaultSkeletalMesh.DefaultSkeletalMesh'"), EAssertionLevel::Check);
 	GetMesh()->SetSkeletalMesh(MeshObj);
+
+	VineGardenData = FPPConstructorHelper::FindAndGetObject<UPPBGVineGardenData>(TEXT("/Script/ProjectP.PPBGVineGardenData'/Game/DataAssets/Boss/GimmickVineGardenData.GimmickVineGardenData'"));
+	
+	TentacleNum = VineGardenData->TentacleNum;
+	MinDistance = VineGardenData->MinDistance;
+	MaxDistance = VineGardenData->MaxDistance;
+	WarningFadeInDuration = VineGardenData->WarningFadeInDuration;
+	WarningFadeOutDuration = VineGardenData->WarningFadeOutDuration;
+	WarningDuration = VineGardenData->WarningDuration;
 }
 
 void APPCharacterBoss::SetupCharacterStatusData(UDataAsset* CharacterStatusData)
@@ -29,11 +39,8 @@ void APPCharacterBoss::BeginPlay()
 
 void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 {
-	const float MinDistance = 500.0f;
-	const float MaxDistance = 1000.0f;
-
 	uint32 GeneratedNum = 0;
-	while(GeneratedNum < InNum)
+	while (GeneratedNum < InNum)
 	{
 		FVector2d RandomPont = FMath::RandPointInCircle(MaxDistance);
 		const float Distance = FMath::RandRange(MinDistance, MaxDistance);
@@ -53,7 +60,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 			SpawnLocation,
 			FQuat::Identity,
 			ECC_ENVIRONMENT,
-			FCollisionShape::MakeSphere(25.f),
+			FCollisionShape::MakeSphere(50.f),
 			CollisionParams
 		);
 
@@ -65,7 +72,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 
 		// 액터 스폰
 		APPTentacle* SpawnedActor = GetWorld()->SpawnActor<APPTentacle>(SpawnLocation, FRotator::ZeroRotator);
-		SpawnedActor->ShowWarningSign();
+		SpawnedActor->ShowWarningSign(WarningFadeInDuration, WarningDuration, WarningFadeOutDuration);
 
 		++GeneratedNum;
 	}

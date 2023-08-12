@@ -12,7 +12,6 @@ APPTentacle::APPTentacle()
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	//WarningZone = CreateDefaultSubobject<APPWarningZoneCylinder>(TEXT("WarningZone"));
 }
 
 // Called when the game starts or when spawned
@@ -29,16 +28,21 @@ void APPTentacle::Tick(float DeltaTime)
 
 }
 
-void APPTentacle::ShowWarningSign()
+void APPTentacle::ShowWarningSign(float InFadeInDuration, float InDelay, float InFadeOutDuration)
 {
 	WarningZone = GetWorld()->SpawnActor<APPWarningZoneCylinder>(GetActorLocation(), FRotator::ZeroRotator);
-	WarningZone->Show(1.0f);
+	WarningZone->Show(InFadeInDuration);
+	GetWorldTimerManager().SetTimer(WarningTimerHandle, FTimerDelegate::CreateLambda([&]()
+	{
+		HideWarningSignAndAttack(InFadeOutDuration);
+		GetWorldTimerManager().ClearTimer(WarningTimerHandle);
+	}), InDelay, false);
 }
 
-void APPTentacle::HideWarningSignAndAttack()
+void APPTentacle::HideWarningSignAndAttack(float InFadeOutDuration)
 {
 	if (WarningZone)
 	{
-		WarningZone->Destroy();
+		WarningZone->HideAndDestroy(InFadeOutDuration);
 	}
 }

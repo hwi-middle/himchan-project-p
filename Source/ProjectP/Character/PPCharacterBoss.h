@@ -24,16 +24,39 @@ protected:
 	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
 	virtual void BeginPlay() override;
 	
-	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
-	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	
 private:
 	void GenerateTentaclesOnRandomLocation(uint32 InNum);
 	
 private:
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	// 보스 정보
+	UPROPERTY(EditDefaultsOnly, Category = BossStatus)
 	float Health;
+
+	// 기믹 - 덩굴정원
+	UPROPERTY()
+	TObjectPtr<class UPPBGVineGardenData> VineGardenData;
+	
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	uint32 TentacleNum;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float MinDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float MaxDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float WarningFadeInDuration;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float WarningFadeOutDuration;
+	
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float WarningDuration;
+	
+
 	
 	// UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	// ECharacterState CurrentState;
