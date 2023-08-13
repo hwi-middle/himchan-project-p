@@ -35,3 +35,5 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> GuidePanel;
 };
+
+
