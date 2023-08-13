@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/WidgetInteractionComponent.h"
 #include "GameFramework/Actor.h"
 #include "ProjectP/Grab/PPVRGrabComponent.h"
 #include "MotionControllerComponent.h"
@@ -39,6 +40,9 @@ private:
 	TObjectPtr<UMotionControllerComponent> MotionController;
 
 	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UWidgetInteractionComponent> HandWidgetInteraction;
+	
+	UPROPERTY(VisibleAnywhere)
 	TSubclassOf<class UPPVRHandAnimInstance> HandAnimInstanceClass;
 
 	UPROPERTY(VisibleAnywhere)
@@ -61,6 +65,8 @@ public:
 	void SetPoseAlphaIndexCurl(const float Value);
 	void SetPoseAlphaThumbUp(const float Value);
 	void SetPoseAlphaPoint(const float Value);
+	void WidgetInteractionToggle(const float Value);
+	FORCEINLINE void DisableWidgetInteraction() { HandWidgetInteraction->InteractionDistance = 0.0f; };
 	void InitHand();
 	void ResetHandMesh();
 

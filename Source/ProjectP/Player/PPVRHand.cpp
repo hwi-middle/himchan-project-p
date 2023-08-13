@@ -23,6 +23,13 @@ APPVRHand::APPVRHand()
 	HandMesh->SetupAttachment(MotionController);
 	HandAnimInstanceClass = FPPConstructorHelper::FindAndGetClass<UPPVRHandAnimInstance>(TEXT("/Game/15-Basic-Movement/Animation/Hand/ABP_VRHand.ABP_VRHand_C"), EAssertionLevel::Check);
 	HandMesh->SetAnimInstanceClass(HandAnimInstanceClass);
+	HandWidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteraction"));
+	HandWidgetInteraction->SetupAttachment(MotionController);
+	
+	HandWidgetInteraction->TraceChannel = ECC_Visibility;
+	HandWidgetInteraction->InteractionDistance = 300.0f;
+	HandWidgetInteraction->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+	HandWidgetInteraction->bShowDebug = true;
 }
 
 // Called when the game starts or when spawned
@@ -92,6 +99,8 @@ void APPVRHand::SetPoseAlphaGrasp(const float Value)
 void APPVRHand::SetPoseAlphaIndexCurl(const float Value)
 {
 	AnimInstance->SetPoseAlphaIndexCurl(Value);
+	static constexpr float WidgetInteractionThreshold = 0.2f;
+	Value > WidgetInteractionThreshold ? this->HandWidgetInteraction->PressPointerKey(TEXT("LeftMouseButton")) : this->HandWidgetInteraction->ReleasePointerKey(TEXT("LeftMouseButton"));
 }
 
 void APPVRHand::SetPoseAlphaThumbUp(const float Value)
@@ -102,6 +111,13 @@ void APPVRHand::SetPoseAlphaThumbUp(const float Value)
 void APPVRHand::SetPoseAlphaPoint(const float Value)
 {
 	AnimInstance->SetPoseAlphaPoint(Value);
+}
+
+void APPVRHand::WidgetInteractionToggle(const float Value)
+{
+	// SetActive로 제어하려니 작동이 제대로 안되서 크기 조정으로 대체
+	bool bIsActivated = abs( HandWidgetInteraction->InteractionDistance - Value) <= KINDA_SMALL_NUMBER;
+	HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;
 }
 
 void APPVRHand::InitHand()

@@ -46,9 +46,10 @@ APPVRPawn::APPVRPawn()
 	PointRightAction = MovementData->PointRightAction;
 	ThumbUpLeftAction = MovementData->ThumbUpLeftAction;
 	ThumbUpRightAction = MovementData->ThumbUpRightAction;
-
+	LeftXButtonPressAction = MovementData->LeftXButtonPressAction;
 	MoveSpeed = MovementData->MoveSpeed;
 	SnapTurnDegrees = MovementData->SnapTurnDegrees;
+	WidgetInteractionDistance = MovementData->WidgetInteractionDistance;
 }
 
 // Called when the game starts or when spawned
@@ -109,6 +110,7 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Triggered, this, &APPVRPawn::ThumbUpRight);
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Completed, this, &APPVRPawn::CompleteThumbUpRight);
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Canceled, this, &APPVRPawn::ThumbUpRight);
+	EnhancedInputComponent->BindAction(LeftXButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleWidgetInteraction);
 }
 
 void APPVRPawn::InitVROrigin()
@@ -127,7 +129,8 @@ void APPVRPawn::InitVRHands()
 	LeftHand->SetHandType(EControllerHand::Left);
 	LeftHand->FinishSpawning(IdentityTransform);
 	LeftHand->AttachToComponent(VROrigin, AttachRule);
-
+	LeftHand->DisableWidgetInteraction();
+	
 	RightHand = GetWorld()->SpawnActorDeferred<APPVRHand>(APPVRHand::StaticClass(), IdentityTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	ensure(RightHand);
 	RightHand->SetHandType(EControllerHand::Right);
@@ -268,6 +271,12 @@ void APPVRPawn::DisableSprint(const FInputActionValue& Value)
 void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 {
 	MoveSpeed == MovementData->MoveSpeed ? MoveSpeed = MovementData->SprintSpeed : MoveSpeed = MovementData->MoveSpeed;
+}
+
+void APPVRPawn::ToggleWidgetInteraction(const FInputActionValue& Value)
+{
+	// 나중에 주로 사용하는 손 바꾸기 구현되면 수정 예정
+	RightHand->WidgetInteractionToggle(WidgetInteractionDistance);
 }
 
 void APPVRPawn::CancelOrCompleteGrabLeft()
