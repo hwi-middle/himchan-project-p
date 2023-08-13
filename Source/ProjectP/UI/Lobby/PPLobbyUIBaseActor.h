@@ -23,4 +23,8 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
 	TObjectPtr<UWidgetComponent> LobbyWidgetComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
+	TObjectPtr<UWidgetComponent> SettingWidgetComponent;
+
 };

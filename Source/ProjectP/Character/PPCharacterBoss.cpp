@@ -12,11 +12,11 @@
 APPCharacterBoss::APPCharacterBoss()
 {
 	// AIControllerClass = APPBossAIController::StaticClass();
-
+	
 	USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Engine/EditorMeshes/SkeletalMesh/DefaultSkeletalMesh.DefaultSkeletalMesh'"), EAssertionLevel::Check);
 	GetMesh()->SetSkeletalMesh(MeshObj);
-
-	BossPatternData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBGVineGardenData'/Game/DataAssets/Boss/GimmickVineGardenData.GimmickVineGardenData'"));
+	
+	BossPatternData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"));
 	
 	VineGardenDamage = BossPatternData->VineGardenDamage;
 	TentacleNum = BossPatternData->TentacleNum;

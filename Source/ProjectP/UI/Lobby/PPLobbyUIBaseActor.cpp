@@ -9,9 +9,11 @@ APPLobbyUIBaseActor::APPLobbyUIBaseActor()
 	PrimaryActorTick.bCanEverTick = false;
 
 	LobbyWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("LobbyUIWidget"));
+	SettingWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("SettingWidget"));
 	RootComponent = LobbyWidgetComponent;
 
 	LobbyWidgetComponent->SetCastShadow(false);
+	SettingWidgetComponent->SetCastShadow(false);
 }
 
 // Called when the game starts or when spawned
