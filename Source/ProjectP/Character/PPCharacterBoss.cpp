@@ -5,7 +5,7 @@
 #include "ProjectP/AI/Boss/PPBossAIController.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "Math/UnrealMathUtility.h"
-#include "ProjectP/BossGimmick/PPBGVineGardenData.h"
+#include "ProjectP/BossGimmick/PPBossGimmickData.h"
 #include "ProjectP/BossGimmick/PPTentacle.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 
@@ -16,15 +16,15 @@ APPCharacterBoss::APPCharacterBoss()
 	USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Engine/EditorMeshes/SkeletalMesh/DefaultSkeletalMesh.DefaultSkeletalMesh'"), EAssertionLevel::Check);
 	GetMesh()->SetSkeletalMesh(MeshObj);
 
-	VineGardenData = FPPConstructorHelper::FindAndGetObject<UPPBGVineGardenData>(TEXT("/Script/ProjectP.PPBGVineGardenData'/Game/DataAssets/Boss/GimmickVineGardenData.GimmickVineGardenData'"));
-
-	VineGardenDamage = VineGardenData->Damage;
-	TentacleNum = VineGardenData->TentacleNum;
-	MinDistance = VineGardenData->MinDistance;
-	MaxDistance = VineGardenData->MaxDistance;
-	WarningFadeInDuration = VineGardenData->WarningFadeInDuration;
-	WarningFadeOutDuration = VineGardenData->WarningFadeOutDuration;
-	WarningDuration = VineGardenData->WarningDuration;
+	BossPatternData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBGVineGardenData'/Game/DataAssets/Boss/GimmickVineGardenData.GimmickVineGardenData'"));
+	
+	VineGardenDamage = BossPatternData->VineGardenDamage;
+	TentacleNum = BossPatternData->TentacleNum;
+	MinDistance = BossPatternData->MinDistance;
+	MaxDistance = BossPatternData->MaxDistance;
+	WarningFadeInDuration = BossPatternData->WarningFadeInDuration;
+	WarningFadeOutDuration = BossPatternData->WarningFadeOutDuration;
+	WarningDuration = BossPatternData->WarningDuration;
 }
 
 void APPCharacterBoss::SetupCharacterStatusData(UDataAsset* CharacterStatusData)
