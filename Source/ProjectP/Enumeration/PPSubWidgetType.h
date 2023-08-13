@@ -12,5 +12,7 @@ enum class ESubWidgetType : uint8
 	Display,
 	Graphic,
 	Sound,
-	Subtitle
+	Subtitle,
+	Setting,
+	Exit
 };

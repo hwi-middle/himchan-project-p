@@ -5,4 +5,6 @@
 #include "CoreMinimal.h"
 
 // 레벨 이름 저장용
-#define LOBBY_LEVEL = "Lobby"
+#define LOBBY_LEVEL "Lobby"
+#define MAIN_LEVEL "Main"
+#define ENDING_LEVEL "Ending"

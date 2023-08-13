@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
+#include "ProjectP/Enumeration/PPSubWidgetType.h"
+#include "ProjectP/UI/Lobby/PPLobbyUIWidget.h"
+#include "ProjectP/UI/Setting/PPSettingBaseActor.h"
 #include "PPLobbyUIBaseActor.generated.h"
 
 UCLASS()
@@ -21,10 +24,40 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
+	UFUNCTION(BlueprintCallable)
+	void OpenSubWidget(ESubWidgetType SubWidget = ESubWidgetType::None);
+
+	UFUNCTION(BlueprintCallable)
+	void ReturnFromSettingToLobby();
+	
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 	TObjectPtr<UWidgetComponent> LobbyWidgetComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "WidgetComponent")
-	TObjectPtr<UWidgetComponent> SettingWidgetComponent;
+	UPROPERTY(VisibleDefaultsOnly, Category = "Widget")
+	TObjectPtr<UPPLobbyUIWidget> LobbyWidget;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
+	TObjectPtr<UWidgetComponent> ExitWidgetComponent;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
+	TObjectPtr<UChildActorComponent> SettingWidgetActor;
+	
+	UPROPERTY(VisibleDefaultsOnly, Category = "Widget")
+	TObjectPtr<APPSettingBaseActor> SettingWidget;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
+	float WidgetAnimationTick;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
+	float WidgetAnimationMoveValue;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widget")
+	float WidgetMaximumMovementAmount;
+
+	UPROPERTY()
+	FVector CurrentLocation;
+	
+	UPROPERTY()
+	FTimerHandle WidgetAnimationTimer;
 };

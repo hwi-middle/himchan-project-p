@@ -9,6 +9,7 @@
 #include "ProjectP/Enumeration/PPSubWidgetType.h"
 #include "PPSettingBaseActor.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FMainWidgetDelegate)
 UCLASS()
 class PROJECTP_API APPSettingBaseActor : public AActor
 {
@@ -16,12 +17,16 @@ class PROJECTP_API APPSettingBaseActor : public AActor
 
 public:
 	APPSettingBaseActor();
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+
+	
+	FMainWidgetDelegate MainWidgetDelegate;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintCallable)
+	void ExitButtonBroadcast();
 	
 	void OpenSubWidget(ESubWidgetType SubWidget = ESubWidgetType::None);
 	void CloseSubWidgetPanel();

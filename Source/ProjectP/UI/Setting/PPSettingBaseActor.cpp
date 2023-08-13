@@ -18,15 +18,21 @@ void APPSettingBaseActor::BeginPlay()
 	Super::BeginPlay();
 	SettingWidget = CastChecked<UPPSettingUIWidget>(SettingWidgetComponent->GetUserWidgetObject());
 	SettingWidget->PassSubWidgetTypeDelegate.AddUObject(this, &APPSettingBaseActor::OpenSubWidget);
+	SettingWidget->LoadMainWidgetDelegate.AddUObject(this, &APPSettingBaseActor::ExitButtonBroadcast);
 	SettingWidget->SetSubWidgetPanelVisible(false);
 	bSubWidgetOpened = false;
 	bIsFirstClick = true;
 }
 
-// Called every frame
-void APPSettingBaseActor::Tick(float DeltaTime)
+void APPSettingBaseActor::ExitButtonBroadcast()
 {
-	Super::Tick(DeltaTime);
+	SwapSubWidget = ESubWidgetType::None;
+	bIsFirstClick = true;
+	if(bSubWidgetOpened)
+	{
+		CloseSubWidgetPanel();
+	}
+	MainWidgetDelegate.Broadcast();
 }
 
 void APPSettingBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
@@ -66,6 +72,7 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 		{
 			SettingWidget->SetSubWidgetHeightOffset(SubWidgetHalfHeightValue);
 			bSubWidgetOpened = false;
+			SettingWidget->SetSubWidgetAnimationWorking(false);
 			// 전환하는 서브위젯이 있다면 다시 서브위젯 패널 열기.
 			// 왜 이런 고생을 하느냐면 멋지니까?
 			if(SwapSubWidget != ESubWidgetType::None)
