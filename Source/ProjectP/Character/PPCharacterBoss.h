@@ -17,33 +17,56 @@ class PROJECTP_API APPCharacterBoss : public APPCharacterEnemy, public ICharacte
 	GENERATED_BODY()
 public:
 	APPCharacterBoss();
-
+	virtual void IncreaseHealth(const float Value) override;
+	virtual void DecreaseHealth(const float Value) override;
 	
 protected:
 	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
+	virtual void BeginPlay() override;
 	
-	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
-	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
-
-	virtual void IncreaseHealth(const float Value) override;
-	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
+	
 private:
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 Health;
+	void GenerateTentaclesOnRandomLocation(uint32 InNum);
 	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	ECharacterState CurrentState;
+private:
+	// 보스 정보
+	UPROPERTY(EditDefaultsOnly, Category = BossStatus)
+	float Health;
 
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	TMap<EBossPattern, uint32> BossPatternDamage;
+	// 기믹 - 덩굴정원
+	UPROPERTY()
+	TObjectPtr<class UPPBGVineGardenData> VineGardenData;
 
-	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	float GenerateWeakPointTime;
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float VineGardenDamage;
 	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	uint32 RequiredWeakPointDestructionCount;
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	uint32 TentacleNum;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float MinDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float MaxDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float WarningFadeInDuration;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float WarningFadeOutDuration;
 	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	float NeutralizeTime;
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float WarningDuration;
+	
+
+	
+	// UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	// ECharacterState CurrentState;
+
+	// UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	// TMap<EBossPattern, uint32> BossPatternDamage;
+	
+	UPROPERTY()
+	TSet<class APPTentacle*> Tentacles;
 };
