@@ -27,6 +27,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	FORCEINLINE void SetTurnDegrees(const float Degrees) { SnapTurnDegrees = Degrees; }
 private:
 	void InitVROrigin();
 	void InitVRHands();
@@ -87,13 +89,22 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UInputAction> ThumbUpRightAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> LeftXButtonPressAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> RightBButtonPressAction;
 	
 	UPROPERTY()
 	float SnapTurnDegrees;
 
 	UPROPERTY()
 	float MoveSpeed;
-
+	
+	UPROPERTY()
+	float WidgetInteractionDistance;
+	
 private:
 	void Move(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
@@ -107,6 +118,9 @@ private:
 	void ThumbUpRight(const FInputActionValue& Value);
 	void DisableSprint(const FInputActionValue& Value);
 	void ToggleSprint(const FInputActionValue& Value);
+	void ToggleFlash(const FInputActionValue& Value);
+	
+private:
 	void CancelOrCompleteGrabLeft();
 	void CancelOrCompleteGrabRight();
 	void CancelOrCompleteIndexCurlLeft();
@@ -115,4 +129,6 @@ private:
 	void CompletePointRight();
 	void CompleteThumbUpLeft();
 	void CompleteThumbUpRight();
+private:
+	void ToggleWidgetInteraction(const FInputActionValue& Value);
 };

@@ -24,6 +24,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="VR Move")
 	float SnapTurnDegrees;
 
+	UPROPERTY(EditAnywhere, Category="VR Interaction")
+	float WidgetInteractionDistance;
+	
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<class UInputMappingContext> InputMappingContext;
 
@@ -59,4 +62,10 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<class UInputAction> ThumbUpRightAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<class UInputAction> LeftXButtonPressAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<class UInputAction> RightBButtonPressAction;
 };
