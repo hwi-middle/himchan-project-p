@@ -36,6 +36,7 @@ void UPPSettingUIWidget::NativeConstruct()
 	*/
 	EnabledSubWidgetType = ESubWidgetType::None;
 	bSubWidgetAnimationWork = false;
+	
 	LoadSettingData();
 }
 

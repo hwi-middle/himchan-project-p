@@ -33,6 +33,7 @@ void APPLobbyUIBaseActor::BeginPlay()
 		SettingWidget->MainWidgetDelegate.AddUObject(this, &APPLobbyUIBaseActor::ReturnFromSettingToLobby);
 	}
 	SettingWidgetActor->SetVisibility(false);
+	ExitWidgetComponent->SetVisibility(false);
 }
 
 void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
@@ -44,10 +45,10 @@ void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 		CurrentLocation = GetActorLocation();
 		GetWorldTimerManager().SetTimer(WidgetAnimationTimer, FTimerDelegate::CreateLambda([&]()
 		{
-			AddActorWorldOffset(FVector(0.0f, WidgetAnimationMoveValue, 0.0f));
-			if(CurrentLocation.Y + WidgetMaximumMovementAmount <= GetActorLocation().Y)
+			AddActorLocalOffset(FVector(0.0f, -WidgetAnimationMoveValue, 0.0f));
+			if(CurrentLocation.Y - WidgetMaximumMovementAmount >= GetActorLocation().Y)
 			{
-				SetActorLocation(CurrentLocation + FVector(0.0f, WidgetMaximumMovementAmount, 0.0f));
+				SetActorLocation(CurrentLocation + FVector(0.0f, -WidgetMaximumMovementAmount, 0.0f));
 				CurrentLocation = GetActorLocation();
 				LobbyWidgetComponent->SetVisibility(false);
 				LobbyWidget->SetButtonInteraction(true);
@@ -57,8 +58,9 @@ void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 	}
 	if(SubWidget == ESubWidgetType::Exit)
 	{
-		ExitWidgetComponent->SetVisibility(true);
-		return;
+		// 시간 되면 위젯 추가로 만들고 일단은 패스
+		// ExitWidgetComponent->SetVisibility(true);
+		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
 	}
 }
 
@@ -68,10 +70,10 @@ void APPLobbyUIBaseActor::ReturnFromSettingToLobby()
 	LobbyWidgetComponent->SetVisibility(true);
 	GetWorldTimerManager().SetTimer(WidgetAnimationTimer, FTimerDelegate::CreateLambda([&]()
 	{
-		AddActorWorldOffset(FVector(0.0f, -WidgetAnimationMoveValue, 0.0f));
-		if(CurrentLocation.Y - WidgetMaximumMovementAmount >= GetActorLocation().Y)
+		AddActorLocalOffset(FVector(0.0f, WidgetAnimationMoveValue, 0.0f));
+		if(CurrentLocation.Y + WidgetMaximumMovementAmount <= GetActorLocation().Y)
 		{
-			SetActorLocation(CurrentLocation - FVector(0.0f, WidgetMaximumMovementAmount, 0.0f));
+			SetActorLocation(CurrentLocation + FVector(0.0f, WidgetMaximumMovementAmount, 0.0f));
 			CurrentLocation = GetActorLocation();
 			SettingWidgetActor->SetVisibility(false);
 			GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
