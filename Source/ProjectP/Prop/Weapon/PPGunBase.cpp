@@ -92,22 +92,19 @@ void APPGunBase::Tick(float DeltaTime)
 	{
 		AimingActor = nullptr;
 		// UE_LOG(LogTemp, Warning, TEXT("Nothing hit along the raycast path"));
-		if (CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
-		{
-			CrossHairPlane->SetStaticMesh(DefaultCrossHair);
-		}
+		CrossHairPlane->SetVisibility(false);
+		FlushPersistentDebugLines(GetWorld());
 		DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, 0.03f, 0, 1.0f);
 		return;
 	}
-
-	DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, 0.03f, 0, 1.0f);
+	
 	AimingActor = HitResult.GetActor();
 
 	if (!AimingActor)
 	{
 		return;
 	}
-
+	CrossHairPlane->SetVisibility(true);
 	// 테스트용 태그. 나중에 태그 모음집 헤더파일 만들어서 관리하기?
 	if (AimingActor->Tags.Contains("DestructibleObject"))
 	{
@@ -124,6 +121,8 @@ void APPGunBase::Tick(float DeltaTime)
 			CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 		}
 	}
+	FlushPersistentDebugLines(GetWorld());
+	DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, 0.03f, 0, 1.0f);
 	
 	FString HitActorName = AimingActor->GetName();
 	FVector HitLocation = HitResult.ImpactPoint;
@@ -227,7 +226,7 @@ void APPGunBase::StopFire()
 void APPGunBase::GrabOnHand(APPVRHand* InHand)
 {
 	CrossHairPlane->SetVisibility(true);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	bHeld = true;
 
 	//UE_LOG(LogTemp, Log, TEXT("OnGrab"));
