@@ -7,9 +7,7 @@
 UENUM()
 enum class EBossPattern :uint8
 {
-	// 임시 네이밍
-	Pattern1,
-	Pattern2,
-	Pattern3,
-	Pattern4
+	VineGarden,
+	LeafTempest,
+	GreenFog,
 };

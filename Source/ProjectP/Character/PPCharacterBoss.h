@@ -36,7 +36,7 @@ private:
 
 	// 기믹 - 덩굴정원
 	UPROPERTY()
-	TObjectPtr<class UPPBGVineGardenData> VineGardenData;
+	TObjectPtr<class UPPBossGimmickData> BossPatternData;
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	float VineGardenDamage;

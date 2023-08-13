@@ -4,18 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "PPBGVineGardenData.generated.h"
+#include "PPBossGimmickData.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTP_API UPPBGVineGardenData : public UPrimaryDataAsset
+class PROJECTP_API UPPBossGimmickData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 public:
+
+	// 덩굴 정원
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float Damage;
+	float VineGardenDamage;
 	
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	uint32 TentacleNum;
@@ -34,4 +36,22 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	float WarningDuration;
+
+	// 리프 템페스트
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	float LeafTempestDamage;
+
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	uint32 LeafNum;
+
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	float TraceStartDelay;
+	
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	float TraceDuration;
+
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	float ExplodeDelay;
+	
+	// 녹빛 안개
 };
