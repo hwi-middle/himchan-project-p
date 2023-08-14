@@ -18,9 +18,14 @@ APPCharacterBoss::APPCharacterBoss()
 {
 	// AIControllerClass = APPBossAIController::StaticClass();
 
-	USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Engine/EditorMeshes/SkeletalMesh/DefaultSkeletalMesh.DefaultSkeletalMesh'"), EAssertionLevel::Check);
-	GetMesh()->SetSkeletalMesh(MeshObj);
-
+	// USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Engine/EditorMeshes/SkeletalMesh/DefaultSkeletalMesh.DefaultSkeletalMesh'"), EAssertionLevel::Check);
+	// GetMesh()->SetSkeletalMesh(MeshObj);
+	
+	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/30-Level-Design/Meshes/Boss/himchan_v01_Group12084.himchan_v01_Group12084'"), EAssertionLevel::Check);
+	TempMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponentFuckingTemporal"));
+	TempMesh->SetStaticMesh(MeshObj);
+	RootComponent = TempMesh;
+	
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
 
 	VG_TentacleNum = BossGimmickData->VG_TentacleNum;
@@ -42,8 +47,8 @@ void APPCharacterBoss::SetupCharacterStatusData(UDataAsset* CharacterStatusData)
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
-	//GenerateTentaclesOnRandomLocation(5);
-	GenerateToxicFog();
+	GenerateTentaclesOnRandomLocation(5);
+	//GenerateToxicFog();
 }
 
 void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
@@ -77,6 +82,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 		// 환경과 충돌이 있었다면 스폰하지 않고 다시 위치 생성
 		if (bHit)
 		{
+			UE_LOG(LogTemp, Log, TEXT("%s과 충돌"), *HitResult.GetActor()->GetName());
 			continue;
 		}
 
