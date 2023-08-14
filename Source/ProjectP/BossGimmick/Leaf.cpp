@@ -9,7 +9,6 @@
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
-#include "TraceLog/standalone_epilogue.h"
 
 // Sets default values
 ALeaf::ALeaf()
@@ -26,7 +25,11 @@ ALeaf::ALeaf()
 	RotateSpeed = FMath::RandRange(BossGimmickData->LT_MinRotateSpeed, BossGimmickData->LT_MaxRotateSpeed);
 	MoveSpeed = FMath::RandRange(BossGimmickData->LT_MinMoveSpeed, BossGimmickData->LT_MaxMoveSpeed);
 	TraceStartDelay = BossGimmickData->LT_TraceStartDelay;
-	
+	TraceDuration = BossGimmickData->LT_TraceDuration;
+	ElapsedTraceTime = 0.f;
+	BlinkDuration = BossGimmickData->LT_BlinkDuration;
+	MaxBlinkSpeed = BossGimmickData->LT_BlinkSpeed;
+
 	bIsActivated = false;
 }
 
@@ -47,8 +50,10 @@ void ALeaf::Tick(float DeltaTime)
 		return;
 	}
 
+	ElapsedTraceTime += DeltaTime;
+
 	FHitResult HitResult;
-	if (CheckPlayerWithSphere(50.f, HitResult))
+	if (ElapsedTraceTime > TraceDuration || CheckPlayerWithSphere(50.f, HitResult))
 	{
 		BlinkAndExplode();
 		bIsActivated = false;
@@ -65,23 +70,21 @@ void ALeaf::Tick(float DeltaTime)
 
 void ALeaf::StartTracing()
 {
-	GetWorldTimerManager().SetTimer(BlinkTimerHandle, FTimerDelegate::CreateLambda([&]()
+	GetWorldTimerManager().SetTimer(DelayTracingTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
 		bIsActivated = true;
+		GetWorldTimerManager().ClearTimer(DelayTracingTimerHandle);
 	}), TraceStartDelay, false);
 }
 
 void ALeaf::BlinkAndExplode()
 {
-	MaxBlinkSpeed = 4.0f;
-	BlinkDuration = 1.0f;
-	BlinkSpeed = 0.f;
-	ElapsedTime = 0.f;
-	UE_LOG(LogTemp, Log, TEXT("BlinkStart"));
+	CurrentBlinkSpeed = 0.f;
+	ElapsedBlinkTime = 0.f;
 
 	GetWorldTimerManager().SetTimer(BlinkTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
-		const float Alpha = ElapsedTime / BlinkDuration;
+		const float Alpha = ElapsedBlinkTime / BlinkDuration;
 		if (Alpha >= 1.f)
 		{
 			FHitResult HitResult;
@@ -95,11 +98,11 @@ void ALeaf::BlinkAndExplode()
 			Destroy();
 		}
 
-		BlinkSpeed = FMath::Lerp(0.f, MaxBlinkSpeed, Alpha);
+		CurrentBlinkSpeed = FMath::Lerp(0.f, MaxBlinkSpeed, Alpha);
+		UE_LOG(LogTemp, Log, TEXT("Alpha: %f, CurrentSpeed: %f"), Alpha, CurrentBlinkSpeed);
+		Mesh->SetScalarParameterValueOnMaterials(TEXT("BlinkSpeed"), CurrentBlinkSpeed);
 
-		Mesh->SetScalarParameterValueOnMaterials(TEXT("BlinkSpeed"), BlinkSpeed);
-
-		ElapsedTime += 0.01f;
+		ElapsedBlinkTime += 0.01f;
 	}), 0.01f, true);
 }
 

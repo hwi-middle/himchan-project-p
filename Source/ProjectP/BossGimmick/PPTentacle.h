@@ -44,5 +44,7 @@ private:
 
 public:
 	void ShowWarningSign(float InFadeInDuration, float InDelay, float InFadeOutDuration, float InDamage);
-	void HideWarningSignAndAttack(float InFadeOutDuration);
+
+private:
+	void HideWarningSignAndAttack(float InFadeOutDuration, float InDamage);
 };

@@ -28,45 +28,46 @@ protected:
 	
 private:
 	void GenerateTentaclesOnRandomLocation(uint32 InNum);
+	void GenerateLeafTempestOnRandomLocation(uint32 InNum);
 	
 private:
 	// 보스 정보
 	UPROPERTY(EditDefaultsOnly, Category = BossStatus)
 	float Health;
 
-	// 기믹 - 덩굴정원
+	// 기믹
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	TMap<EBossPattern, uint32> BossPatternDamage;
+	
 	UPROPERTY()
-	TObjectPtr<class UPPBossGimmickData> BossPatternData;
-
+	TObjectPtr<class UPPBossGimmickData> BossGimmickData;
+	
+	// 기믹 - 덩굴정원
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float VineGardenDamage;
+	float VG_Damage;
 	
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	uint32 TentacleNum;
+	uint32 VG_TentacleNum;
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float MinDistance;
+	float VG_MinDistance;
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float MaxDistance;
+	float VG_MaxDistance;
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float WarningFadeInDuration;
+	float VG_WarningFadeInDuration;
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float WarningFadeOutDuration;
+	float VG_WarningFadeOutDuration;
 	
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float WarningDuration;
+	float VG_WarningDuration;
 	
-
+	// 기믹 - 리프 템페스트
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	uint32 LT_LeafNum;
 	
 	// UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	// ECharacterState CurrentState;
-
-	// UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	// TMap<EBossPattern, uint32> BossPatternDamage;
-	
-	UPROPERTY()
-	TSet<class APPTentacle*> Tentacles;
 };

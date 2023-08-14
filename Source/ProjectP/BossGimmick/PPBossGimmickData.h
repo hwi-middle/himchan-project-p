@@ -63,7 +63,10 @@ public:
 	float LT_TraceDuration;
 
 	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="ExplodeDelay")
-	float LT_ExplodeDelay;
+	float LT_BlinkDuration;
+	
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="BlinkSpeed")
+	float LT_BlinkSpeed;
 	
 	// 녹빛 안개
 };

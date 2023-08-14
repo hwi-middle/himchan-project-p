@@ -39,12 +39,12 @@ void APPTentacle::ShowWarningSign(float InFadeInDuration, float InDelay, float I
 	FadeOutDuration = InFadeOutDuration;
 	GetWorldTimerManager().SetTimer(WarningTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
-		HideWarningSignAndAttack(FadeOutDuration);
+		HideWarningSignAndAttack(FadeOutDuration, InDamage);
 		GetWorldTimerManager().ClearTimer(WarningTimerHandle);
 	}), InFadeInDuration + InDelay, false);
 }
 
-void APPTentacle::HideWarningSignAndAttack(float InFadeOutDuration)
+void APPTentacle::HideWarningSignAndAttack(float InFadeOutDuration, float InDamage)
 {
 	if (WarningZone)
 	{
@@ -75,7 +75,7 @@ void APPTentacle::HideWarningSignAndAttack(float InFadeOutDuration)
 			if (Player)
 			{
 				FDamageEvent DamageEvent;
-				Player->TakeDamage(10.f, DamageEvent, nullptr, this);
+				Player->TakeDamage(InDamage, DamageEvent, nullptr, this);
 			}
 		}
 

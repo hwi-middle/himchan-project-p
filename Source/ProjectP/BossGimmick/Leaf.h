@@ -52,15 +52,15 @@ private:
 	
 	UPROPERTY()
 	float TraceStartDelay;
+
+	UPROPERTY()
+	float ElapsedTraceTime;
 	
 	UPROPERTY()
 	float TraceDuration;
 
 	UPROPERTY()
-	float ExplodeDelay;
-
-	UPROPERTY()
-	float BlinkSpeed;
+	float CurrentBlinkSpeed;
 
 	UPROPERTY()
 	float MaxBlinkSpeed;
@@ -69,7 +69,7 @@ private:
 	float BlinkDuration;
 
 	UPROPERTY()
-	float ElapsedTime;
+	float ElapsedBlinkTime;
 
 	UPROPERTY()
 	uint32 bIsActivated : 1;
