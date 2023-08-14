@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "Engine/GameInstance.h"
+#include "Engine/ObjectLibrary.h"
 #include "ProjectP/Util/PPSaveSettingOption.h"
 #include "ProjectP/Util/StringDataTable.h"
 #include "PPGameInstance.generated.h"
@@ -32,5 +33,7 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<UDataTable> StringDataTable;
+	UPROPERTY()
+	TObjectPtr<UObjectLibrary> SoundCueLibrary;
 };
 
