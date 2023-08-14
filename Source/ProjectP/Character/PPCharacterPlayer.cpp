@@ -13,7 +13,7 @@ APPCharacterPlayer::APPCharacterPlayer()
 
 	PlayerStatusData = FPPConstructorHelper::FindAndGetObject<UPPPlayerStatusData>(TEXT("/Script/ProjectP.PPPlayerStatusData'/Game/DataAssets/Player/PlayerStatusData.PlayerStatusData'"), EAssertionLevel::Check);
 	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollsionCapsule"));
-	CollisionCapsule->InitCapsuleSize(5.0f, 90.0f);
+	CollisionCapsule->InitCapsuleSize(15.0f, 90.0f);
 	CollisionCapsule->SetCollisionProfileName(TEXT("Pawn"));
 	TObjectPtr<USceneComponent> OriginalRootComponent = RootComponent;
 	RootComponent = CollisionCapsule;

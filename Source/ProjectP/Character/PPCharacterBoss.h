@@ -8,6 +8,7 @@
 #include "ProjectP/Interface/CharacterStatusInterface.h"
 #include "PPCharacterBoss.generated.h"
 
+
 /**
  * 
  */
@@ -19,6 +20,9 @@ public:
 	APPCharacterBoss();
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
+
+	// TestOnly
+	void TestPattern(EBossPattern Pattern, uint32 Num = 0);
 	
 protected:
 	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
@@ -36,6 +40,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = BossStatus)
 	float Health;
 
+	UPROPERTY()
+	TObjectPtr<class UStaticMeshComponent> TempMesh;
+	
 	// 기믹
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	TMap<EBossPattern, uint32> BossPatternDamage;

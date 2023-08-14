@@ -17,9 +17,15 @@
 APPCharacterBoss::APPCharacterBoss()
 {
 	// AIControllerClass = APPBossAIController::StaticClass();
+
+	// USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Engine/EditorMeshes/SkeletalMesh/DefaultSkeletalMesh.DefaultSkeletalMesh'"), EAssertionLevel::Check);
+	// GetMesh()->SetSkeletalMesh(MeshObj);
 	
-	USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Engine/EditorMeshes/SkeletalMesh/DefaultSkeletalMesh.DefaultSkeletalMesh'"), EAssertionLevel::Check);
-	GetMesh()->SetSkeletalMesh(MeshObj);
+	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/30-Level-Design/Meshes/Boss/himchan_v01_Group12084.himchan_v01_Group12084'"), EAssertionLevel::Check);
+	TempMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponentFuckingTemporal"));
+	TempMesh->SetStaticMesh(MeshObj);
+	RootComponent = TempMesh;
+
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
 
 	VG_TentacleNum = BossGimmickData->VG_TentacleNum;
@@ -42,7 +48,8 @@ void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
 	//GenerateTentaclesOnRandomLocation(5);
-	GenerateToxicFog();
+	//GenerateToxicFog();
+	//GenerateLeafTempestOnRandomLocation(10);
 }
 
 void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
@@ -76,6 +83,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 		// 환경과 충돌이 있었다면 스폰하지 않고 다시 위치 생성
 		if (bHit)
 		{
+			UE_LOG(LogTemp, Log, TEXT("%s과 충돌"), *HitResult.GetActor()->GetName());
 			continue;
 		}
 
@@ -155,7 +163,11 @@ void APPCharacterBoss::GenerateToxicFog()
 			FCollisionShape::MakeSphere(GF_Radius),
 			CollisionParams
 		);
-
+		// TestOnly
+		FlushPersistentDebugLines(GetWorld());
+		DrawDebugSphere(GetWorld(), GetActorLocation(), GF_Radius*2, 64, FColor::Green, false, 1.f);
+		//
+		GF_ElapsedTime += 1.f;
 		if (!bHit)
 		{
 			return;
@@ -169,7 +181,6 @@ void APPCharacterBoss::GenerateToxicFog()
 		
 		FDamageEvent DamageEvent;
 		Player->TakeDamage(GF_Damage, DamageEvent, nullptr, this);
-		GF_ElapsedTime += 1.f;
 	}), 1.f, true);
 }
 
@@ -187,4 +198,22 @@ void APPCharacterBoss::DecreaseHealth(const float Value)
 	 * Do something
 	 */
 	Health -= Value;
+}
+
+void APPCharacterBoss::TestPattern(EBossPattern Pattern, uint32 Num)
+{
+	switch (Pattern)
+	{
+	case EBossPattern::GreenFog:
+		GenerateToxicFog();
+		break;
+	case EBossPattern::LeafTempest:
+		GenerateLeafTempestOnRandomLocation(Num);
+		break;
+	case EBossPattern::VineGarden:
+		GenerateTentaclesOnRandomLocation(Num);
+		break;
+	default:
+		checkNoEntry();
+	}
 }

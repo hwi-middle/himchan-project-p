@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "ProjectP/Character/PPCharacterBoss.h"
+#include "ProjectP/Enumeration/PPBossPattern.h"
 #include "Components/Button.h"
 #include "PPPatternTestWidget.generated.h"
 
@@ -21,13 +22,13 @@ public:
 
 protected:
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void StartLeafTempestPattern() {  }
+	FORCEINLINE void StartLeafTempestPattern() { BossCharacter->TestPattern(EBossPattern::LeafTempest, LeafTempestNum); }
 	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void StartGreenFogPattern() {  }
+	FORCEINLINE void StartGreenFogPattern() { BossCharacter->TestPattern(EBossPattern::GreenFog); }
 	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void StartGardenPattern() {  }
+	FORCEINLINE void StartGardenPattern() { BossCharacter->TestPattern(EBossPattern::VineGarden, VineGardenNum); }
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI", meta =(BindWidget))
 	TObjectPtr<UButton> LeafButton;
