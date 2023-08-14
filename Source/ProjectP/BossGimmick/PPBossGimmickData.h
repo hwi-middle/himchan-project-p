@@ -16,42 +16,54 @@ class PROJECTP_API UPPBossGimmickData : public UPrimaryDataAsset
 public:
 
 	// 덩굴 정원
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float VineGardenDamage;
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData, DisplayName="Damage")
+	float VG_Damage;
 	
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	uint32 TentacleNum;
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData, DisplayName="TentacleNum")
+	uint32 VG_TentacleNum;
 
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float MinDistance;
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData, DisplayName="MinDistance")
+	float VG_MinDistance;
 
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float MaxDistance;
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData, DisplayName="MaxDistance")
+	float VG_MaxDistance;
 
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float WarningFadeInDuration;
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData, DisplayName="WarningFadeInDuration")
+	float VG_WarningFadeInDuration;
 
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float WarningFadeOutDuration;
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData, DisplayName="WarningFadeOutDuration")
+	float VG_WarningFadeOutDuration;
 	
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float WarningDuration;
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData, DisplayName="WarningDuration")
+	float VG_WarningDuration;
 
 	// 리프 템페스트
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
-	float LeafTempestDamage;
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="Damage")
+	float LT_Damage;
 
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
-	uint32 LeafNum;
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="LeafNum")
+	uint32 LT_LeafNum;
 
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
-	float TraceStartDelay;
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="TraceStartDelay")
+	float LT_TraceStartDelay;
+
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="MoveSpeed")
+	float LT_MinMoveSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="MoveSpeed")
+	float LT_MaxMoveSpeed;
 	
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
-	float TraceDuration;
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="RotateSpeed")
+	float LT_MinRotateSpeed;
+	
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="MoveSpeed")
+	float LT_MaxRotateSpeed;
+	
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="TraceDuration")
+	float LT_TraceDuration;
 
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
-	float ExplodeDelay;
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="ExplodeDelay")
+	float LT_ExplodeDelay;
 	
 	// 녹빛 안개
 };
