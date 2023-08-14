@@ -40,7 +40,7 @@ void APPCharacterBoss::SetupCharacterStatusData(UDataAsset* CharacterStatusData)
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
-	GenerateLeafTempestOnRandomLocation(5);
+	GenerateTentaclesOnRandomLocation(5);
 }
 
 void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
@@ -79,7 +79,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 
 		// 액터 스폰
 		APPTentacle* SpawnedActor = GetWorld()->SpawnActor<APPTentacle>(SpawnLocation, FRotator::ZeroRotator);
-		SpawnedActor->ShowWarningSign(VG_WarningFadeInDuration, VG_WarningDuration, VG_WarningFadeOutDuration, VG_Damage);
+		SpawnedActor->ShowWarningSign();
 
 		++GeneratedNum;
 	}

@@ -25,6 +25,9 @@ public:
 
 private:
 	UPROPERTY()
+	TObjectPtr<class UPPBossGimmickData> BossGimmickData;
+	
+	UPROPERTY()
 	TObjectPtr<class APPWarningZoneCylinder> WarningZone;
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
@@ -37,14 +40,20 @@ private:
 	FTimerHandle HitPlayerTimerHandle;
 
 	UPROPERTY()
-	float FadeOutDuration;
+	float WarningFadeInDuration;
+	
+	UPROPERTY()
+	float WarningFadeOutDuration;
 
+	UPROPERTY()
+	float WarningDuration;
+	
 	UPROPERTY()
 	float Damage;
 
 public:
-	void ShowWarningSign(float InFadeInDuration, float InDelay, float InFadeOutDuration, float InDamage);
+	void ShowWarningSign();
 
 private:
-	void HideWarningSignAndAttack(float InFadeOutDuration, float InDamage);
+	void HideWarningSignAndAttack();
 };

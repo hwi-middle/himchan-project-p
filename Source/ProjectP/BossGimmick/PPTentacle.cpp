@@ -3,25 +3,32 @@
 
 #include "PPTentacle.h"
 
+#include "PPBossGimmickData.h"
 #include "PPWarningZoneCylinder.h"
 #include "Engine/DamageEvents.h"
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
+#include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
 APPTentacle::APPTentacle()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+
+	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
+	Damage = BossGimmickData->VG_Damage;
+	WarningFadeInDuration = BossGimmickData->VG_WarningFadeInDuration;
+	WarningFadeOutDuration = BossGimmickData->VG_WarningFadeOutDuration;
+	WarningDuration = BossGimmickData->VG_WarningDuration;
 }
 
 // Called when the game starts or when spawned
 void APPTentacle::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 }
 
 // Called every frame
@@ -31,26 +38,23 @@ void APPTentacle::Tick(float DeltaTime)
 
 }
 
-void APPTentacle::ShowWarningSign(float InFadeInDuration, float InDelay, float InFadeOutDuration, float InDamage)
+void APPTentacle::ShowWarningSign()
 {
-	Damage = InDamage;
 	WarningZone = GetWorld()->SpawnActor<APPWarningZoneCylinder>(GetActorLocation(), FRotator::ZeroRotator);
-	WarningZone->Show(InFadeInDuration);
-	FadeOutDuration = InFadeOutDuration;
+	WarningZone->Show(WarningFadeInDuration);
 	GetWorldTimerManager().SetTimer(WarningTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
-		HideWarningSignAndAttack(FadeOutDuration, InDamage);
+		HideWarningSignAndAttack();
 		GetWorldTimerManager().ClearTimer(WarningTimerHandle);
-	}), InFadeInDuration + InDelay, false);
+	}), WarningFadeInDuration + WarningDuration, false);
 }
 
-void APPTentacle::HideWarningSignAndAttack(float InFadeOutDuration, float InDamage)
+void APPTentacle::HideWarningSignAndAttack()
 {
 	if (WarningZone)
 	{
-		WarningZone->HideAndDestroy(InFadeOutDuration);
+		WarningZone->HideAndDestroy(WarningFadeOutDuration);
 	}
-	UE_LOG(LogTemp, Log, TEXT("촉수 사라짐"));
 
 	// TODO: 촉수 나오는 애니메이션 재생
 	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, FTimerDelegate::CreateLambda([&]()
@@ -75,10 +79,10 @@ void APPTentacle::HideWarningSignAndAttack(float InFadeOutDuration, float InDama
 			if (Player)
 			{
 				FDamageEvent DamageEvent;
-				Player->TakeDamage(InDamage, DamageEvent, nullptr, this);
+				Player->TakeDamage(Damage, DamageEvent, nullptr, this);
 			}
 		}
 
 		GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
-	}), InFadeOutDuration, false);
+	}), WarningFadeOutDuration, false);
 }
