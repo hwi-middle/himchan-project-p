@@ -69,4 +69,12 @@ public:
 	float LT_BlinkSpeed;
 	
 	// 녹빛 안개
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog, DisplayName="Damage")
+	float GF_Damage;
+	
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog, DisplayName="Duration")
+	float GF_Duration;
+
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog, DisplayName="Radius")
+	float GF_Radius;
 };

@@ -3,6 +3,8 @@
 
 #include "ProjectP/Character/PPCharacterBoss.h"
 
+#include "PPCharacterPlayer.h"
+#include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/AI/Boss/PPBossAIController.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
@@ -26,6 +28,10 @@ APPCharacterBoss::APPCharacterBoss()
 	VG_MaxDistance = BossGimmickData->VG_MaxDistance;
 
 	LT_LeafNum = BossGimmickData->LT_LeafNum;
+
+	GF_Damage = BossGimmickData->GF_Damage;
+	GF_Duration = BossGimmickData->GF_Duration;
+	GF_Radius = BossGimmickData->GF_Radius;
 }
 
 void APPCharacterBoss::SetupCharacterStatusData(UDataAsset* CharacterStatusData)
@@ -36,7 +42,8 @@ void APPCharacterBoss::SetupCharacterStatusData(UDataAsset* CharacterStatusData)
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
-	GenerateTentaclesOnRandomLocation(5);
+	//GenerateTentaclesOnRandomLocation(5);
+	GenerateToxicFog();
 }
 
 void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
@@ -122,6 +129,49 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 
 		++GeneratedNum;
 	}
+}
+
+void APPCharacterBoss::GenerateToxicFog()
+{
+	GF_ElapsedTime = 0.f;
+	GetWorldTimerManager().SetTimer(GreenFogTimerHandle, FTimerDelegate::CreateLambda([&]()
+	{
+		if (GF_ElapsedTime >= GF_Duration)
+		{
+			GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
+			return;
+		}
+
+		FVector SpawnLocation = GetActorLocation();
+		FHitResult HitResult;
+		FCollisionQueryParams CollisionParams;
+		CollisionParams.AddIgnoredActor(this);
+
+		bool bHit = GetWorld()->SweepSingleByChannel(
+			HitResult,
+			SpawnLocation,
+			SpawnLocation,
+			FQuat::Identity,
+			ECC_CHECK_PAWN,
+			FCollisionShape::MakeSphere(GF_Radius),
+			CollisionParams
+		);
+
+		if (!bHit)
+		{
+			return;
+		}
+
+		APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(HitResult.GetActor());
+		if (!Player)
+		{
+			return;
+		}
+		
+		FDamageEvent DamageEvent;
+		Player->TakeDamage(GF_Damage, DamageEvent, nullptr, this);
+		GF_ElapsedTime += 1.f;
+	}), 1.f, true);
 }
 
 void APPCharacterBoss::IncreaseHealth(const float Value)

@@ -29,6 +29,7 @@ protected:
 private:
 	void GenerateTentaclesOnRandomLocation(uint32 InNum);
 	void GenerateLeafTempestOnRandomLocation(uint32 InNum);
+	void GenerateToxicFog();
 	
 private:
 	// 보스 정보
@@ -55,7 +56,20 @@ private:
 	// 기믹 - 리프 템페스트
 	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
 	uint32 LT_LeafNum;
+
+	// 기믹 - 녹빛 안개
+	UPROPERTY()
+	FTimerHandle GreenFogTimerHandle;
+
+	UPROPERTY()
+	float GF_ElapsedTime;
 	
-	// UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	// ECharacterState CurrentState;
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	float GF_Damage;
+
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	float GF_Duration;
+
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	float GF_Radius;
 };
