@@ -28,45 +28,48 @@ protected:
 	
 private:
 	void GenerateTentaclesOnRandomLocation(uint32 InNum);
+	void GenerateLeafTempestOnRandomLocation(uint32 InNum);
+	void GenerateToxicFog();
 	
 private:
 	// 보스 정보
 	UPROPERTY(EditDefaultsOnly, Category = BossStatus)
 	float Health;
 
+	// 기믹
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	TMap<EBossPattern, uint32> BossPatternDamage;
+	
+	UPROPERTY()
+	TObjectPtr<class UPPBossGimmickData> BossGimmickData;
+	
 	// 기믹 - 덩굴정원
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	uint32 VG_TentacleNum;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float VG_MinDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float VG_MaxDistance;
+	
+	// 기믹 - 리프 템페스트
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	uint32 LT_LeafNum;
+
+	// 기믹 - 녹빛 안개
 	UPROPERTY()
-	TObjectPtr<class UPPBossGimmickData> BossPatternData;
+	FTimerHandle GreenFogTimerHandle;
 
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float VineGardenDamage;
-	
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	uint32 TentacleNum;
-
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float MinDistance;
-
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float MaxDistance;
-
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float WarningFadeInDuration;
-
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float WarningFadeOutDuration;
-	
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float WarningDuration;
-	
-
-	
-	// UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	// ECharacterState CurrentState;
-
-	// UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	// TMap<EBossPattern, uint32> BossPatternDamage;
-	
 	UPROPERTY()
-	TSet<class APPTentacle*> Tentacles;
+	float GF_ElapsedTime;
+	
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	float GF_Damage;
+
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	float GF_Duration;
+
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	float GF_Radius;
 };

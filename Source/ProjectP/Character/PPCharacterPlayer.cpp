@@ -8,12 +8,12 @@
 // Sets default values
 APPCharacterPlayer::APPCharacterPlayer()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	PlayerStatusData = FPPConstructorHelper::FindAndGetObject<UPPPlayerStatusData>(TEXT("/Script/ProjectP.PPPlayerStatusData'/Game/DataAssets/Player/PlayerStatusData.PlayerStatusData'"), EAssertionLevel::Check);
 	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollsionCapsule"));
-	CollisionCapsule->InitCapsuleSize(5.0f,90.0f);
+	CollisionCapsule->InitCapsuleSize(5.0f, 90.0f);
 	CollisionCapsule->SetCollisionProfileName(TEXT("Pawn"));
 	TObjectPtr<USceneComponent> OriginalRootComponent = RootComponent;
 	RootComponent = CollisionCapsule;
@@ -36,17 +36,18 @@ float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	// TODO: ECharacterState 걷어내기
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Health -= DamageAmount;
-	if(Health <= 0)
+	UE_LOG(LogTemp, Log, TEXT("%f만큼의 피해를 입음"), DamageAmount);
+	if (Health <= 0)
 	{
 		CurrentState = ECharacterState::Dead;
 		return DamageAmount;
 	}
-	
-	if(CurrentState == ECharacterState::Idle)
+
+	if (CurrentState == ECharacterState::Idle)
 	{
 		GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
 		CurrentState = ECharacterState::Hit;
-		
+
 		GetWorldTimerManager().SetTimer(HitCheckTimer, FTimerDelegate::CreateLambda([&]()
 		{
 			//SetCharacterState(ECharacterState::Idle);
@@ -56,7 +57,7 @@ float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	}
 	else
 	{
-		if(GetWorldTimerManager().IsTimerActive(HitCheckTimer))
+		if (GetWorldTimerManager().IsTimerActive(HitCheckTimer))
 		{
 			GetWorldTimerManager().ClearTimer(HitCheckTimer);
 		}
@@ -88,12 +89,12 @@ void APPCharacterPlayer::DecreaseHealth(const float Value)
 void APPCharacterPlayer::EnableRecoveryHealthTimer()
 {
 	// Idle 상태 자연 회복 관련
-	if(Health < PlayerStatusData->MaximumHealth)
+	if (Health < PlayerStatusData->MaximumHealth)
 	{
 		GetWorldTimerManager().SetTimer(RecoveryTickTimer, FTimerDelegate::CreateLambda([&]()
 		{
 			Health += RecoveryHealthAmountOnIdle;
-			if(Health >= PlayerStatusData->MaximumHealth)
+			if (Health >= PlayerStatusData->MaximumHealth)
 			{
 				Health = PlayerStatusData->MaximumHealth;
 				GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
@@ -101,6 +102,3 @@ void APPCharacterPlayer::EnableRecoveryHealthTimer()
 		}), RecoveryHealthTick, true);
 	}
 }
-
-
-
