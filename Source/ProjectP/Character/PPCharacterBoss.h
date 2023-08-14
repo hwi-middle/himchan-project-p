@@ -44,9 +44,6 @@ private:
 	
 	// 기믹 - 덩굴정원
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float VG_Damage;
-	
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	uint32 VG_TentacleNum;
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
@@ -54,15 +51,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	float VG_MaxDistance;
-
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float VG_WarningFadeInDuration;
-
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float VG_WarningFadeOutDuration;
-	
-	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
-	float VG_WarningDuration;
 	
 	// 기믹 - 리프 템페스트
 	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)

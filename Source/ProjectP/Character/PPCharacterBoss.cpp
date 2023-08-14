@@ -21,13 +21,9 @@ APPCharacterBoss::APPCharacterBoss()
 
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
 
-	VG_Damage = BossGimmickData->VG_Damage;
 	VG_TentacleNum = BossGimmickData->VG_TentacleNum;
 	VG_MinDistance = BossGimmickData->VG_MinDistance;
 	VG_MaxDistance = BossGimmickData->VG_MaxDistance;
-	VG_WarningFadeInDuration = BossGimmickData->VG_WarningFadeInDuration;
-	VG_WarningFadeOutDuration = BossGimmickData->VG_WarningFadeOutDuration;
-	VG_WarningDuration = BossGimmickData->VG_WarningDuration;
 
 	LT_LeafNum = BossGimmickData->LT_LeafNum;
 }
