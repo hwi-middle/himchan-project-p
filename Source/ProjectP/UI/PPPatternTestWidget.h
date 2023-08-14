@@ -20,7 +20,14 @@ public:
 	virtual void NativeConstruct() override;
 
 protected:
-	FORCEINLINE void StartLeafTempest() {  };
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void StartLeafTempestPattern() {  }
+	
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void StartGreenFogPattern() {  }
+	
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void StartGardenPattern() {  }
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI", meta =(BindWidget))
 	TObjectPtr<UButton> LeafButton;
@@ -30,7 +37,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI", meta =(BindWidget))
 	TObjectPtr<UButton> FogButton;
-	
+
+	UPROPERTY(EditAnywhere)
+	int LeafTempestNum;
+
+	UPROPERTY(EditAnywhere)
+	int VineGardenNum;
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<APPCharacterBoss> BossCharacter;
