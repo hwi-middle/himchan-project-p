@@ -6,41 +6,50 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
-
 #include "InputCoreTypes.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectP/Character/PPCharacterBase.h"
+#include "ProjectP/Character/PPCharacterBoss.h"
+#include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Grab/PPVRGrabComponent.h"
 #include "ProjectP/Player/PPVRHand.h"
+#include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
+#include "Math/UnrealMathUtility.h"
 
 // Sets default values
 APPGunBase::APPGunBase()
 {
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetCollisionObjectType(ECC_GIMMICK);
 
-	// TODO: Socket으로 분리
-	MuzzlePosition = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzlePosition"));
-	MuzzlePosition->SetupAttachment(WeaponMesh);
+	CrossHairPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrossHairPlane"));
+	DefaultCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/73-CrossHair/CrossHair/CrossHair.CrossHair'"), EAssertionLevel::Check);
+	DetectedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/73-CrossHair/CrossHair/CrossHair_Detect.CrossHair_Detect'"), EAssertionLevel::Check);
+	CrossHairPlane->SetStaticMesh(DefaultCrossHair);
+	CrossHairPlane->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CrossHairPlane->SetCollisionObjectType(ECC_WorldStatic);
+	CrossHairPlane->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f));
+	CrossHairPlane->SetCastShadow(false);
+	CrossHairPlane->SetVisibility(false);
+	CrossHairPlane->SetupAttachment(WeaponMesh);
 
-	LaserPosition = CreateDefaultSubobject<USceneComponent>(TEXT("LaserPosition"));
-	LaserPosition->SetupAttachment(WeaponMesh);
-
-	FlashPosition = CreateDefaultSubobject<USceneComponent>(TEXT("FlashPosition"));
-	FlashPosition->SetupAttachment(WeaponMesh);
-
-	GripPosition = CreateDefaultSubobject<USceneComponent>(TEXT("GripPosition"));
-	GripPosition->SetupAttachment(WeaponMesh);
+	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
+	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
+	Flashlight->SetupAttachment(WeaponMesh);
+	Flashlight->SetVisibility(false);
 
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
-	GrabComponent->SetRelativeLocation(GripPosition->GetRelativeLocation());
 
 	LeftShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootLeft.IA_VRShootLeft'"), EAssertionLevel::Check);
 	RightShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootRight.IA_VRShootRight'"), EAssertionLevel::Check);
 	LeftHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Left.IMC_Weapon_Left'"), EAssertionLevel::Check);
 	RightHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Right.IMC_Weapon_Right'"), EAssertionLevel::Check);
 
+	bIsFlashlightEnable = false;
 	bIsUnavailable = false;
+	bHeld = false;
 	CurrentOverheat = 0;
 }
 
@@ -50,15 +59,24 @@ void APPGunBase::BeginPlay()
 	UPPVRGrabComponent* GrabComponentCasted = Cast<UPPVRGrabComponent>(GrabComponent);
 	GrabComponentCasted->OnGrab.AddUObject(this, &APPGunBase::GrabOnHand);
 	GrabComponentCasted->OnRelease.AddUObject(this, &APPGunBase::ReleaseOnHand);
+	GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_GRIP));
+
+	Flashlight->SetWorldLocation(WeaponMesh->GetSocketLocation(GUN_FLASH));
+	Flashlight->SetWorldRotation(WeaponMesh->GetSocketRotation(GUN_FLASH));
 }
 
 void APPGunBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!bHeld)
+	{
+		return;
+	}
+	
 	float Distance = 1000.f;
-	FVector StartLocation = MuzzlePosition->GetComponentLocation();
-	FVector ForwardVector = MuzzlePosition->GetForwardVector();
+	FVector StartLocation = WeaponMesh->GetSocketLocation(GUN_MUZZLE);
+	FVector ForwardVector = WeaponMesh->GetSocketTransform(GUN_MUZZLE).GetUnitAxis(EAxis::X);
 	FVector EndLocation = StartLocation + ForwardVector * Distance;
 
 	FHitResult HitResult;
@@ -72,24 +90,48 @@ void APPGunBase::Tick(float DeltaTime)
 		ECC_Visibility,
 		CollisionParams
 	);
+	FColor LineColor = FColor::Green;
 
-	if (bHit)
-	{
-		AimingActor = HitResult.GetActor();
-		if (AimingActor)
-		{
-			FString HitActorName = AimingActor->GetName();
-			FVector HitLocation = HitResult.ImpactPoint;
-			// UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *HitActorName, *HitLocation.ToString());
-		}
-		DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, FColor::Red, false, 0.03f, 0, 1.0f);
-	}
-	else
+	if (!bHit)
 	{
 		AimingActor = nullptr;
 		// UE_LOG(LogTemp, Warning, TEXT("Nothing hit along the raycast path"));
-		DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 0.03f, 0, 1.0f);
+		CrossHairPlane->SetVisibility(false);
+		FlushPersistentDebugLines(GetWorld());
+		DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, 0.03f, 0, 1.0f);
+		return;
 	}
+	
+	AimingActor = HitResult.GetActor();
+
+	if (!AimingActor)
+	{
+		return;
+	}
+	CrossHairPlane->SetVisibility(true);
+	// 테스트용 태그. 나중에 태그 모음집 헤더파일 만들어서 관리하기?
+	if (AimingActor->Tags.Contains("DestructibleObject"))
+	{
+		if (CrossHairPlane->GetStaticMesh() != DetectedCrossHair)
+		{
+			CrossHairPlane->SetStaticMesh(DetectedCrossHair);
+		}
+		LineColor = FColor::Red;
+	}
+	else
+	{
+		if (CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
+		{
+			CrossHairPlane->SetStaticMesh(DefaultCrossHair);
+		}
+	}
+	FlushPersistentDebugLines(GetWorld());
+	DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, 0.03f, 0, 1.0f);
+	
+	FString HitActorName = AimingActor->GetName();
+	FVector HitLocation = HitResult.ImpactPoint;
+	CrossHairPlane->SetWorldLocation(HitLocation);
+	// UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *HitActorName, *HitLocation.ToString());
 }
 
 void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
@@ -121,30 +163,22 @@ void APPGunBase::PressTrigger()
 void APPGunBase::OnFire()
 {
 	const float DeltaTime = GetWorld()->DeltaTimeSeconds;
+	constexpr float TimerRate = 0.01f;
 
 	// 게이지가 0인 상태에서 발사할 때 부터 게이지 감소가 시작
-	if (CurrentOverheat == 0)
+	if (CurrentOverheat <= KINDA_SMALL_NUMBER)
 	{
 		GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
-			// 언더플로 방지
-			if(CurrentOverheat > OverheatCoolDownPerSecond)
-			{
-				CurrentOverheat -= OverheatCoolDownPerSecond;
-			}
-			else
-			{
-				CurrentOverheat = 0;
-			}
-			
-			UE_LOG(LogTemp, Log, TEXT("Cooldowned: %u"), CurrentOverheat);
-			if (CurrentOverheat == 0)
+			CurrentOverheat -= OverheatCoolDownPerSecond * TimerRate;
+			UE_LOG(LogTemp, Log, TEXT("Cooldowned: %f"), CurrentOverheat);
+			if (CurrentOverheat < KINDA_SMALL_NUMBER)
 			{
 				UE_LOG(LogTemp, Log, TEXT("No more overheat now"));
-				CurrentOverheat = 0;
+				CurrentOverheat = 0.f;
 				GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
 			}
-		}), 1.f, true);
+		}), TimerRate, true);
 	}
 
 	ElapsedTimeAfterLastShoot += DeltaTime;
@@ -162,7 +196,14 @@ void APPGunBase::OnFire()
 
 		if (AimingActor)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
+			if (APPCharacterBoss* Enemy = Cast<APPCharacterBoss>(AimingActor))
+			{
+				const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
+				
+				Enemy->DecreaseHealth(Damage);
+				UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), Damage);
+				UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
+			}
 		}
 		else
 		{
@@ -187,31 +228,19 @@ void APPGunBase::StopFire()
 
 void APPGunBase::GrabOnHand(APPVRHand* InHand)
 {
+	CrossHairPlane->SetVisibility(true);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	bHeld = true;
+
 	//UE_LOG(LogTemp, Log, TEXT("OnGrab"));
 	//SetupInputMappingContextByHandType(InHand->GetHandType());
 }
 
 void APPGunBase::ReleaseOnHand(APPVRHand* InHand)
 {
-
-}
-
-void APPGunBase::ToggleLaserPoint()
-{
-	if (!bIsLaserPointEnable)
-	{
-		/*
-		 * Do something
-		 */
-		bIsLaserPointEnable = true;
-	}
-	else
-	{
-		/*
-		 * Do something
-		 */
-		bIsLaserPointEnable = false;
-	}
+	CrossHairPlane->SetVisibility(false);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	bHeld = false;
 }
 
 void APPGunBase::SetupInputMappingContextByHandType(const EControllerHand InHandType)
@@ -246,20 +275,17 @@ void APPGunBase::SetupInputMappingContextByHandType(const EControllerHand InHand
 	// check(FinalInputMappingContext);
 }
 
-void APPGunBase::ToggleFlashlight()
+void APPGunBase::ToggleFlash()
 {
 	if (!bIsFlashlightEnable)
 	{
-		/*
-		 * Do something
-		 */
+		Flashlight->SetVisibility(true);
 		bIsFlashlightEnable = true;
 	}
 	else
 	{
-		/*
-		 * Do something
-		 */
+
+		Flashlight->SetVisibility(false);
 		bIsFlashlightEnable = false;
 	}
 }

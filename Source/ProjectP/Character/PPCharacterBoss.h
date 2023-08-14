@@ -17,33 +17,59 @@ class PROJECTP_API APPCharacterBoss : public APPCharacterEnemy, public ICharacte
 	GENERATED_BODY()
 public:
 	APPCharacterBoss();
-
+	virtual void IncreaseHealth(const float Value) override;
+	virtual void DecreaseHealth(const float Value) override;
 	
 protected:
 	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
+	virtual void BeginPlay() override;
 	
-	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
-	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
-
-	virtual void IncreaseHealth(const float Value) override;
-	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
-private:
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 Health;
 	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	ECharacterState CurrentState;
+private:
+	void GenerateTentaclesOnRandomLocation(uint32 InNum);
+	void GenerateLeafTempestOnRandomLocation(uint32 InNum);
+	void GenerateToxicFog();
+	
+private:
+	// 보스 정보
+	UPROPERTY(EditDefaultsOnly, Category = BossStatus)
+	float Health;
 
+	// 기믹
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	TMap<EBossPattern, uint32> BossPatternDamage;
+	
+	UPROPERTY()
+	TObjectPtr<class UPPBossGimmickData> BossGimmickData;
+	
+	// 기믹 - 덩굴정원
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	uint32 VG_TentacleNum;
 
-	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	float GenerateWeakPointTime;
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float VG_MinDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	float VG_MaxDistance;
 	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	uint32 RequiredWeakPointDestructionCount;
+	// 기믹 - 리프 템페스트
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	uint32 LT_LeafNum;
+
+	// 기믹 - 녹빛 안개
+	UPROPERTY()
+	FTimerHandle GreenFogTimerHandle;
+
+	UPROPERTY()
+	float GF_ElapsedTime;
 	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterGimmick)
-	float NeutralizeTime;
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	float GF_Damage;
+
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	float GF_Duration;
+
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	float GF_Radius;
 };

@@ -47,6 +47,8 @@ APPVRPawn::APPVRPawn()
 	ThumbUpLeftAction = MovementData->ThumbUpLeftAction;
 	ThumbUpRightAction = MovementData->ThumbUpRightAction;
 	LeftXButtonPressAction = MovementData->LeftXButtonPressAction;
+	RightBButtonPressAction = MovementData->RightBButtonPressAction;
+	
 	MoveSpeed = MovementData->MoveSpeed;
 	SnapTurnDegrees = MovementData->SnapTurnDegrees;
 	WidgetInteractionDistance = MovementData->WidgetInteractionDistance;
@@ -111,6 +113,7 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Completed, this, &APPVRPawn::CompleteThumbUpRight);
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Canceled, this, &APPVRPawn::ThumbUpRight);
 	EnhancedInputComponent->BindAction(LeftXButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleWidgetInteraction);
+	EnhancedInputComponent->BindAction(RightBButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleFlash);
 }
 
 void APPVRPawn::InitVROrigin()
@@ -271,6 +274,28 @@ void APPVRPawn::DisableSprint(const FInputActionValue& Value)
 void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 {
 	MoveSpeed == MovementData->MoveSpeed ? MoveSpeed = MovementData->SprintSpeed : MoveSpeed = MovementData->MoveSpeed;
+}
+
+void APPVRPawn::ToggleFlash(const FInputActionValue& Value)
+{
+	UPPVRGrabComponent* LeftHeldComponent = LeftHand->GetHeldComponent();
+	UPPVRGrabComponent* RightHeldComponent = RightHand->GetHeldComponent();
+	if (LeftHeldComponent)
+	{
+		APPGunBase* Weapon = Cast<APPGunBase>(LeftHeldComponent->GetOuter());
+		if (Weapon)
+		{
+			Weapon->ToggleFlash();
+		}
+	}
+	else if(RightHeldComponent)
+	{
+		APPGunBase* Weapon = Cast<APPGunBase>(RightHeldComponent->GetOuter());
+		if (Weapon)
+		{
+			Weapon->ToggleFlash();
+		}
+	}
 }
 
 void APPVRPawn::ToggleWidgetInteraction(const FInputActionValue& Value)
