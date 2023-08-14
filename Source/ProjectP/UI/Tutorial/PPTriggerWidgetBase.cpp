@@ -9,10 +9,11 @@ APPTriggerWidgetBase::APPTriggerWidgetBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	TutorialWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
-	TriggerBox->SetBoxExtent(FVector(200.0f, 200.0f, 200.0f));
-	RootComponent = TriggerBox;
+	TriggerBox->SetBoxExtent(FVector(400.0f, 400.0f, 400.0f));
+	TriggerBox->SetupAttachment(RootComponent);
 	TutorialWidgetComponent->SetupAttachment(RootComponent);
 }
 

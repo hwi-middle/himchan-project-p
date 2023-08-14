@@ -3,6 +3,7 @@
 
 #include "ProjectP/Game/PPGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectP/Util/PPConstructorHelper.h"
 
 UPPGameInstance::UPPGameInstance()
 {
@@ -12,4 +13,10 @@ UPPGameInstance::UPPGameInstance()
 	{
 		SaveSettingOption = SavedOption;
 	}
+	StringDataTable = FPPConstructorHelper::FindAndGetObject<UDataTable>(TEXT("/Script/Engine.DataTable'/Game/Project-P/DataTable/StringData.StringData'"), EAssertionLevel::Check);
+}
+
+FStringDataTable* UPPGameInstance::GetStringDataTable(FName RowName)
+{
+	return StringDataTable->FindRow<FStringDataTable>(RowName, TEXT("Find StringDataTable"));
 }
