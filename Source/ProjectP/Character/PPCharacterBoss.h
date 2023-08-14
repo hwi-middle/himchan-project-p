@@ -36,6 +36,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = BossStatus)
 	float Health;
 
+	UPROPERTY()
+	TObjectPtr<class UStaticMeshComponent> TempMesh;
+	
 	// 기믹
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	TMap<EBossPattern, uint32> BossPatternDamage;
