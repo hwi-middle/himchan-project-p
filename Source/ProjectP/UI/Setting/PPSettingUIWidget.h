@@ -116,6 +116,7 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	uint32 bSubWidgetAnimationWork : 1;
+	
 	UPROPERTY()
 	ESubWidgetType EnabledSubWidgetType;
 };

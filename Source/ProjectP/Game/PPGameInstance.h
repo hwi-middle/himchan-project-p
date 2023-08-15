@@ -31,7 +31,7 @@ public:
 
 	FORCEINLINE TObjectPtr<UPPSaveSettingOption> GetSaveSettingOption() const { return SaveSettingOption; }
 	
-public:
+private:
     // 인스턴스내에 환경설정 값을 저장시켜놓고 레벨을 옮길 때 레벨에서 인스턴스의 환경설정 값을 적용
 	UPROPERTY()
 	TObjectPtr<UPPSaveSettingOption> SaveSettingOption;

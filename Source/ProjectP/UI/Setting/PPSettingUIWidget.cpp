@@ -42,9 +42,9 @@ void UPPSettingUIWidget::NativeConstruct()
 
 void UPPSettingUIWidget::SaveSettingData()
 {
-	TObjectPtr<UPPGameInstance> CurrentGI = CastChecked<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	// 만약 게임 플레이 내용 저장/불러오기 기능을 구현한다고 해도 설정은 여러개 저장 할 일이 없기 때문에 인덱스 0 고정
 	// 파일 이름 또한 마찬가지로 생성자에서 설정한 초기 값 사용
+	TObjectPtr<UPPGameInstance> CurrentGI = CastChecked<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	TObjectPtr<UPPSaveSettingOption> SaveSettingOption = CurrentGI->GetSaveSettingOption();
 	if(SaveSettingOption)
 	{
@@ -68,13 +68,13 @@ void UPPSettingUIWidget::SaveSettingData()
 void UPPSettingUIWidget::LoadSettingData()
 {
 	const TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	
-	if(CurrentGI->SaveSettingOption)
+	TObjectPtr<UPPSaveSettingOption> SaveSettingOption = CurrentGI->GetSaveSettingOption();
+	if(SaveSettingOption)
 	{
-		SoundSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
-		DisplaySettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
-		GraphicSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
-		AccessibilitySettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
+		SoundSettingWidget->LoadSettingData(SaveSettingOption);
+		DisplaySettingWidget->LoadSettingData(SaveSettingOption);
+		GraphicSettingWidget->LoadSettingData(SaveSettingOption);
+		AccessibilitySettingWidget->LoadSettingData(SaveSettingOption);
 		/*
 		SubtitleSettingWidget->LoadSettingData(CurrentGI->SaveSettingOption);
 		*/

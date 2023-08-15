@@ -64,6 +64,7 @@ void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 				GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
 			}
 		}), WidgetAnimationTick, true);
+		return;
 	}
 	if(SubWidget == ESubWidgetType::Exit)
 	{
