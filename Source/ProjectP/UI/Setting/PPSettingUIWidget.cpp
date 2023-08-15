@@ -42,25 +42,26 @@ void UPPSettingUIWidget::NativeConstruct()
 
 void UPPSettingUIWidget::SaveSettingData()
 {
-	TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	TObjectPtr<UPPGameInstance> CurrentGI = CastChecked<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	// 만약 게임 플레이 내용 저장/불러오기 기능을 구현한다고 해도 설정은 여러개 저장 할 일이 없기 때문에 인덱스 0 고정
 	// 파일 이름 또한 마찬가지로 생성자에서 설정한 초기 값 사용
-	if(CurrentGI->SaveSettingOption)
+	TObjectPtr<UPPSaveSettingOption> SaveSettingOption = CurrentGI->GetSaveSettingOption();
+	if(SaveSettingOption)
 	{
 		// 서브위젯으로 세이브 전달
-		SoundSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
-		DisplaySettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
-		GraphicSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
-		AccessibilitySettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
+		SoundSettingWidget->SaveSettingData(SaveSettingOption);
+		DisplaySettingWidget->SaveSettingData(SaveSettingOption);
+		GraphicSettingWidget->SaveSettingData(SaveSettingOption);
+		AccessibilitySettingWidget->SaveSettingData(SaveSettingOption);
 		/*
 		SubtitleSettingWidget->SaveSettingData(CurrentGI->SaveSettingOption);
 		*/
-		UGameplayStatics::SaveGameToSlot(CurrentGI->SaveSettingOption, CurrentGI->SaveSettingOption->SaveFileName, 0);
+		UGameplayStatics::SaveGameToSlot(SaveSettingOption, SaveSettingOption->SaveFileName, 0);
 		UE_LOG(LogTemp, Log, TEXT("Save SettingOption Data Completed"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("Save SettingOption Data Completed"));
+		UE_LOG(LogTemp, Log, TEXT("Save SettingOption Data invalied"));
 	}
 }
 

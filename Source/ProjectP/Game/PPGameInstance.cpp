@@ -13,11 +13,37 @@ UPPGameInstance::UPPGameInstance()
 	{
 		SaveSettingOption = SavedOption;
 	}
+	
 	StringDataTable = FPPConstructorHelper::FindAndGetObject<UDataTable>(TEXT("/Script/Engine.DataTable'/Game/Project-P/DataTable/StringData.StringData'"), EAssertionLevel::Check);
-	SoundCueLibrary = FPPConstructorHelper::FindAndGetObject<UObjectLibrary>(TEXT("/Script/Engine.ObjectLibrary'/Game/Project-P/DataTable/SoundObjectLibrary.SoundObjectLibrary'"), EAssertionLevel::Check);
+	
+	TObjectPtr<UObjectLibrary> SoundCueLibrary = FPPConstructorHelper::FindAndGetObject<UObjectLibrary>(TEXT("/Script/Engine.ObjectLibrary'/Game/Project-P/DataTable/SoundObjectLibrary.SoundObjectLibrary'"), EAssertionLevel::Check);
+	if(SoundCueLibrary)
+	{
+		TArray<USoundCue*> SoundCueTempArray;
+		SoundCueLibrary->GetObjects(SoundCueTempArray);
+		for (auto SoundCue : SoundCueTempArray)
+		{
+			FString SoundCueName = SoundCue->GetName();
+			SoundCueMap.Emplace(SoundCueName, SoundCue);
+			UE_LOG(LogTemp, Log, TEXT("Add SoundCueName: %s"), *SoundCueName);
+		}
+	}
 }
 
-FStringDataTable* UPPGameInstance::GetStringDataTable(FName RowName)
+FStringDataTable* UPPGameInstance::GetStringDataTable(const FName RowName)
 {
 	return StringDataTable->FindRow<FStringDataTable>(RowName, TEXT("Find StringDataTable"));
+}
+
+TObjectPtr<USoundCue> UPPGameInstance::GetSoundCue(const FString SoundName)
+{
+	if(SoundCueMap.Contains(SoundName))
+	{
+		return SoundCueMap[SoundName];
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("!!! Access invalid SoundKey !!!"));
+		return nullptr;
+	}
 }

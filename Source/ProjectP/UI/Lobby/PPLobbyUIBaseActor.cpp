@@ -1,7 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectP/UI/Lobby/PPLobbyUIBaseActor.h"
+
+#include "ProjectP/Constant/PPSoundName.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/UI/Lobby/PPLobbyUIWidget.h"
+#include "Sound/SoundCue.h"
+
 // Sets default values
 APPLobbyUIBaseActor::APPLobbyUIBaseActor()
 {
@@ -38,6 +43,10 @@ void APPLobbyUIBaseActor::BeginPlay()
 
 void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 {
+	const TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	TObjectPtr<USoundCue> SoundCue = CurrentGI->GetSoundCue(TEST_SOUND);
+	UGameplayStatics::PlaySound2D(GetWorld(), SoundCue);
+	
 	if(SubWidget == ESubWidgetType::Setting)
 	{
 		LobbyWidget->SetButtonInteraction(false);
