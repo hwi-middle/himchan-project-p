@@ -16,7 +16,6 @@
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "Math/UnrealMathUtility.h"
-#include "ProjectP/Constant/PPSoundName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 
 // Sets default values
@@ -68,11 +67,11 @@ void APPGunBase::BeginPlay()
 
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 
-	GrabOnHandSoundCue = GameInstance->GetSoundCue(GUN_GRAB_ON_HAND_SOUND);
-	OnFireSoundCue = GameInstance->GetSoundCue(GUN_FIRE_SOUND);
-	CoolDownSoundCue = GameInstance->GetSoundCue(GUN_COOLDOWN_SOUND);
-	OverheatSoundCue = GameInstance->GetSoundCue(GUN_OVERHEAT_SOUND);
-	ToggleFlashSoundCue = GameInstance->GetSoundCue(GUN_TOGGLE_FLASH_SOUND);
+	GrabOnHandSoundCue = GameInstance->GetSoundData()->GunGrabOnHandSoundCue;
+	OnFireSoundCue = GameInstance->GetSoundData()->GunOnFireSoundCue;
+	CoolDownSoundCue = GameInstance->GetSoundData()->GunCoolDownSoundCue;
+	OverheatSoundCue = GameInstance->GetSoundData()->GunOverheatSoundCue;
+	ToggleFlashSoundCue = GameInstance->GetSoundData()->GunToggleFlashSoundCue;
 }
 
 void APPGunBase::Tick(float DeltaTime)

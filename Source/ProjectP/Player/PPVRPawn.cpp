@@ -16,10 +16,8 @@
 #include "EnhancedInput/Public/InputMappingContext.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "ProjectP/Constant/PPSoundName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Prop/Weapon/PPGunBase.h"
-
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
@@ -68,8 +66,8 @@ void APPVRPawn::BeginPlay()
 	InitVRHands();
 
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
-	WalkSoundCue = GameInstance->GetSoundCue(PLAYER_WALK_SOUND);
-	SprintSoundCue = GameInstance->GetSoundCue(PLAYER_SPRINT_SOUND);
+	WalkSoundCue = GameInstance->GetSoundData()->PlayerWalkSoundCue;
+	SprintSoundCue = GameInstance->GetSoundData()->PlayerSprintSoundCue;
 }
 
 // Called every frame

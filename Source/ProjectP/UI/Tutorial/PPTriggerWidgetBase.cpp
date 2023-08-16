@@ -2,9 +2,9 @@
 
 
 #include "ProjectP/UI/Tutorial/PPTriggerWidgetBase.h"
+
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
-#include "ProjectP/Constant/PPSoundName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 
 // Sets default values
@@ -31,8 +31,8 @@ void APPTriggerWidgetBase::BeginPlay()
 	TutorialWidget->SetGuidePanelOpacity(0.0f);
 	
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
-	TriggerEnterSoundCue = GameInstance->GetSoundCue(WIDGET_OPEN_SOUND);
-	TriggerOutSoundCue = GameInstance->GetSoundCue(WIDGET_CLOSE_SOUND);
+	TriggerEnterSoundCue = GameInstance->GetSoundData()->WidgetOpenSoundCue;
+	TriggerOutSoundCue = GameInstance->GetSoundData()->WidgetCloseSoundCue;
 	bIsFirstTriggered = true;
 }
 

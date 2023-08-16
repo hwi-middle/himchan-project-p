@@ -4,7 +4,6 @@
 #include "ProjectP/UI/Setting/PPSettingBaseActor.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "ProjectP/Constant/PPSoundName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 
 // Sets default values
@@ -26,8 +25,8 @@ void APPSettingBaseActor::BeginPlay()
 	SettingWidget->SetSubWidgetPanelVisible(false);
 
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
-	WidgetOpenSoundCue = GameInstance->GetSoundCue(WIDGET_OPEN_SOUND);
-	WidgetCloseSoundCue = GameInstance->GetSoundCue(WIDGET_CLOSE_SOUND);
+	WidgetOpenSoundCue = GameInstance->GetSoundData()->WidgetOpenSoundCue;
+	WidgetCloseSoundCue = GameInstance->GetSoundData()->WidgetCloseSoundCue;
 	
 	bSubWidgetOpened = false;
 	bIsFirstClick = true;

@@ -2,7 +2,6 @@
 
 #include "ProjectP/UI/Lobby/PPLobbyUIBaseActor.h"
 
-#include "ProjectP/Constant/PPSoundName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/UI/Lobby/PPLobbyUIWidget.h"
 #include "Sound/SoundCue.h"
@@ -41,7 +40,7 @@ void APPLobbyUIBaseActor::BeginPlay()
 	ExitWidgetComponent->SetVisibility(false);
 
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
-	WidgetMoveSoundCue = GameInstance->GetSoundCue(WIDGET_MOVE_SOUND);
+	WidgetMoveSoundCue = GameInstance->GetSoundData()->WidgetMoveSoundCue;
 }
 
 void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
