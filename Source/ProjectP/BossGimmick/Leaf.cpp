@@ -19,7 +19,7 @@ ALeaf::ALeaf()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeafMesh"));
 	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Material/BossGimmick/Leaf/SM_Cube.SM_Cube'"));
 	Mesh->SetStaticMesh(MeshObj);
-
+	
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
 	Damage = BossGimmickData->LT_Damage;
 	RotateSpeed = FMath::RandRange(BossGimmickData->LT_MinRotateSpeed, BossGimmickData->LT_MaxRotateSpeed);
@@ -32,7 +32,9 @@ ALeaf::ALeaf()
 
 	Tags.Add(TEXT("DestructibleObject"));
 	Mesh->SetSimulatePhysics(false);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Mesh->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
+	Health = 0.1f;
 	bIsActivated = false;
 }
 
@@ -102,7 +104,6 @@ void ALeaf::BlinkAndExplode()
 		}
 
 		CurrentBlinkSpeed = FMath::Lerp(0.f, MaxBlinkSpeed, Alpha);
-		UE_LOG(LogTemp, Log, TEXT("Alpha: %f, CurrentSpeed: %f"), Alpha, CurrentBlinkSpeed);
 		Mesh->SetScalarParameterValueOnMaterials(TEXT("BlinkSpeed"), CurrentBlinkSpeed);
 
 		ElapsedBlinkTime += 0.01f;
@@ -131,4 +132,18 @@ bool ALeaf::CheckPlayerWithSphere(const float InRadius, FHitResult& Result)
 
 	const APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(Result.GetActor());
 	return Player != nullptr;
+}
+
+void ALeaf::IncreaseHealth(const float Value)
+{
+	Health += Value;
+}
+
+void ALeaf::DecreaseHealth(const float Value)
+{
+	Health -= Value;
+	if (Health <= 0)
+	{
+		Destroy();
+	}
 }
