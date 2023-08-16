@@ -3,13 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PPSettingUIWidget.h"
+#include "Sound/SoundCue.h"
 #include "GameFramework/Actor.h"
 #include "Components/WidgetComponent.h"
+#include "ProjectP/UI/Setting/PPSettingUIWidget.h"
 #include "ProjectP/Enumeration/PPSubWidgetType.h"
 #include "PPSettingBaseActor.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FMainWidgetDelegate)
+
 UCLASS()
 class PROJECTP_API APPSettingBaseActor : public AActor
 {
@@ -44,6 +46,13 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	FTimerHandle SubWidgetOpenTimer;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<USoundCue> WidgetOpenSoundCue;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<USoundCue> WidgetCloseSoundCue;
+	
 	/*
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	FTimerHandle SubWidgetContentOpacityTimer;

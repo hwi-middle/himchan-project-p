@@ -37,13 +37,14 @@ FStringDataTable* UPPGameInstance::GetStringDataTable(const FName RowName)
 
 TObjectPtr<USoundCue> UPPGameInstance::GetSoundCue(const FString SoundName)
 {
+	//check(SoundCueMap.Contains(SoundName));
 	if(SoundCueMap.Contains(SoundName))
 	{
 		return SoundCueMap[SoundName];
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("!!! Access invalid SoundKey !!!"));
+		UE_LOG(LogTemp, Log, TEXT("Access invalid SoundKey by %s"), *SoundName);
 		return nullptr;
 	}
 }

@@ -3,6 +3,9 @@
 
 #include "ProjectP/UI/Tutorial/PPTriggerWidgetBase.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
+#include "ProjectP/Constant/PPSoundName.h"
+#include "ProjectP/Game/PPGameInstance.h"
 
 // Sets default values
 APPTriggerWidgetBase::APPTriggerWidgetBase()
@@ -21,10 +24,16 @@ APPTriggerWidgetBase::APPTriggerWidgetBase()
 void APPTriggerWidgetBase::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	TutorialWidget = CastChecked<UPPTutorialUIWidget>(TutorialWidgetComponent->GetUserWidgetObject());
 	//TutorialWidget->SetBackgroundOpacity(0.0f);
 	TutorialWidget->SetPadding(FMargin(WidgetHalfWidthValue, TutorialWidget->GetPadding().Top, WidgetHalfWidthValue, TutorialWidget->GetPadding().Bottom));
 	TutorialWidget->SetGuidePanelOpacity(0.0f);
+	
+	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	TriggerEnterSoundCue = GameInstance->GetSoundCue(WIDGET_OPEN_SOUND);
+	TriggerOutSoundCue = GameInstance->GetSoundCue(WIDGET_CLOSE_SOUND);
+	bIsFirstTriggered = true;
 }
 
 // Called every frame
@@ -37,12 +46,18 @@ void APPTriggerWidgetBase::Tick(float DeltaTime)
 void APPTriggerWidgetBase::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-
+	
 	TObjectPtr<ACharacter> Player = Cast<ACharacter>(OtherActor);
 	if(Player)
 	{
 		OverlapActor = OtherActor;
-
+		if(bIsFirstTriggered)
+		{
+			UGameplayStatics::PlaySound2D(this, CommanderSoundCue);
+			bIsFirstTriggered = false;
+		}
+		UGameplayStatics::PlaySound2D(this, TriggerEnterSoundCue);
+		
 		// 애니메이션 도중 이벤트 발생시 기존 애니메이션 중지
 		if(GetWorldTimerManager().IsTimerActive(BackgroundOpacityTimer) || GetWorldTimerManager().IsTimerActive(GuidePanelOpacityTimer))
 		{
@@ -78,6 +93,8 @@ void APPTriggerWidgetBase::NotifyActorEndOverlap(AActor* OtherActor)
 	TObjectPtr<ACharacter> Player = Cast<ACharacter>(OtherActor);
 	if(Player)
 	{
+		UGameplayStatics::PlaySound2D(this, TriggerOutSoundCue);
+		
 		// 애니메이션 도중 이벤트 발생시 기존 애니메이션 중지
 		if(GetWorldTimerManager().IsTimerActive(BackgroundOpacityTimer) || GetWorldTimerManager().IsTimerActive(GuidePanelOpacityTimer))
 		{

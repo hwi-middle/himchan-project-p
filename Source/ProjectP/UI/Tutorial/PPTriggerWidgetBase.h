@@ -7,6 +7,7 @@
 #include "Components/WidgetComponent.h"
 #include "ProjectP/UI/Tutorial/PPTutorialUIWidget.h"
 #include "GameFramework/Actor.h"
+#include "Sound/SoundCue.h"
 #include "PPTriggerWidgetBase.generated.h"
 
 UCLASS()
@@ -57,6 +58,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
 	float WidgetRotateDelay;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	uint32 bIsFirstTriggered : 1;
 	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
 	FTimerHandle BackgroundOpacityTimer;
@@ -66,4 +70,13 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
 	FTimerHandle TurnToPlayerTimer;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<USoundCue> TriggerEnterSoundCue;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<USoundCue> TriggerOutSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<USoundCue> CommanderSoundCue;
 };

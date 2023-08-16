@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "GameFramework/Pawn.h"
+#include "Sound/SoundCue.h"
 #include "PPVRPawn.generated.h"
 
 UCLASS()
@@ -54,6 +55,13 @@ private:
 	TObjectPtr<class UFloatingPawnMovement> FloatingPawnMovement;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USoundCue> WalkSoundCue;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USoundCue> SprintSoundCue;
+	
+private:
 	UPROPERTY()
 	TObjectPtr<class UInputMappingContext> InputMappingContext;
 
@@ -95,6 +103,15 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UInputAction> RightBButtonPressAction;
+
+	UPROPERTY()
+	FTimerHandle MoveSoundTimerHandle;
+
+	UPROPERTY()
+	float WalkSoundRate;
+
+	UPROPERTY()
+	float SprintSoundRate;
 	
 	UPROPERTY()
 	float SnapTurnDegrees;
@@ -104,7 +121,7 @@ private:
 	
 	UPROPERTY()
 	float WidgetInteractionDistance;
-	
+
 private:
 	void Move(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
@@ -116,7 +133,8 @@ private:
 	void PointRight(const FInputActionValue& Value);
 	void ThumbUpLeft(const FInputActionValue& Value);
 	void ThumbUpRight(const FInputActionValue& Value);
-	void DisableSprint(const FInputActionValue& Value);
+	void StartMove(const FInputActionValue& Value);
+	void CompleteMove(const FInputActionValue& Value);
 	void ToggleSprint(const FInputActionValue& Value);
 	void ToggleFlash(const FInputActionValue& Value);
 	
