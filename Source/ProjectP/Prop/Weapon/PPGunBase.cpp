@@ -74,6 +74,8 @@ void APPGunBase::Tick(float DeltaTime)
 		return;
 	}
 	
+	WeaponMesh->SetScalarParameterValueOnMaterials(TEXT("Alpha"), CurrentOverheat / MaxOverheat);
+	
 	float Distance = 1000.f;
 	FVector StartLocation = WeaponMesh->GetSocketLocation(GUN_MUZZLE);
 	FVector ForwardVector = WeaponMesh->GetSocketTransform(GUN_MUZZLE).GetUnitAxis(EAxis::X);
