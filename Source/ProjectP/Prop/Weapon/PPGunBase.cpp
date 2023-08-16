@@ -173,14 +173,13 @@ void APPGunBase::PressTrigger()
 void APPGunBase::OnFire()
 {
 	const float DeltaTime = GetWorld()->DeltaTimeSeconds;
-	constexpr float TimerRate = 0.01f;
 
 	// 게이지가 0인 상태에서 발사할 때 부터 게이지 감소가 시작
 	if (CurrentOverheat <= KINDA_SMALL_NUMBER)
 	{
 		GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
-			CurrentOverheat -= OverheatCoolDownPerSecond * TimerRate;
+			CurrentOverheat -= OverheatCoolDownPerSecond * 0.01f;
 			UE_LOG(LogTemp, Log, TEXT("Cooldowned: %f"), CurrentOverheat);
 			if (CurrentOverheat < KINDA_SMALL_NUMBER)
 			{
@@ -188,7 +187,7 @@ void APPGunBase::OnFire()
 				CurrentOverheat = 0.f;
 				GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
 			}
-		}), TimerRate, true);
+		}), 0.01f, true);
 	}
 
 	ElapsedTimeAfterLastShoot += DeltaTime;
@@ -207,7 +206,7 @@ void APPGunBase::OnFire()
 		
 		if (AimingActor)
 		{
-			if (APPCharacterBoss* Enemy = Cast<APPCharacterBoss>(AimingActor))
+			if (ICharacterStatusInterface* Enemy = Cast<ICharacterStatusInterface>(AimingActor))
 			{
 				const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
 				

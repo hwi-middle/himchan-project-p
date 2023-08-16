@@ -28,7 +28,7 @@ public:
 	
 	// StatusInterface override
 protected:
-	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
+	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData);
 //	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
 //	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
 

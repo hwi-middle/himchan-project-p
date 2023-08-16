@@ -27,7 +27,12 @@ APPCharacterBoss::APPCharacterBoss()
 	RootComponent = TempMesh;
 
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
+}
 
+void APPCharacterBoss::BeginPlay()
+{
+	Super::BeginPlay();
+	
 	VG_TentacleNum = BossGimmickData->VG_TentacleNum;
 	VG_MinDistance = BossGimmickData->VG_MinDistance;
 	VG_MaxDistance = BossGimmickData->VG_MaxDistance;
@@ -37,19 +42,6 @@ APPCharacterBoss::APPCharacterBoss()
 	GF_Damage = BossGimmickData->GF_Damage;
 	GF_Duration = BossGimmickData->GF_Duration;
 	GF_Radius = BossGimmickData->GF_Radius;
-}
-
-void APPCharacterBoss::SetupCharacterStatusData(UDataAsset* CharacterStatusData)
-{
-
-}
-
-void APPCharacterBoss::BeginPlay()
-{
-	Super::BeginPlay();
-	//GenerateTentaclesOnRandomLocation(5);
-	//GenerateToxicFog();
-	//GenerateLeafTempestOnRandomLocation(10);
 }
 
 void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
@@ -165,7 +157,7 @@ void APPCharacterBoss::GenerateToxicFog()
 		);
 		// TestOnly
 		FlushPersistentDebugLines(GetWorld());
-		DrawDebugSphere(GetWorld(), GetActorLocation(), GF_Radius*2, 64, FColor::Green, false, 1.f);
+		DrawDebugSphere(GetWorld(), GetActorLocation(), GF_Radius, 64, FColor::Green, false, 1.f);
 		//
 		GF_ElapsedTime += 1.f;
 		if (!bHit)
@@ -181,7 +173,7 @@ void APPCharacterBoss::GenerateToxicFog()
 		
 		FDamageEvent DamageEvent;
 		Player->TakeDamage(GF_Damage, DamageEvent, nullptr, this);
-	}), 1.f, true);
+	}), 1.f, true, 0.f);
 }
 
 void APPCharacterBoss::IncreaseHealth(const float Value)
