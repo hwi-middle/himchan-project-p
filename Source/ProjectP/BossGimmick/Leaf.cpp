@@ -31,6 +31,8 @@ ALeaf::ALeaf()
 	MaxBlinkSpeed = BossGimmickData->LT_BlinkSpeed;
 
 	Tags.Add(TEXT("DestructibleObject"));
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	bIsActivated = false;
 }
 
