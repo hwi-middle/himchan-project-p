@@ -30,6 +30,7 @@ ALeaf::ALeaf()
 	BlinkDuration = BossGimmickData->LT_BlinkDuration;
 	MaxBlinkSpeed = BossGimmickData->LT_BlinkSpeed;
 
+	Tags.Add(TEXT("DestructibleObject"));
 	bIsActivated = false;
 }
 
