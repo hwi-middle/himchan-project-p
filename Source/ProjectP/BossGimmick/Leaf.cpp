@@ -7,8 +7,10 @@
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Character/PPCharacterPlayer.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
+#include "ProjectP/Util/PPSoundData.h"
 
 // Sets default values
 ALeaf::ALeaf()
@@ -29,7 +31,8 @@ ALeaf::ALeaf()
 	ElapsedTraceTime = 0.f;
 	BlinkDuration = BossGimmickData->LT_BlinkDuration;
 	MaxBlinkSpeed = BossGimmickData->LT_BlinkSpeed;
-
+	DestroySpeed = BossGimmickData->LT_DestroySpeed;
+	
 	Tags.Add(TEXT("DestructibleObject"));
 	Mesh->SetSimulatePhysics(false);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -42,6 +45,11 @@ ALeaf::ALeaf()
 void ALeaf::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	const UPPSoundData* SoundData = GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->GetSoundData();
+	ExplodeSoundCue = SoundData->BossLeafTempestExplodeSoundCue;
+	DestroySoundCue = SoundData->BossLeafTempestDestroySoundCue;
+	
 	Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 }
 
@@ -98,7 +106,7 @@ void ALeaf::BlinkAndExplode()
 				FDamageEvent DamageEvent;
 				HitResult.GetActor()->TakeDamage(10.f, DamageEvent, nullptr, this);
 			}
-
+			UGameplayStatics::PlaySound2D(this, ExplodeSoundCue);
 			GetWorldTimerManager().ClearTimer(BlinkTimerHandle);
 			Destroy();
 		}
@@ -144,6 +152,24 @@ void ALeaf::DecreaseHealth(const float Value)
 	Health -= Value;
 	if (Health <= 0)
 	{
-		Destroy();
+		if(GetWorldTimerManager().IsTimerActive(BlinkTimerHandle))
+		{
+			GetWorldTimerManager().ClearTimer(BlinkTimerHandle);
+		}
+		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		UGameplayStatics::PlaySound2D(this, DestroySoundCue);
+		bIsActivated = false;
+		
+		GetWorldTimerManager().SetTimer(DestroyEffectTimerHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			float CurrentOpacity = 0.0f;
+			Mesh->GetMaterial(0)->GetScalarParameterValue(TEXT("Opacity"), CurrentOpacity);
+			if(CurrentOpacity <= 0.0f)
+			{
+				GetWorldTimerManager().ClearTimer(DestroyEffectTimerHandle);
+				Destroy();
+			}
+			Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), CurrentOpacity - DestroySpeed);
+		}), 0.01f, true);
 	}
 }

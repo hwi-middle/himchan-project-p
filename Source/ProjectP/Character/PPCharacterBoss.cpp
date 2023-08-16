@@ -12,6 +12,7 @@
 #include "ProjectP/BossGimmick/Leaf.h"
 #include "ProjectP/BossGimmick/PPBossGimmickData.h"
 #include "ProjectP/BossGimmick/PPTentacle.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 
 APPCharacterBoss::APPCharacterBoss()
@@ -27,6 +28,7 @@ APPCharacterBoss::APPCharacterBoss()
 	RootComponent = TempMesh;
 
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
+	bHasGFSpawned = false;
 }
 
 void APPCharacterBoss::BeginPlay()
@@ -42,11 +44,19 @@ void APPCharacterBoss::BeginPlay()
 	GF_Damage = BossGimmickData->GF_Damage;
 	GF_Duration = BossGimmickData->GF_Duration;
 	GF_Radius = BossGimmickData->GF_Radius;
+
+	const UPPSoundData* SoundData = GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->GetSoundData();
+	
+	VG_OmenSound = SoundData->BossVineGardenOmenSoundCue;
+	LT_OmenSound = SoundData->BossLeafTempestOmenSoundCue;
+	GF_OmenSound = SoundData->BossGreenFogOmenSoundCue;
+	GF_SpawnSound = SoundData->BossGreenFogSpawnSoundCue;
 }
 
 void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 {
 	uint32 GeneratedNum = 0;
+	UGameplayStatics::PlaySound2D(this, VG_OmenSound);
 	while (GeneratedNum < InNum)
 	{
 		FVector2d RandomPont = FMath::RandPointInCircle(VG_MaxDistance);
@@ -90,6 +100,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 {
 	uint32 GeneratedNum = 0;
+	UGameplayStatics::PlaySound2D(this, LT_OmenSound);
 	while (GeneratedNum < InNum)
 	{
 		FVector2d RandomPont = FMath::RandPointInCircle(VG_MaxDistance);
@@ -133,10 +144,18 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 void APPCharacterBoss::GenerateToxicFog()
 {
 	GF_ElapsedTime = 0.f;
+	UGameplayStatics::PlaySound2D(this, GF_OmenSound);
 	GetWorldTimerManager().SetTimer(GreenFogTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
+		if(!bHasGFSpawned)
+		{
+			UGameplayStatics::PlaySound2D(this, GF_SpawnSound);
+			bHasGFSpawned = true;
+		}
+		
 		if (GF_ElapsedTime >= GF_Duration)
 		{
+			bHasGFSpawned = false;
 			GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
 			return;
 		}

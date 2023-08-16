@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ProjectP/Interface/CharacterStatusInterface.h"
+#include "Sound/SoundCue.h"
 #include "Leaf.generated.h"
 
 UCLASS()
@@ -79,6 +80,9 @@ private:
 	float ElapsedBlinkTime;
 
 	UPROPERTY()
+	float DestroySpeed;
+	
+	UPROPERTY()
 	uint32 bIsActivated : 1;
 
 	UPROPERTY()
@@ -89,4 +93,13 @@ private:
 
 	UPROPERTY()
 	FTimerHandle DestroyTimerHandle;
+
+	UPROPERTY()
+	FTimerHandle DestroyEffectTimerHandle;
+	
+	UPROPERTY()
+	TObjectPtr<USoundCue> ExplodeSoundCue;
+
+	UPROPERTY()
+	TObjectPtr<USoundCue> DestroySoundCue;
 };

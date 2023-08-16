@@ -64,16 +64,10 @@ public:
 public:
 	UPROPERTY(EditAnywhere, Category = "Boss")
 	TObjectPtr<USoundCue> BossVineGardenOmenSoundCue;
-
-	UPROPERTY(EditAnywhere, Category = "Boss")
-	TObjectPtr<USoundCue> BossVineGardenSpawnSoundCue;
-
+	
 	UPROPERTY(EditAnywhere, Category = "Boss")
 	TObjectPtr<USoundCue> BossLeafTempestOmenSoundCue;
-
-	UPROPERTY(EditAnywhere, Category = "Boss")
-	TObjectPtr<USoundCue> BossLeafTempestSpawnSoundCue;
-
+	
 	UPROPERTY(EditAnywhere, Category = "Boss")
 	TObjectPtr<USoundCue> BossLeafTempestExplodeSoundCue;
 

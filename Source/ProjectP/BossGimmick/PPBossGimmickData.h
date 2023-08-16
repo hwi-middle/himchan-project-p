@@ -67,6 +67,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="BlinkSpeed")
 	float LT_BlinkSpeed;
+
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="DestroySpeed(0.0 ~ 1.0)")
+	float LT_DestroySpeed;
 	
 	// 녹빛 안개
 	UPROPERTY(EditDefaultsOnly, Category = GreenFog, DisplayName="Damage")
