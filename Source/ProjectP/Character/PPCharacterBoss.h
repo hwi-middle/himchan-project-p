@@ -25,7 +25,7 @@ public:
 	void TestPattern(EBossPattern Pattern, uint32 Num = 0);
 	
 protected:
-	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
+	//virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
 	virtual void BeginPlay() override;
 	
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }

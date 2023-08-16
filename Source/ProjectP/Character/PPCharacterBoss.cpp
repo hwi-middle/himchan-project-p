@@ -29,11 +29,6 @@ APPCharacterBoss::APPCharacterBoss()
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
 }
 
-void APPCharacterBoss::SetupCharacterStatusData(UDataAsset* CharacterStatusData)
-{
-
-}
-
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
@@ -138,7 +133,6 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 void APPCharacterBoss::GenerateToxicFog()
 {
 	GF_ElapsedTime = 0.f;
-	UE_LOG(LogTemp, Log, TEXT("GF_Radius: %f"), GF_Radius);
 	GetWorldTimerManager().SetTimer(GreenFogTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
 		if (GF_ElapsedTime >= GF_Duration)

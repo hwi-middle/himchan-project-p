@@ -24,11 +24,12 @@ class PROJECTP_API ICharacterStatusInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 protected:
 	// 기본 생성자 및 상태 변환
-	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) = 0;
+	//virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) = 0;
 	
 	// virtual void SetCharacterState(const ECharacterState EState) = 0;
 	// const virtual ECharacterState GetCurrentState() = 0;
 
+public:
 	virtual void IncreaseHealth(const float Value) = 0;
 	virtual void DecreaseHealth(const float Value) = 0;
 	const virtual float GetCurrentHealth() = 0;

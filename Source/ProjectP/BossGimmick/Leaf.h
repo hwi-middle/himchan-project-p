@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ProjectP/Interface/CharacterStatusInterface.h"
 #include "Leaf.generated.h"
 
 UCLASS()
-class PROJECTP_API ALeaf : public AActor
+class PROJECTP_API ALeaf : public AActor, public ICharacterStatusInterface
 {
 	GENERATED_BODY()
 
@@ -30,8 +31,14 @@ public:
 	void StartTracing();
 	void BlinkAndExplode();
 	bool CheckPlayerWithSphere(float InRadius, FHitResult& Result);
+	virtual void IncreaseHealth(const float Value) override;
+	virtual void DecreaseHealth(const float Value) override;
+	const virtual float GetCurrentHealth() override { return Health; }
 
 private:
+	UPROPERTY()
+	float Health;
+
 	UPROPERTY()
 	TObjectPtr<class UStaticMeshComponent> Mesh;
 
@@ -40,7 +47,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AActor> Target;
-	
+
 	UPROPERTY()
 	float Damage;
 
@@ -49,13 +56,13 @@ private:
 
 	UPROPERTY()
 	float RotateSpeed;
-	
+
 	UPROPERTY()
 	float TraceStartDelay;
 
 	UPROPERTY()
 	float ElapsedTraceTime;
-	
+
 	UPROPERTY()
 	float TraceDuration;
 
@@ -76,12 +83,10 @@ private:
 
 	UPROPERTY()
 	FTimerHandle DelayTracingTimerHandle;
-	
+
 	UPROPERTY()
 	FTimerHandle BlinkTimerHandle;
-	
+
 	UPROPERTY()
 	FTimerHandle DestroyTimerHandle;
-
-	
 };
