@@ -29,8 +29,17 @@ public:
 	// Gun
 public:
 	UPROPERTY(EditAnywhere, Category = "Gun")
-	TObjectPtr<USoundCue> GunOnFireSoundCue;
+	TObjectPtr<USoundCue> GunOnFireTypeASoundCue;
 
+	UPROPERTY(EditAnywhere, Category = "Gun")
+	TObjectPtr<USoundCue> GunOnFireTypeBSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Gun")
+	TObjectPtr<USoundCue> GunOnFireTypeCSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Gun")
+	TObjectPtr<USoundCue> GunOnFireTypeDSoundCue;
+	
 	UPROPERTY(EditAnywhere, Category = "Gun")
 	TObjectPtr<USoundCue> GunGrabOnHandSoundCue;
 

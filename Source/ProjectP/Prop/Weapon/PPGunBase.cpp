@@ -68,7 +68,7 @@ void APPGunBase::BeginPlay()
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 
 	GrabOnHandSoundCue = GameInstance->GetSoundData()->GunGrabOnHandSoundCue;
-	OnFireSoundCue = GameInstance->GetSoundData()->GunOnFireSoundCue;
+	OnFireSoundCue = GameInstance->GetSoundData()->GunOnFireTypeASoundCue;
 	CoolDownSoundCue = GameInstance->GetSoundData()->GunCoolDownSoundCue;
 	OverheatSoundCue = GameInstance->GetSoundData()->GunOverheatSoundCue;
 	ToggleFlashSoundCue = GameInstance->GetSoundData()->GunToggleFlashSoundCue;
