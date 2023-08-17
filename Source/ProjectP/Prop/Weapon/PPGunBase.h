@@ -53,6 +53,9 @@ private:
 	TObjectPtr<class UStaticMeshComponent> CrossHairPlane;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TObjectPtr<class UNiagaraComponent> MuzzleNiagaraEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TObjectPtr<USpotLightComponent> Flashlight;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
@@ -97,6 +100,8 @@ private:
 	// UPROPERTY()
 	// uint32 bIsOverheated : 1;
 
+	UPROPERTY()
+	uint32 bIsOnShooting : 1;
 	UPROPERTY()
 	uint32 bIsUnavailable : 1;
 

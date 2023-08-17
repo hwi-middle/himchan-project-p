@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "InputCoreTypes.h"
+#include "NiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Character/PPCharacterBase.h"
 #include "ProjectP/Character/PPCharacterBoss.h"
@@ -34,6 +35,11 @@ APPGunBase::APPGunBase()
 	CrossHairPlane->SetVisibility(false);
 	CrossHairPlane->SetupAttachment(WeaponMesh);
 
+	MuzzleNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MuzzleVFX"));
+	UNiagaraSystem* MuzzleNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(TEXT("/Script/Niagara.NiagaraSystem'/Game/Project-P/VFX/GUN_Fire/NS_Flash.NS_Flash'"), EAssertionLevel::Check);
+	MuzzleNiagaraEffect->SetAsset(MuzzleNiagaraSystem);
+	MuzzleNiagaraEffect->SetActive(false);
+	
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
 	Flashlight->SetupAttachment(WeaponMesh);
@@ -47,6 +53,7 @@ APPGunBase::APPGunBase()
 	LeftHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Left.IMC_Weapon_Left'"), EAssertionLevel::Check);
 	RightHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Right.IMC_Weapon_Right'"), EAssertionLevel::Check);
 
+	bIsOnShooting = false;
 	bIsFlashlightEnable = false;
 	bIsUnavailable = false;
 	bHeld = false;
@@ -60,7 +67,8 @@ void APPGunBase::BeginPlay()
 	GrabComponentCasted->OnGrab.AddUObject(this, &APPGunBase::GrabOnHand);
 	GrabComponentCasted->OnRelease.AddUObject(this, &APPGunBase::ReleaseOnHand);
 	GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_GRIP));
-
+	MuzzleNiagaraEffect->SetActive(false);
+	
 	Flashlight->SetWorldLocation(WeaponMesh->GetSocketLocation(GUN_FLASH));
 	Flashlight->SetWorldRotation(WeaponMesh->GetSocketRotation(GUN_FLASH));
 }
@@ -73,6 +81,9 @@ void APPGunBase::Tick(float DeltaTime)
 	{
 		return;
 	}
+
+	MuzzleNiagaraEffect->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_MUZZLE));
+	MuzzleNiagaraEffect->SetRelativeRotation(WeaponMesh->GetSocketRotation(GUN_MUZZLE));
 	
 	WeaponMesh->SetScalarParameterValueOnMaterials(TEXT("Alpha"), CurrentOverheat / MaxOverheat);
 	
@@ -165,7 +176,11 @@ void APPGunBase::PressTrigger()
 void APPGunBase::OnFire()
 {
 	const float DeltaTime = GetWorld()->DeltaTimeSeconds;
-
+	if(!bIsOnShooting)
+	{
+		bIsOnShooting = true;
+		MuzzleNiagaraEffect->SetActive(true);
+	}
 	// 게이지가 0인 상태에서 발사할 때 부터 게이지 감소가 시작
 	if (CurrentOverheat <= KINDA_SMALL_NUMBER)
 	{
@@ -239,6 +254,7 @@ void APPGunBase::OnFire()
 
 void APPGunBase::StopFire()
 {
+	bIsOnShooting = false;
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot;
 }
 
