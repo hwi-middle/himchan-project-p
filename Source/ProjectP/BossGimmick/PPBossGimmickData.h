@@ -38,43 +38,43 @@ public:
 	float VG_WarningDuration;
 
 	// 리프 템페스트
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="Damage")
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="Damage")
 	float LT_Damage;
 
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="LeafNum")
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="LeafNum")
 	uint32 LT_LeafNum;
 
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="TraceStartDelay")
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="TraceStartDelay")
 	float LT_TraceStartDelay;
 
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="MoveSpeed")
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="MinMoveSpeed")
 	float LT_MinMoveSpeed;
 
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="MoveSpeed")
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="MaxMoveSpeed")
 	float LT_MaxMoveSpeed;
 	
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="RotateSpeed")
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="MinRotateSpeed")
 	float LT_MinRotateSpeed;
 	
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="MoveSpeed")
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="MaxRotateSpeed")
 	float LT_MaxRotateSpeed;
 	
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="TraceDuration")
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="TraceDuration")
 	float LT_TraceDuration;
 
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="ExplodeDelay")
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="ExplodeDelay")
 	float LT_BlinkDuration;
 	
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="BlinkSpeed")
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="BlinkSpeed")
 	float LT_BlinkSpeed;
 	
 	// 녹빛 안개
-	UPROPERTY(EditDefaultsOnly, Category = GreenFog, DisplayName="Damage")
+	UPROPERTY(EditDefaultsOnly, Category = GreenFogData, DisplayName="Damage")
 	float GF_Damage;
 	
-	UPROPERTY(EditDefaultsOnly, Category = GreenFog, DisplayName="Duration")
+	UPROPERTY(EditDefaultsOnly, Category = GreenFogData, DisplayName="Duration")
 	float GF_Duration;
 
-	UPROPERTY(EditDefaultsOnly, Category = GreenFog, DisplayName="Radius")
+	UPROPERTY(EditDefaultsOnly, Category = GreenFogData, DisplayName="Radius")
 	float GF_Radius;
 };
