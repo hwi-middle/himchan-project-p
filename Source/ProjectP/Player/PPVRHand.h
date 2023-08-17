@@ -69,7 +69,6 @@ public:
 	void SetPoseAlphaThumbUp(const float Value);
 	void SetPoseAlphaPoint(const float Value);
 	void WidgetInteractionToggle(const float Value);
-	FORCEINLINE void DisableWidgetInteraction() { HandWidgetInteraction->InteractionDistance = 0.0f; };
 	void InitHand();
 	void ResetHandMesh();
 
@@ -79,6 +78,8 @@ public:
 	FORCEINLINE EControllerHand GetHandType() const { return HandType; }
 	FORCEINLINE class UPPVRGrabComponent* GetHeldComponent() const { return HeldComponent; }
 
+	// TestOnly
 private:
-	void SeupWidgetComponent();
+	void SetupWidgetComponent();
+	void SetupDebugWidget();
 };
