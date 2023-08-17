@@ -141,6 +141,7 @@ void APPCharacterBoss::GenerateToxicFog()
 	{
 		if (GF_ElapsedTime >= GF_Duration)
 		{
+			FlushPersistentDebugLines(GetWorld());
 			GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
 			return;
 		}
@@ -160,7 +161,7 @@ void APPCharacterBoss::GenerateToxicFog()
 			CollisionParams
 		);
 		// TestOnly
-		FlushPersistentDebugLines(GetWorld());
+		// FlushPersistentDebugLines(GetWorld());
 		DrawDebugSphere(GetWorld(), GetActorLocation(), GF_Radius, 64, FColor::Green, false, 1.f);
 		//
 		GF_ElapsedTime += 1.f;
