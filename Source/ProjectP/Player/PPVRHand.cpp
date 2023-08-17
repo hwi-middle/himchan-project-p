@@ -5,6 +5,7 @@
 
 #include "MotionControllerComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "ProjectP/Animation/PPVRHandAnimInstance.h"
@@ -23,13 +24,13 @@ APPVRHand::APPVRHand()
 	HandMesh->SetupAttachment(MotionController);
 	HandAnimInstanceClass = FPPConstructorHelper::FindAndGetClass<UPPVRHandAnimInstance>(TEXT("/Game/15-Basic-Movement/Animation/Hand/ABP_VRHand.ABP_VRHand_C"), EAssertionLevel::Check);
 	HandMesh->SetAnimInstanceClass(HandAnimInstanceClass);
+	
 	HandWidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteraction"));
 	HandWidgetInteraction->SetupAttachment(MotionController);
+	HandWidgetInteraction->SetActive(false);
+
+	DebugWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugWidget"));
 	
-	HandWidgetInteraction->TraceChannel = ECC_Visibility;
-	HandWidgetInteraction->InteractionDistance = 300.0f;
-	HandWidgetInteraction->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
-	HandWidgetInteraction->bShowDebug = true;
 }
 
 // Called when the game starts or when spawned
@@ -99,8 +100,11 @@ void APPVRHand::SetPoseAlphaGrasp(const float Value)
 void APPVRHand::SetPoseAlphaIndexCurl(const float Value)
 {
 	AnimInstance->SetPoseAlphaIndexCurl(Value);
-	static constexpr float WidgetInteractionThreshold = 0.2f;
-	Value > WidgetInteractionThreshold ? this->HandWidgetInteraction->PressPointerKey(TEXT("LeftMouseButton")) : this->HandWidgetInteraction->ReleasePointerKey(TEXT("LeftMouseButton"));
+	if(GetHandType() == EControllerHand::Left)
+	{
+		static constexpr float WidgetInteractionThreshold = 0.2f;
+		Value > WidgetInteractionThreshold ? this->HandWidgetInteraction->PressPointerKey(TEXT("LeftMouseButton")) : this->HandWidgetInteraction->ReleasePointerKey(TEXT("LeftMouseButton"));
+	}
 }
 
 void APPVRHand::SetPoseAlphaThumbUp(const float Value)
@@ -116,8 +120,11 @@ void APPVRHand::SetPoseAlphaPoint(const float Value)
 void APPVRHand::WidgetInteractionToggle(const float Value)
 {
 	// SetActive로 제어하려니 작동이 제대로 안되서 크기 조정으로 대체
-	bool bIsActivated = abs( HandWidgetInteraction->InteractionDistance - Value) <= KINDA_SMALL_NUMBER;
-	HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;
+	if(GetHandType() == EControllerHand::Left)
+	{
+		bool bIsActivated = abs( HandWidgetInteraction->InteractionDistance - Value) <= KINDA_SMALL_NUMBER;
+		HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;
+	}
 }
 
 void APPVRHand::InitHand()
@@ -131,6 +138,7 @@ void APPVRHand::InitHand()
 		HandMesh->SetRelativeRotation(FRotator(0.f, 180.f, 90.f));
 		Path = TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_left.SKM_MannyXR_left'");
 		SetActorLabel(TEXT("LeftHand"));
+		SeupWidgetComponent();
 		break;
 	case EControllerHand::Right:
 		HandMesh->SetRelativeRotation(FRotator(0.f, 0.f, 90.f));
@@ -151,4 +159,13 @@ void APPVRHand::ResetHandMesh()
 {
 	HandMesh->AttachToComponent(MotionController, FAttachmentTransformRules::KeepWorldTransform);
 	HandMesh->SetRelativeTransform(InitHandMeshRelativeTransform, false, nullptr, ETeleportType::TeleportPhysics);
+}
+
+void APPVRHand::SeupWidgetComponent()
+{
+	HandWidgetInteraction->TraceChannel = ECC_Visibility;
+	HandWidgetInteraction->InteractionDistance = 300.0f;
+	HandWidgetInteraction->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+	HandWidgetInteraction->bShowDebug = true;
+	HandWidgetInteraction->SetActive(true);
 }

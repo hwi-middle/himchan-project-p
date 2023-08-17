@@ -55,6 +55,9 @@ private:
 	TObjectPtr<class UPPVRGrabComponent> HeldComponent;
 
 	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UWidgetComponent> DebugWidgetComponent;
+	
+	UPROPERTY(VisibleAnywhere)
 	FTransform InitHandMeshRelativeTransform;
 
 public:
@@ -75,4 +78,7 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetHandMesh() const { return HandMesh; }
 	FORCEINLINE EControllerHand GetHandType() const { return HandType; }
 	FORCEINLINE class UPPVRGrabComponent* GetHeldComponent() const { return HeldComponent; }
+
+private:
+	void SeupWidgetComponent();
 };
