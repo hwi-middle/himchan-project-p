@@ -45,6 +45,9 @@ private:
 	float GunCurrentOverheatGauge;
 
 	UPROPERTY()
+	float GunUnavailableTimeRemains;
+	
+	UPROPERTY()
 	FString GunAimingActorName;
 	
 };

@@ -20,6 +20,4 @@ void UPPBossHealthBarWidget::NativeTick(const FGeometry& MyGeometry, float InDel
 	CurrentHealth = BossCharacter->GetCurrentHealth();
 	float HealthBarPercent = CurrentHealth / MaxHealth;
 	HealthBar->SetPercent(HealthBarPercent);
-	
-	UE_LOG(LogTemp, Log, TEXT("CurrentHealth : %f"), CurrentHealth);
 }

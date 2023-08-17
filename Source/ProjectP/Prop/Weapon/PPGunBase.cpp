@@ -215,10 +215,25 @@ void APPGunBase::OnFire()
 	if (CurrentOverheat > MaxOverheat)
 	{
 		bIsUnavailable = true;
+		// TestOnly
+		CurrentUnavailableTime = UnavailableTime;
+		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			CurrentUnavailableTime -= 0.01f;
+			if(CurrentUnavailableTime <= 0.0f)
+			{
+				bIsUnavailable = false;
+				GetWorldTimerManager().ClearTimer(BlockShootTimerHandle);
+			}
+		}), 0.01f, true);
+		//
+		
+		/*
 		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
 			bIsUnavailable = false;
 		}), UnavailableTime, false);
+		*/
 	}
 }
 
