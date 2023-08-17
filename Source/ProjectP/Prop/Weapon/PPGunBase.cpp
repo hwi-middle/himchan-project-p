@@ -26,7 +26,7 @@ APPGunBase::APPGunBase()
 
 	CrossHairPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrossHairPlane"));
 	DefaultCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair.SM_CrossHair'"), EAssertionLevel::Check);
-	DetectedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair_Detect.SM_CrossHair_Detect'"), EAssertionLevel::Check);
+	OverheatedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair_Detect.SM_CrossHair_Detect'"), EAssertionLevel::Check);
 	CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 	CrossHairPlane->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CrossHairPlane->SetCollisionObjectType(ECC_WorldStatic);
@@ -57,6 +57,7 @@ APPGunBase::APPGunBase()
 	bIsFlashlightEnable = false;
 	bIsUnavailable = false;
 	bHeld = false;
+	LineColor = FColor::Green;
 	CurrentOverheat = 0;
 }
 
@@ -103,7 +104,6 @@ void APPGunBase::Tick(float DeltaTime)
 		ECC_Visibility,
 		CollisionParams
 	);
-	FColor LineColor = FColor::Green;
 
 	if (!bHit)
 	{
@@ -121,22 +121,15 @@ void APPGunBase::Tick(float DeltaTime)
 	{
 		return;
 	}
-	CrossHairPlane->SetVisibility(true);
+	
 	// 테스트용 태그. 나중에 태그 모음집 헤더파일 만들어서 관리하기?
 	if (AimingActor->Tags.Contains("DestructibleObject"))
 	{
-		if (CrossHairPlane->GetStaticMesh() != DetectedCrossHair)
-		{
-			CrossHairPlane->SetStaticMesh(DetectedCrossHair);
-		}
-		LineColor = FColor::Red;
+		CrossHairPlane->SetVisibility(true);
 	}
 	else
 	{
-		if (CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
-		{
-			CrossHairPlane->SetStaticMesh(DefaultCrossHair);
-		}
+		CrossHairPlane->SetVisibility(false);
 	}
 	// FlushPersistentDebugLines(GetWorld());
 	DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, -1, 0, 1.0f);
@@ -232,12 +225,20 @@ void APPGunBase::OnFire()
 		bIsUnavailable = true;
 		// TestOnly
 		CurrentUnavailableTime = UnavailableTime;
+		if (CrossHairPlane->GetStaticMesh() != OverheatedCrossHair)
+		{
+			CrossHairPlane->SetStaticMesh(OverheatedCrossHair);
+		}
+		LineColor = FColor::Red;
+		
 		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
 			CurrentUnavailableTime -= 0.01f;
 			if(CurrentUnavailableTime <= 0.0f)
 			{
 				bIsUnavailable = false;
+				LineColor = FColor::Green;
+				CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 				GetWorldTimerManager().ClearTimer(BlockShootTimerHandle);
 			}
 		}), 0.01f, true);
@@ -255,6 +256,7 @@ void APPGunBase::OnFire()
 void APPGunBase::StopFire()
 {
 	bIsOnShooting = false;
+	MuzzleNiagaraEffect->SetActive(false);
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot;
 }
 

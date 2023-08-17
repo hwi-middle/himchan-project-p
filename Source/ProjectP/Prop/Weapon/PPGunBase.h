@@ -113,7 +113,7 @@ private:
 	TObjectPtr<class UStaticMesh> DefaultCrossHair;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "CrossHair")
-	TObjectPtr<class UStaticMesh> DetectedCrossHair;
+	TObjectPtr<class UStaticMesh> OverheatedCrossHair;
 	
 private:
 	UPROPERTY()
@@ -133,6 +133,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class AActor> AimingActor;
+
+	UPROPERTY()
+	FColor LineColor;
 	
 	uint32 bIsFlashlightEnable : 1;
 
