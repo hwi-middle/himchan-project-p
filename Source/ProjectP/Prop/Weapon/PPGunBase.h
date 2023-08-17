@@ -31,6 +31,10 @@ public:
 	void OnFire();
 	void StopFire();
 	void ToggleFlash();
+	// Test Only
+	FORCEINLINE float GetCurrentOverheatGauge() const { return CurrentOverheat; }
+	FORCEINLINE FString GetAimingActorName() const { return AimingActor->GetActorNameOrLabel(); }
+	//
 protected:
 	void SetupWeaponData(UPPWeaponData* WeaponData);
 	void PressTrigger();

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProjectP/UI/PPPatternTestWidget.h"
+#include "ProjectP/UI/TestOnly/PPPatternTestWidget.h"
 
 #include "Kismet/GameplayStatics.h"
 
