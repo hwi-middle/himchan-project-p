@@ -25,16 +25,15 @@ protected:
 public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	virtual void IncreaseHealth(const float Value) override;
+	virtual void DecreaseHealth(const float Value) override;
+	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	
 	// StatusInterface override
 protected:
 	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData);
 //	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
 //	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
-
-	virtual void IncreaseHealth(const float Value) override;
-	virtual void DecreaseHealth(const float Value) override;
-	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Collision)

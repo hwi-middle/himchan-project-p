@@ -20,15 +20,13 @@ public:
 	APPCharacterBoss();
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
-
+	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	// TestOnly
 	void TestPattern(EBossPattern Pattern, uint32 Num = 0);
 	
 protected:
 	//virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
 	virtual void BeginPlay() override;
-	
-	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	
 private:
 	void GenerateTentaclesOnRandomLocation(uint32 InNum);
@@ -40,6 +38,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = BossStatus)
 	float Health;
 
+	UPROPERTY()
+	TObjectPtr<class UPPVRBossData> BossData;
+	
 	UPROPERTY()
 	TObjectPtr<class UStaticMeshComponent> TempMesh;
 	

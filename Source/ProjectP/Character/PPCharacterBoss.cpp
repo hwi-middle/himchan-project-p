@@ -4,6 +4,7 @@
 #include "ProjectP/Character/PPCharacterBoss.h"
 
 #include "PPCharacterPlayer.h"
+#include "PPVRBossData.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/AI/Boss/PPBossAIController.h"
@@ -26,12 +27,15 @@ APPCharacterBoss::APPCharacterBoss()
 	TempMesh->SetStaticMesh(MeshObj);
 	RootComponent = TempMesh;
 
+	BossData = FPPConstructorHelper::FindAndGetObject<UPPVRBossData>(TEXT("/Script/ProjectP.PPVRBossData'/Game/DataAssets/Boss/BossData.BossData'"), EAssertionLevel::Check);
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
 }
 
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Health = BossData->MaxHP;
 	
 	VG_TentacleNum = BossGimmickData->VG_TentacleNum;
 	VG_MinDistance = BossGimmickData->VG_MinDistance;

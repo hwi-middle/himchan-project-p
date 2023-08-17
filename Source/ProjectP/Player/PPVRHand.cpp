@@ -5,9 +5,11 @@
 
 #include "MotionControllerComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "ProjectP/Animation/PPVRHandAnimInstance.h"
+#include "ProjectP/UI/TestOnly/PPDebugWidget.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 
 // Sets default values
@@ -23,13 +25,15 @@ APPVRHand::APPVRHand()
 	HandMesh->SetupAttachment(MotionController);
 	HandAnimInstanceClass = FPPConstructorHelper::FindAndGetClass<UPPVRHandAnimInstance>(TEXT("/Game/15-Basic-Movement/Animation/Hand/ABP_VRHand.ABP_VRHand_C"), EAssertionLevel::Check);
 	HandMesh->SetAnimInstanceClass(HandAnimInstanceClass);
+	
 	HandWidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteraction"));
 	HandWidgetInteraction->SetupAttachment(MotionController);
-	
-	HandWidgetInteraction->TraceChannel = ECC_Visibility;
-	HandWidgetInteraction->InteractionDistance = 300.0f;
-	HandWidgetInteraction->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
-	HandWidgetInteraction->bShowDebug = true;
+	// Test Only
+	DebugWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugWidget"));
+	DebugWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPDebugWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/30-Level-Design/TestOnlyBlueprint/DebugViewWidget.DebugViewWidget_C'"), EAssertionLevel::Check));
+	DebugWidgetComponent->SetMaterial(0, FPPConstructorHelper::FindAndGetObject<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Engine/EngineMaterials/Widget3DPassThrough_Translucent.Widget3DPassThrough_Translucent'"), EAssertionLevel::Check));
+	DebugWidgetComponent->SetupAttachment(MotionController);
+	//
 }
 
 // Called when the game starts or when spawned
@@ -99,8 +103,11 @@ void APPVRHand::SetPoseAlphaGrasp(const float Value)
 void APPVRHand::SetPoseAlphaIndexCurl(const float Value)
 {
 	AnimInstance->SetPoseAlphaIndexCurl(Value);
-	static constexpr float WidgetInteractionThreshold = 0.2f;
-	Value > WidgetInteractionThreshold ? this->HandWidgetInteraction->PressPointerKey(TEXT("LeftMouseButton")) : this->HandWidgetInteraction->ReleasePointerKey(TEXT("LeftMouseButton"));
+	if(GetHandType() == EControllerHand::Left)
+	{
+		static constexpr float WidgetInteractionThreshold = 0.2f;
+		Value > WidgetInteractionThreshold ? this->HandWidgetInteraction->PressPointerKey(TEXT("LeftMouseButton")) : this->HandWidgetInteraction->ReleasePointerKey(TEXT("LeftMouseButton"));
+	}
 }
 
 void APPVRHand::SetPoseAlphaThumbUp(const float Value)
@@ -116,8 +123,11 @@ void APPVRHand::SetPoseAlphaPoint(const float Value)
 void APPVRHand::WidgetInteractionToggle(const float Value)
 {
 	// SetActive로 제어하려니 작동이 제대로 안되서 크기 조정으로 대체
-	bool bIsActivated = abs( HandWidgetInteraction->InteractionDistance - Value) <= KINDA_SMALL_NUMBER;
-	HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;
+	if(GetHandType() == EControllerHand::Left)
+	{
+		bool bIsActivated = abs( HandWidgetInteraction->InteractionDistance - Value) <= KINDA_SMALL_NUMBER;
+		HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;
+	}
 }
 
 void APPVRHand::InitHand()
@@ -131,11 +141,15 @@ void APPVRHand::InitHand()
 		HandMesh->SetRelativeRotation(FRotator(0.f, 180.f, 90.f));
 		Path = TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_left.SKM_MannyXR_left'");
 		SetActorLabel(TEXT("LeftHand"));
+		SetupWidgetComponent();
+		SetupDebugWidget();
 		break;
 	case EControllerHand::Right:
 		HandMesh->SetRelativeRotation(FRotator(0.f, 0.f, 90.f));
 		Path = TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_right.SKM_MannyXR_right'");
 		SetActorLabel(TEXT("RightHand"));
+		HandWidgetInteraction->DestroyComponent();
+		DebugWidgetComponent->DestroyComponent();
 		break;
 	default:
 		checkNoEntry();
@@ -151,4 +165,23 @@ void APPVRHand::ResetHandMesh()
 {
 	HandMesh->AttachToComponent(MotionController, FAttachmentTransformRules::KeepWorldTransform);
 	HandMesh->SetRelativeTransform(InitHandMeshRelativeTransform, false, nullptr, ETeleportType::TeleportPhysics);
+}
+
+void APPVRHand::SetupWidgetComponent()
+{
+	// 히히 매직넘버 발사
+	HandWidgetInteraction->TraceChannel = ECC_Visibility;
+	HandWidgetInteraction->InteractionDistance = 300.0f;
+	HandWidgetInteraction->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+	HandWidgetInteraction->bShowDebug = true;
+	HandWidgetInteraction->SetActive(true);
+}
+
+void APPVRHand::SetupDebugWidget()
+{
+	// 히히 매직넘버 발사
+	DebugWidgetComponent->SetWorldScale3D(FVector(1.0f, 0.01f, 0.01f));
+	DebugWidgetComponent->SetRelativeLocation(FVector(0.0f, -7.0f, 4.0f));
+	DebugWidgetComponent->SetRelativeRotation(FRotator(180.0f, 90.0f, 90.0f));
+	DebugWidgetComponent->SetDrawSize(FVector2d(1920.0f, 1080.0f));
 }

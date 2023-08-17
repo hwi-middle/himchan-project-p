@@ -55,6 +55,9 @@ private:
 	TObjectPtr<class UPPVRGrabComponent> HeldComponent;
 
 	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UWidgetComponent> DebugWidgetComponent;
+	
+	UPROPERTY(VisibleAnywhere)
 	FTransform InitHandMeshRelativeTransform;
 
 public:
@@ -66,7 +69,6 @@ public:
 	void SetPoseAlphaThumbUp(const float Value);
 	void SetPoseAlphaPoint(const float Value);
 	void WidgetInteractionToggle(const float Value);
-	FORCEINLINE void DisableWidgetInteraction() { HandWidgetInteraction->InteractionDistance = 0.0f; };
 	void InitHand();
 	void ResetHandMesh();
 
@@ -75,4 +77,9 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetHandMesh() const { return HandMesh; }
 	FORCEINLINE EControllerHand GetHandType() const { return HandType; }
 	FORCEINLINE class UPPVRGrabComponent* GetHeldComponent() const { return HeldComponent; }
+
+	// TestOnly
+private:
+	void SetupWidgetComponent();
+	void SetupDebugWidget();
 };

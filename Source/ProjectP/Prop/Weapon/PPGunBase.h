@@ -31,6 +31,14 @@ public:
 	void OnFire();
 	void StopFire();
 	void ToggleFlash();
+	
+	// Test Only
+	float CurrentUnavailableTime;
+	FORCEINLINE float GetCurrentOverheatGauge() const { return CurrentOverheat; }
+	FORCEINLINE float GetUnavailableTimeRemains() const { return bIsUnavailable ? CurrentUnavailableTime : 0; }
+	FORCEINLINE FString GetAimingActorName() const { return AimingActor != nullptr ? AimingActor->GetActorNameOrLabel() : FString::Printf(TEXT("None")); }
+	//
+	
 protected:
 	void SetupWeaponData(UPPWeaponData* WeaponData);
 	void PressTrigger();
@@ -73,7 +81,7 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	float UnavailableTime;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	float ShootPerSecond;
 

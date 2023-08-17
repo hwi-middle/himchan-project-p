@@ -132,7 +132,6 @@ void APPVRPawn::InitVRHands()
 	LeftHand->SetHandType(EControllerHand::Left);
 	LeftHand->FinishSpawning(IdentityTransform);
 	LeftHand->AttachToComponent(VROrigin, AttachRule);
-	LeftHand->DisableWidgetInteraction();
 	
 	RightHand = GetWorld()->SpawnActorDeferred<APPVRHand>(APPVRHand::StaticClass(), IdentityTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	ensure(RightHand);
@@ -301,7 +300,7 @@ void APPVRPawn::ToggleFlash(const FInputActionValue& Value)
 void APPVRPawn::ToggleWidgetInteraction(const FInputActionValue& Value)
 {
 	// 나중에 주로 사용하는 손 바꾸기 구현되면 수정 예정
-	RightHand->WidgetInteractionToggle(WidgetInteractionDistance);
+	LeftHand->WidgetInteractionToggle(WidgetInteractionDistance);
 }
 
 void APPVRPawn::CancelOrCompleteGrabLeft()

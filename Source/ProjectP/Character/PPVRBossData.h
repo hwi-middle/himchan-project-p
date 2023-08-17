@@ -14,6 +14,7 @@ class PROJECTP_API UPPVRBossData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
+public:
 	UPROPERTY(EditDefaultsOnly, Category = BossData)
 	uint32 MaxHP;
 };
