@@ -19,7 +19,6 @@ class PROJECTP_API APPSettingBaseActor : public AActor
 
 public:
 	APPSettingBaseActor();
-
 	
 	FMainWidgetDelegate MainWidgetDelegate;
 
@@ -27,6 +26,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	void ClearAllTimerOnLevelChange();
+	
+protected:
 	UFUNCTION(BlueprintCallable)
 	void ExitButtonBroadcast();
 	
@@ -40,12 +43,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UPPSettingUIWidget> SettingWidget;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "UI")
-	FTimerHandle SubWidgetCloseTimer;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "UI")
-	FTimerHandle SubWidgetOpenTimer;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<USoundCue> WidgetOpenSoundCue;
@@ -75,8 +72,11 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	ESubWidgetType SwapSubWidget;
-	/*
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-	float WidgetAddOpacityValue;
-	*/
+
+private:
+	UPROPERTY()
+	FTimerHandle SubWidgetCloseTimer;
+
+	UPROPERTY()
+	FTimerHandle SubWidgetOpenTimer;
 };

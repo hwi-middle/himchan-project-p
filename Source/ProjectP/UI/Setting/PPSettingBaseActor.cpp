@@ -25,11 +25,22 @@ void APPSettingBaseActor::BeginPlay()
 	SettingWidget->SetSubWidgetPanelVisible(false);
 
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
-	WidgetOpenSoundCue = GameInstance->GetSoundData()->WidgetOpenSoundCue;
-	WidgetCloseSoundCue = GameInstance->GetSoundData()->WidgetCloseSoundCue;
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPSettingBaseActor::ClearAllTimerOnLevelChange);
+
+	const UPPSoundData* SoundData = GameInstance->GetSoundData();
+	WidgetOpenSoundCue = SoundData->WidgetOpenSoundCue;
+	WidgetCloseSoundCue = SoundData->WidgetCloseSoundCue;
 	
 	bSubWidgetOpened = false;
 	bIsFirstClick = true;
+}
+
+void APPSettingBaseActor::ClearAllTimerOnLevelChange()
+{
+	GetWorldTimerManager().ClearTimer(SubWidgetOpenTimer);
+	GetWorldTimerManager().ClearTimer(SubWidgetCloseTimer);
+	SubWidgetOpenTimer.Invalidate();
+	SubWidgetCloseTimer.Invalidate();
 }
 
 void APPSettingBaseActor::ExitButtonBroadcast()

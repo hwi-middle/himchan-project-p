@@ -7,6 +7,7 @@
 #include "PPWarningZoneCylinder.h"
 #include "Engine/DamageEvents.h"
 #include "ProjectP/Character/PPCharacterPlayer.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
@@ -29,6 +30,16 @@ void APPTentacle::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPTentacle::ClearAllTimerOnLevelChange);
+}
+
+void APPTentacle::ClearAllTimerOnLevelChange()
+{
+	GetWorldTimerManager().ClearTimer(WarningTimerHandle);
+	GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
+	WarningTimerHandle.Invalidate();
+	HitPlayerTimerHandle.Invalidate();
 }
 
 // Called every frame

@@ -46,11 +46,26 @@ void ALeaf::BeginPlay()
 {
 	Super::BeginPlay();
 
-	const UPPSoundData* SoundData = GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->GetSoundData();
+	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &ALeaf::ClearAllTimerOnLevelChange);
+	
+	const UPPSoundData* SoundData = GameInstance->GetSoundData();
 	ExplodeSoundCue = SoundData->BossLeafTempestExplodeSoundCue;
 	DestroySoundCue = SoundData->BossLeafTempestDestroySoundCue;
 
 	Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+}
+
+void ALeaf::ClearAllTimerOnLevelChange()
+{
+	GetWorldTimerManager().ClearTimer(BlinkTimerHandle);
+	GetWorldTimerManager().ClearTimer(DestroyTimerHandle);
+	GetWorldTimerManager().ClearTimer(DelayTracingTimerHandle);
+	GetWorldTimerManager().ClearTimer(DestroyEffectTimerHandle);
+	BlinkTimerHandle.Invalidate();
+	DestroyTimerHandle.Invalidate();
+	DelayTracingTimerHandle.Invalidate();
+	DestroyEffectTimerHandle.Invalidate();
 }
 
 // Called every frame

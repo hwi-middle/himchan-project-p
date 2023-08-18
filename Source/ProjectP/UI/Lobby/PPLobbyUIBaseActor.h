@@ -24,6 +24,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	void ClearAllTimerOnLevelChange();
+	
 protected:
 	UFUNCTION(BlueprintCallable)
 	void OpenSubWidget(ESubWidgetType SubWidget = ESubWidgetType::None);

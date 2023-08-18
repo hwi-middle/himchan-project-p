@@ -25,6 +25,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	void ClearAllTimerOnLevelChange();
+
+protected:
 	void FadeInOrOutScreenImage(const bool IsFaded);
 
 	// 람다안의람다안의람다안의람다식으로 합치기 가능
