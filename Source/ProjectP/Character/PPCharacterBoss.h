@@ -23,7 +23,7 @@ public:
 	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	// TestOnly
-	void TestPattern(EBossPattern Pattern, uint32 Num = 0);
+	void TestPattern(EBossPattern Pattern);
 	
 protected:
 	//virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
