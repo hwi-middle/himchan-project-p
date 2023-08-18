@@ -66,8 +66,16 @@ void APPVRPawn::BeginPlay()
 	InitVRHands();
 
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
-	WalkSoundCue = GameInstance->GetSoundData()->PlayerWalkSoundCue;
-	SprintSoundCue = GameInstance->GetSoundData()->PlayerSprintSoundCue;
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPVRPawn::ClearAllTimerOnLevelChange);
+	const UPPSoundData* SoundData = GameInstance->GetSoundData();
+	WalkSoundCue = SoundData->PlayerWalkSoundCue;
+	SprintSoundCue = SoundData->PlayerSprintSoundCue;
+}
+
+void APPVRPawn::ClearAllTimerOnLevelChange()
+{
+	GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
+	MoveSoundTimerHandle.Invalidate();
 }
 
 // Called every frame

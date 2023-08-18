@@ -33,6 +33,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	void ClearAllTimerOnLevelChange();
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UWidgetComponent> TutorialWidgetComponent;

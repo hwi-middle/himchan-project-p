@@ -21,6 +21,9 @@ public:
 protected:
 	virtual void Tick(float DeltaTime) override;
 	virtual void BeginPlay() override;
+
+private:
+	void ClearAllTimerOnLevelChange();
 	
 public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -34,7 +37,7 @@ protected:
 	virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData);
 //	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
 //	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
-
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = Collision)
 	TObjectPtr<UCapsuleComponent> CollisionCapsule;
@@ -47,14 +50,7 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	uint32 Health;
-	
-	/* 감염 게이지는 일단은 선언만 해놓고 사용 여부는 기획 파트와 상의 필요
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 InfectionGauge;
 
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 MaximumInfectionValue;
-	*/
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	uint32 RecoveryHealthAmountOnIdle;
 

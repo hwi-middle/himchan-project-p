@@ -3,6 +3,7 @@
 
 #include "PPWarningZoneBase.h"
 
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
@@ -18,6 +19,15 @@ void APPWarningZoneBase::BeginPlay()
 {
 	Super::BeginPlay();
 	Show(1.0f);
+
+	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPWarningZoneBase::ClearAllTimerOnLevelChange);
+}
+
+void APPWarningZoneBase::ClearAllTimerOnLevelChange()
+{
+	GetWorldTimerManager().ClearTimer(FadeTimerHandle);
+	FadeTimerHandle.Invalidate();
 }
 
 // Called every frame

@@ -30,10 +30,10 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
+	void ClearAllTimerOnLevelChange();
 	void GenerateTentaclesOnRandomLocation(uint32 InNum);
 	void GenerateLeafTempestOnRandomLocation(uint32 InNum);
 	void GenerateToxicFog();
-	
 private:
 	// 보스 정보
 	UPROPERTY(EditDefaultsOnly, Category = BossStatus)

@@ -5,6 +5,8 @@
 
 #include "PPEndingUIWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectP/Constant/PPLevelName.h"
+#include "ProjectP/Game/PPGameInstance.h"
 
 // Sets default values
 APPEndingScreenBaseActor::APPEndingScreenBaseActor()
@@ -41,6 +43,21 @@ void APPEndingScreenBaseActor::BeginPlay()
 	
 	ScreenLight->SetIntensity(0.0f);
 	ToggleLight(false);
+	
+	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPEndingScreenBaseActor::ClearAllTimerOnLevelChange);
+}
+
+void APPEndingScreenBaseActor::ClearAllTimerOnLevelChange()
+{
+	GetWorldTimerManager().ClearTimer(FadeSequenceTimer);
+	GetWorldTimerManager().ClearTimer(CreditMoveTimer);
+	GetWorldTimerManager().ClearTimer(DelayTimer);
+	GetWorldTimerManager().ClearTimer(LightIntensityControlTimer);
+	FadeSequenceTimer.Invalidate();
+	CreditMoveTimer.Invalidate();
+	DelayTimer.Invalidate();
+	LightIntensityControlTimer.Invalidate();
 }
 
 void APPEndingScreenBaseActor::FadeInOrOutScreenImage(const bool IsFaded)
@@ -115,10 +132,8 @@ void APPEndingScreenBaseActor::ExitToLobby()
 {
 	GetWorldTimerManager().SetTimer(DelayTimer, FTimerDelegate::CreateLambda([&]()
 		{
-			// 로비로 돌아가는 딜레이 시간에 따라 조명 타이머가 유지된 채로 레벨이 넘어가 크래쉬 발생 가능
-			GetWorldTimerManager().ClearTimer(DelayTimer);
-			GetWorldTimerManager().ClearTimer(LightIntensityControlTimer);
-			UGameplayStatics::OpenLevel(this, "ExitToLobbyTest");
+			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+			UGameplayStatics::OpenLevel(this, LOBBY_LEVEL);
 		}), ExitToLobbyDelay, false);
 }
 

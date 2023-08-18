@@ -13,6 +13,7 @@
 #include "ProjectP/BossGimmick/Leaf.h"
 #include "ProjectP/BossGimmick/PPBossGimmickData.h"
 #include "ProjectP/BossGimmick/PPTentacle.h"
+#include "ProjectP/Constant/PPLevelName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 
@@ -49,12 +50,20 @@ void APPCharacterBoss::BeginPlay()
 	GF_Duration = BossGimmickData->GF_Duration;
 	GF_Radius = BossGimmickData->GF_Radius;
 
-	const UPPSoundData* SoundData = GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->GetSoundData();
+	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPCharacterBoss::ClearAllTimerOnLevelChange);
 	
+	const UPPSoundData* SoundData = GameInstance->GetSoundData();
 	VG_OmenSound = SoundData->BossVineGardenOmenSoundCue;
 	LT_OmenSound = SoundData->BossLeafTempestOmenSoundCue;
 	GF_OmenSound = SoundData->BossGreenFogOmenSoundCue;
 	GF_SpawnSound = SoundData->BossGreenFogSpawnSoundCue;
+}
+
+void APPCharacterBoss::ClearAllTimerOnLevelChange()
+{
+	GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
+	GreenFogTimerHandle.Invalidate();
 }
 
 void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
@@ -214,6 +223,21 @@ void APPCharacterBoss::DecreaseHealth(const float Value)
 	 * Do something
 	 */
 	Health -= Value;
+	if(Health <= 0)
+	{
+		// 테스트용 레벨 이동.
+		// 최종 구현에서는 입구 반대편 문을 가리던 덩굴이 사라지는 기믹(기획팀이 그랬음)
+		FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
+		if(LevelName == MAIN_LEVEL)
+		{
+			// 타이머 초기화 도중에 새로운 타이머 생성 방지
+			APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+			PlayerController->SetIgnoreMoveInput(true);
+			PlayerController->SetIgnoreLookInput(true);
+			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+			UGameplayStatics::OpenLevel(this, ENDING_LEVEL);
+		}
+	}
 }
 
 void APPCharacterBoss::TestPattern(EBossPattern Pattern)

@@ -40,7 +40,16 @@ void APPLobbyUIBaseActor::BeginPlay()
 	ExitWidgetComponent->SetVisibility(false);
 
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
-	WidgetMoveSoundCue = GameInstance->GetSoundData()->WidgetMoveSoundCue;
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPLobbyUIBaseActor::ClearAllTimerOnLevelChange);
+
+	const UPPSoundData* SoundData = GameInstance->GetSoundData();
+	WidgetMoveSoundCue = SoundData->WidgetMoveSoundCue;
+}
+
+void APPLobbyUIBaseActor::ClearAllTimerOnLevelChange()
+{
+	GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
+	WidgetAnimationTimer.Invalidate();
 }
 
 void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)

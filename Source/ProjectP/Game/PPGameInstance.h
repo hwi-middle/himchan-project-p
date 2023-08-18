@@ -12,6 +12,8 @@
 #include "ProjectP/Util/PPSoundData.h"
 #include "PPGameInstance.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FClearTimerHandleDelegate)
+
 /**
  * 인스턴스 = 싱글톤 객체와 유사한 역할(메모리를 지속적으로 차지함)
  * 가급적이면 전역적으로 관리해야 하는 내용만을 포함시키도록 한다.
@@ -25,12 +27,16 @@ public:
 	UPPGameInstance();
 
 public:
+	FClearTimerHandleDelegate ClearTimerHandleDelegate;
 	
 	FStringDataTable* GetStringDataTable(const FName RowName);
 
 	FORCEINLINE TObjectPtr<UPPSaveSettingOption> GetSaveSettingOption() const { return SaveSettingOption; }
 
 	FORCEINLINE TObjectPtr<UPPSoundData> GetSoundData() const { return SoundData; }
+
+	
+	FORCEINLINE void ClearAllTimerHandle() const { ClearTimerHandleDelegate.Broadcast(); }
 	
 private:
     // 인스턴스내에 환경설정 값을 저장시켜놓고 레벨을 옮길 때 레벨에서 인스턴스의 환경설정 값을 적용
