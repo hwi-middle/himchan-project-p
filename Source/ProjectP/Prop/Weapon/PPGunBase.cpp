@@ -8,10 +8,6 @@
 #include "InputMappingContext.h"
 #include "InputCoreTypes.h"
 #include "NiagaraComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "ProjectP/Character/PPCharacterBase.h"
-#include "ProjectP/Character/PPCharacterBoss.h"
-#include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Grab/PPVRGrabComponent.h"
 #include "ProjectP/Player/PPVRHand.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
@@ -23,6 +19,7 @@
 APPGunBase::APPGunBase()
 {
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	WeaponMesh->SetCollisionObjectType(ECC_GIMMICK);
 
 	CrossHairPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrossHairPlane"));
@@ -40,7 +37,7 @@ APPGunBase::APPGunBase()
 	UNiagaraSystem* MuzzleNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(TEXT("/Script/Niagara.NiagaraSystem'/Game/Project-P/VFX/GUN_Fire/NS_Flash.NS_Flash'"), EAssertionLevel::Check);
 	MuzzleNiagaraEffect->SetAsset(MuzzleNiagaraSystem);
 	MuzzleNiagaraEffect->SetActive(false);
-	
+
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
 	Flashlight->SetupAttachment(WeaponMesh);
@@ -70,7 +67,7 @@ void APPGunBase::BeginPlay()
 	GrabComponentCasted->OnRelease.AddUObject(this, &APPGunBase::ReleaseOnHand);
 	GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_GRIP));
 	MuzzleNiagaraEffect->SetActive(false);
-	
+
 	Flashlight->SetWorldLocation(WeaponMesh->GetSocketLocation(GUN_FLASH));
 	Flashlight->SetWorldRotation(WeaponMesh->GetSocketRotation(GUN_FLASH));
 }
@@ -79,6 +76,8 @@ void APPGunBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	WeaponMesh->SetScalarParameterValueOnMaterials(TEXT("Alpha"), CurrentOverheat / MaxOverheat);
+
 	if (!bHeld)
 	{
 		return;
@@ -86,9 +85,7 @@ void APPGunBase::Tick(float DeltaTime)
 
 	MuzzleNiagaraEffect->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_MUZZLE));
 	MuzzleNiagaraEffect->SetRelativeRotation(WeaponMesh->GetSocketRotation(GUN_MUZZLE));
-	
-	WeaponMesh->SetScalarParameterValueOnMaterials(TEXT("Alpha"), CurrentOverheat / MaxOverheat);
-	
+
 	float Distance = 1000.f;
 	FVector StartLocation = WeaponMesh->GetSocketLocation(GUN_MUZZLE);
 	FVector ForwardVector = WeaponMesh->GetSocketTransform(GUN_MUZZLE).GetUnitAxis(EAxis::X);
@@ -115,14 +112,14 @@ void APPGunBase::Tick(float DeltaTime)
 		DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, -1, 0, 1.0f);
 		return;
 	}
-	
+
 	AimingActor = HitResult.GetActor();
 
 	if (!AimingActor)
 	{
 		return;
 	}
-	
+
 	// 테스트용 태그. 나중에 태그 모음집 헤더파일 만들어서 관리하기?
 	if (AimingActor->Tags.Contains("DestructibleObject"))
 	{
@@ -134,7 +131,7 @@ void APPGunBase::Tick(float DeltaTime)
 	}
 	// FlushPersistentDebugLines(GetWorld());
 	DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, -1, 0, 1.0f);
-	
+
 	FString HitActorName = AimingActor->GetName();
 	FVector HitLocation = HitResult.ImpactPoint;
 	CrossHairPlane->SetWorldLocation(HitLocation);
@@ -154,6 +151,7 @@ void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
 	ShootPerSecond = WeaponData->ShootPerSecond;
 	ShootDelayPerShoot = 1.0f / ShootPerSecond;
 	OverheatCoolDownPerSecond = WeaponData->OverheatCoolDownPerSecond;
+	CooldownDelay = WeaponData->CooldownDelay;
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot; // 첫 발사 시에는 바로 발사부터 되도록
 }
 
@@ -169,93 +167,86 @@ void APPGunBase::PressTrigger()
 
 void APPGunBase::OnFire()
 {
+	// 과열 게이지 쿨다운 타이머 삭제
+	GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
+
 	const float DeltaTime = GetWorld()->DeltaTimeSeconds;
-	if(!bIsOnShooting)
-	{
-		bIsOnShooting = true;
-		MuzzleNiagaraEffect->SetActive(true);
-	}
-	// 게이지가 0인 상태에서 발사할 때 부터 게이지 감소가 시작
-	if (CurrentOverheat <= KINDA_SMALL_NUMBER)
-	{
-		GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			CurrentOverheat -= OverheatCoolDownPerSecond * 0.01f;
-			UE_LOG(LogTemp, Log, TEXT("Cooldowned: %f"), CurrentOverheat);
-			if (CurrentOverheat < KINDA_SMALL_NUMBER)
-			{
-				UE_LOG(LogTemp, Log, TEXT("No more overheat now"));
-				CurrentOverheat = 0.f;
-				GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
-			}
-		}), 0.01f, true);
-	}
-
 	ElapsedTimeAfterLastShoot += DeltaTime;
-	if (ElapsedTimeAfterLastShoot >= ShootDelayPerShoot)
+
+	// 발사 주기가 되지 않았다면 return
+	if (ElapsedTimeAfterLastShoot < ShootDelayPerShoot)
 	{
-		ElapsedTimeAfterLastShoot = 0.f;
-
-		if (bIsUnavailable)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Unavailable!"));
-			return;
-		}
-
-		CurrentOverheat += OverheatAmountPerSingleShoot;
-
-		if (AimingActor)
-		{
-			if (ICharacterStatusInterface* Enemy = Cast<ICharacterStatusInterface>(AimingActor))
-			{
-				const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
-				
-				Enemy->DecreaseHealth(Damage);
-				UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), Damage);
-				UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
-			}
-			else if(UPPDestructible* Component = AimingActor->FindComponentByClass<UPPDestructible>())
-			{
-				const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
-				Component->DecreaseHealth(Damage);
-			}
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Hit Nowhere"));
-		}
+		return;
 	}
 
-	if (CurrentOverheat > MaxOverheat)
+	// 발사 주기 카운트 초기화
+	ElapsedTimeAfterLastShoot = 0.f;
+
+	// 발사 주기가 되긴 했는데 발사가 불가능한 상태면 return
+	if (bIsUnavailable)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Unavailable!"));
+		return;
+	}
+
+	// 발사 이펙트 적용
+	bIsOnShooting = true;
+	MuzzleNiagaraEffect->SetActive(true);
+
+
+	CurrentOverheat += OverheatAmountPerSingleShoot;
+
+	if (AimingActor)
+	{
+		if (ICharacterStatusInterface* Enemy = Cast<ICharacterStatusInterface>(AimingActor))
+		{
+			const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
+
+			Enemy->DecreaseHealth(Damage);
+			UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), Damage);
+			UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
+		}
+		else if (UPPDestructible* Component = AimingActor->FindComponentByClass<UPPDestructible>())
+		{
+			const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
+			Component->DecreaseHealth(Damage);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Hit Nowhere"));
+	}
+
+	// 과열상태 처리
+	if (CurrentOverheat >= MaxOverheat)
 	{
 		bIsUnavailable = true;
-		// TestOnly
-		CurrentUnavailableTime = UnavailableTime;
+		LineColor = FColor::Red;
+		MuzzleNiagaraEffect->SetActive(false);
+
+		ElapsedUnavailableTime = 0.f;
 		if (CrossHairPlane->GetStaticMesh() != OverheatedCrossHair)
 		{
 			CrossHairPlane->SetStaticMesh(OverheatedCrossHair);
 		}
-		LineColor = FColor::Red;
-		
+
 		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
-			CurrentUnavailableTime -= 0.01f;
-			if(CurrentUnavailableTime <= 0.0f)
+			GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
+
+			CurrentOverheat = FMath::Lerp(MaxOverheat, 0.f, ElapsedUnavailableTime / UnavailableTime);
+			UE_LOG(LogTemp, Log, TEXT("Overheat: %f"), CurrentOverheat);
+
+			if (ElapsedUnavailableTime >= UnavailableTime)
 			{
 				bIsUnavailable = false;
 				LineColor = FColor::Green;
+				CurrentOverheat = 0.f;
 				CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 				GetWorldTimerManager().ClearTimer(BlockShootTimerHandle);
 			}
+			ElapsedUnavailableTime += 0.01f;
 		}), 0.01f, true);
-		//
-		
-		/*
-		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			bIsUnavailable = false;
-		}), UnavailableTime, false);
-		*/
 	}
 }
 
@@ -264,6 +255,20 @@ void APPGunBase::StopFire()
 	bIsOnShooting = false;
 	MuzzleNiagaraEffect->SetActive(false);
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot;
+
+	// 정지 후 CooldownDelay 만큼의 시간이 흐르면 Cooldown 시작
+	GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
+	{
+		CurrentOverheat -= OverheatCoolDownPerSecond * 0.01f;
+		UE_LOG(LogTemp, Log, TEXT("Cooldowned: %f"), CurrentOverheat);
+		if (CurrentOverheat < KINDA_SMALL_NUMBER)
+		{
+			UE_LOG(LogTemp, Log, TEXT("No more overheat now"));
+			CurrentOverheat = 0.f;
+			GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
+		}
+	}), 0.01f, true, CooldownDelay);
+
 }
 
 void APPGunBase::GrabOnHand(APPVRHand* InHand)

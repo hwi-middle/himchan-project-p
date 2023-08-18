@@ -33,9 +33,9 @@ public:
 	void ToggleFlash();
 	
 	// Test Only
-	float CurrentUnavailableTime;
+	float ElapsedUnavailableTime;
 	FORCEINLINE float GetCurrentOverheatGauge() const { return CurrentOverheat; }
-	FORCEINLINE float GetUnavailableTimeRemains() const { return bIsUnavailable ? CurrentUnavailableTime : 0; }
+	FORCEINLINE float GetUnavailableTimeRemains() const { return bIsUnavailable ? (UnavailableTime - ElapsedUnavailableTime) : 0; }
 	FORCEINLINE FString GetAimingActorName() const { return AimingActor != nullptr ? AimingActor->GetActorNameOrLabel() : FString::Printf(TEXT("None")); }
 	//
 	
@@ -90,6 +90,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	float ShootDelayPerShoot;
+
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
+	float CooldownDelay;
 	
 	UPROPERTY()
 	float OverheatCoolDownPerSecond;
