@@ -16,6 +16,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Object/PPDestructible.h"
+#include "ProjectP/Util/PPDrawLineHelper.h"
 
 // Sets default values
 APPGunBase::APPGunBase()
@@ -129,7 +130,7 @@ void APPGunBase::Tick(float DeltaTime)
 		// UE_LOG(LogTemp, Warning, TEXT("Nothing hit along the raycast path"));
 		CrossHairPlane->SetVisibility(false);
 		// FlushPersistentDebugLines(GetWorld());
-		DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, -1, 0, 1.0f);
+		FPPDrawLineHelper::DrawLine(GetWorld(), StartLocation, EndLocation, LineColor, false, -1, 0, 1.0f);
 		return;
 	}
 
@@ -150,7 +151,7 @@ void APPGunBase::Tick(float DeltaTime)
 		CrossHairPlane->SetVisibility(false);
 	}
 	// FlushPersistentDebugLines(GetWorld());
-	DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, -1, 0, 1.0f);
+	FPPDrawLineHelper::DrawLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, -1, 0, 1.0f);
 
 	FString HitActorName = AimingActor->GetName();
 	FVector HitLocation = HitResult.ImpactPoint;
