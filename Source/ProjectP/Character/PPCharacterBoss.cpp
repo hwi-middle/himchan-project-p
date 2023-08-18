@@ -54,10 +54,10 @@ void APPCharacterBoss::BeginPlay()
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPCharacterBoss::ClearAllTimerOnLevelChange);
 	
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
-	VG_OmenSound = SoundData->BossVineGardenOmenSoundCue;
-	LT_OmenSound = SoundData->BossLeafTempestOmenSoundCue;
-	GF_OmenSound = SoundData->BossGreenFogOmenSoundCue;
-	GF_SpawnSound = SoundData->BossGreenFogSpawnSoundCue;
+	VG_OmenSound = SoundData->BossVGOmenSoundCue;
+	LT_OmenSound = SoundData->BossLTOmenSoundCue;
+	GF_OmenSound = SoundData->BossGFOmenSoundCue;
+	GF_SpawnSound = SoundData->BossGFSpawnSoundCue;
 }
 
 void APPCharacterBoss::ClearAllTimerOnLevelChange()

@@ -15,88 +15,96 @@ class PROJECTP_API UPPSoundData : public UDataAsset
 {
 	GENERATED_BODY()
 
+	// BGM
+public:
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "로비 배경음악")
+	TObjectPtr<USoundCue> LobbyBGMSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "튜토리얼 배경음악")
+	TObjectPtr<USoundCue> TutorialBGMSoundCue;
+	
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "보스전 배경음악")
+	TObjectPtr<USoundCue> BossBGMSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "BGM", DisplayName = "엔딩 배경음악")
+	TObjectPtr<USoundCue> EndingBGMSoundCue;
+	
 	// Player
 public:
-	UPROPERTY(EditAnywhere, Category = "Player")
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 피격음")
 	TObjectPtr<USoundCue> PlayerHitSoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Player")
-	TObjectPtr<USoundCue> PlayerWalkSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 발소리 리스트")
+	TArray<USoundCue*> PlayerWalkTypeASoundCueArray;
 
-	UPROPERTY(EditAnywhere, Category = "Player")
-	TObjectPtr<USoundCue> PlayerSprintSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 걷기 발소리 간격")
+	float WalkSoundRate;
 
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 달리기 발소리 간격")
+	float SprintSoundRate;
+	
 	// Gun
 public:
-	UPROPERTY(EditAnywhere, Category = "Gun")
-	TObjectPtr<USoundCue> GunOnFireTypeASoundCue;
+	UPROPERTY(EditAnywhere, Category = "Gun", DisplayName = "총기 발사음 리스트")
+	TArray<USoundCue*> GunOnFireSoundCueArray;
 
-	UPROPERTY(EditAnywhere, Category = "Gun")
-	TObjectPtr<USoundCue> GunOnFireTypeBSoundCue;
-
-	UPROPERTY(EditAnywhere, Category = "Gun")
-	TObjectPtr<USoundCue> GunOnFireTypeCSoundCue;
-
-	UPROPERTY(EditAnywhere, Category = "Gun")
-	TObjectPtr<USoundCue> GunOnFireTypeDSoundCue;
-	
-	UPROPERTY(EditAnywhere, Category = "Gun")
+	UPROPERTY(EditAnywhere, Category = "Gun", DisplayName = "총기 줍는 소리")
 	TObjectPtr<USoundCue> GunGrabOnHandSoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Gun")
+	UPROPERTY(EditAnywhere, Category = "Gun", DisplayName = "총기 냉각음")
 	TObjectPtr<USoundCue> GunCoolDownSoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Gun")
-	TObjectPtr<USoundCue> GunOverheatSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Gun", DisplayName = "총기 과열게이지 상승음")
+	TObjectPtr<USoundCue> IncreaseGunOverheatGaugeSoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Gun")
+	UPROPERTY(EditAnywhere, Category = "Gun", DisplayName = "총기 최대과열 효과음")
+	TObjectPtr<USoundCue> GunOverheatGaugeMaxSoundCue;
+	
+	UPROPERTY(EditAnywhere, Category = "Gun", DisplayName = "총기 ")
 	TObjectPtr<USoundCue> GunToggleFlashSoundCue;
 
 	// Commander
 public:
-	UPROPERTY(EditAnywhere, Category = "Commander")
+	UPROPERTY(EditAnywhere, Category = "Commander", DisplayName = "커맨더 플레이어 체력 경고음")
 	TObjectPtr<USoundCue> CommanderHealthWaringSoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Commander")
-	TObjectPtr<USoundCue> CommanderVineGardenSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Commander", DisplayName = "커맨더 덩굴정원 경고음")
+	TObjectPtr<USoundCue> CommanderVGWaringSoundCue;
 	
-	UPROPERTY(EditAnywhere, Category = "Commander")
-	TObjectPtr<USoundCue> CommanderLeafTempestSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Commander", DisplayName = "커맨더 리프템페스트 경고음")
+	TObjectPtr<USoundCue> CommanderLFWaringSoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Commander")
-	TObjectPtr<USoundCue> CommanderGreenFogSoundCue;
-
-	UPROPERTY(EditAnywhere, Category = "Commander")
-	TObjectPtr<USoundCue> CommanderThornWhipSoundCue;
-
+	UPROPERTY(EditAnywhere, Category = "Commander", DisplayName = "커맨더 녹빛안개 경고음")
+	TObjectPtr<USoundCue> CommanderGFWaringSoundCue;
+	
 	// Boss
 public:
-	UPROPERTY(EditAnywhere, Category = "Boss")
-	TObjectPtr<USoundCue> BossVineGardenOmenSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 덩굴정원 전조음")
+	TObjectPtr<USoundCue> BossVGOmenSoundCue;
 	
-	UPROPERTY(EditAnywhere, Category = "Boss")
-	TObjectPtr<USoundCue> BossLeafTempestOmenSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 리프템페스트 전조음")
+	TObjectPtr<USoundCue> BossLTOmenSoundCue;
 	
-	UPROPERTY(EditAnywhere, Category = "Boss")
-	TObjectPtr<USoundCue> BossLeafTempestExplodeSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 리프템페스트 폭발음")
+	TObjectPtr<USoundCue> BossLTExplodeSoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Boss")
-	TObjectPtr<USoundCue> BossLeafTempestDestroySoundCue;
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 리프템페스트 파괴음")
+	TObjectPtr<USoundCue> BossLTDestroySoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Boss")
-	TObjectPtr<USoundCue> BossGreenFogOmenSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 녹빛안개 경고음")
+	TObjectPtr<USoundCue> BossGFOmenSoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Boss")
-	TObjectPtr<USoundCue> BossGreenFogSpawnSoundCue;
+	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 녹빛안개 생성음")
+	TObjectPtr<USoundCue> BossGFSpawnSoundCue;
 
 	// UI
 public:
-	UPROPERTY(EditAnywhere, Category = "Widget")
+	UPROPERTY(EditAnywhere, Category = "Widget", DisplayName = "UI 이동음")
 	TObjectPtr<USoundCue> WidgetMoveSoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Widget")
+	UPROPERTY(EditAnywhere, Category = "Widget", DisplayName = "UI 열기 사운드")
 	TObjectPtr<USoundCue> WidgetOpenSoundCue;
 
-	UPROPERTY(EditAnywhere, Category = "Widget")
+	UPROPERTY(EditAnywhere, Category = "Widget", DisplayName = "UI 닫기 사운드")
 	TObjectPtr<USoundCue> WidgetCloseSoundCue;
 };

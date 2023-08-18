@@ -51,8 +51,6 @@ APPVRPawn::APPVRPawn()
 	RightBButtonPressAction = MovementData->RightBButtonPressAction;
 	
 	MoveSpeed = MovementData->WalkSpeed;
-	WalkSoundRate = MovementData->WalkSoundRate;
-	SprintSoundRate = MovementData->SprintSoundRate;
 	SnapTurnDegrees = MovementData->SnapTurnDegrees;
 	WidgetInteractionDistance = MovementData->WidgetInteractionDistance;
 }
@@ -68,8 +66,9 @@ void APPVRPawn::BeginPlay()
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPVRPawn::ClearAllTimerOnLevelChange);
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
-	WalkSoundCue = SoundData->PlayerWalkSoundCue;
-	SprintSoundCue = SoundData->PlayerSprintSoundCue;
+	WalkSoundCueArray = SoundData->PlayerWalkTypeASoundCueArray;
+	WalkSoundRate = SoundData->WalkSoundRate;
+	SprintSoundRate = SoundData->SprintSoundRate;
 }
 
 void APPVRPawn::ClearAllTimerOnLevelChange()
@@ -286,6 +285,7 @@ void APPVRPawn::StartMove(const FInputActionValue& Value)
 	}
 	GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
+		WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
 		UGameplayStatics::PlaySound2D(this, WalkSoundCue);
 	}), WalkSoundRate, true);
 }
@@ -315,6 +315,7 @@ void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 	{
 		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
+			WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
 			UGameplayStatics::PlaySound2D(this, WalkSoundCue);
 		}), WalkSoundRate, true);
 	}
@@ -322,7 +323,8 @@ void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 	{
 		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
-			UGameplayStatics::PlaySound2D(this, SprintSoundCue);
+			WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
+			UGameplayStatics::PlaySound2D(this, WalkSoundCue);
 		}), SprintSoundRate, true);
 	}
 }

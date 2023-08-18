@@ -48,7 +48,7 @@ APPGunBase::APPGunBase()
 
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
-
+	
 	LeftShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootLeft.IA_VRShootLeft'"), EAssertionLevel::Check);
 	RightShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootRight.IA_VRShootRight'"), EAssertionLevel::Check);
 	LeftHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Left.IMC_Weapon_Left'"), EAssertionLevel::Check);
@@ -56,6 +56,7 @@ APPGunBase::APPGunBase()
 
 	bIsOnShooting = false;
 	bIsFlashlightEnable = false;
+	bIsCooldownStart = false;
 	bIsUnavailable = false;
 	bHeld = false;
 	LineColor = FColor::Green;
@@ -78,10 +79,11 @@ void APPGunBase::BeginPlay()
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPGunBase::ClearAllTimerOnLevelChange);
 	
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
+	FireSoundCueArray = SoundData->GunOnFireSoundCueArray;
 	GrabOnHandSoundCue = SoundData->GunGrabOnHandSoundCue;
-	OnFireSoundCue = SoundData->GunOnFireTypeASoundCue;
 	CoolDownSoundCue = SoundData->GunCoolDownSoundCue;
-	OverheatSoundCue = SoundData->GunOverheatSoundCue;
+	IncreaseOverheatSoundCue = SoundData->IncreaseGunOverheatGaugeSoundCue;
+	OverheatGaugeMaxSoundCue = SoundData->GunOverheatGaugeMaxSoundCue;
 	ToggleFlashSoundCue = SoundData->GunToggleFlashSoundCue;
 }
 
@@ -212,9 +214,12 @@ void APPGunBase::OnFire()
 
 	// 발사 이펙트 적용
 	bIsOnShooting = true;
+	bIsCooldownStart = false;
 	MuzzleNiagaraEffect->SetActive(true);
+	OnFireSoundCue = FireSoundCueArray[FMath::RandRange(0, FireSoundCueArray.Num() - 1)];
 	UGameplayStatics::PlaySound2D(this, OnFireSoundCue);
-
+	UGameplayStatics::PlaySound2D(this, IncreaseOverheatSoundCue);
+	
 	CurrentOverheat += OverheatAmountPerSingleShoot;
 
 	if (AimingActor)
@@ -241,7 +246,7 @@ void APPGunBase::OnFire()
 	// 과열상태 처리
 	if (CurrentOverheat >= MaxOverheat)
 	{
-		UGameplayStatics::PlaySound2D(this, OverheatSoundCue);
+		UGameplayStatics::PlaySound2D(this, OverheatGaugeMaxSoundCue);
 		bIsUnavailable = true;
 		LineColor = FColor::Red;
 		MuzzleNiagaraEffect->SetActive(false);
@@ -274,7 +279,6 @@ void APPGunBase::OnFire()
 
 void APPGunBase::StopFire()
 {
-	UGameplayStatics::PlaySound2D(this, CoolDownSoundCue);
 	bIsOnShooting = false;
 	MuzzleNiagaraEffect->SetActive(false);
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot;
@@ -282,11 +286,17 @@ void APPGunBase::StopFire()
 	// 정지 후 CooldownDelay 만큼의 시간이 흐르면 Cooldown 시작
 	GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
+		if(!bIsCooldownStart)
+		{
+			bIsCooldownStart = true;
+			UGameplayStatics::PlaySound2D(this, CoolDownSoundCue);
+		}
 		CurrentOverheat -= OverheatCoolDownPerSecond * 0.01f;
 		UE_LOG(LogTemp, Log, TEXT("Cooldowned: %f"), CurrentOverheat);
 		if (CurrentOverheat < KINDA_SMALL_NUMBER)
 		{
 			UE_LOG(LogTemp, Log, TEXT("No more overheat now"));
+			bIsCooldownStart = false;
 			CurrentOverheat = 0.f;
 			GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
 		}
@@ -307,6 +317,7 @@ void APPGunBase::GrabOnHand(APPVRHand* InHand)
 void APPGunBase::ReleaseOnHand(APPVRHand* InHand)
 {
 	CrossHairPlane->SetVisibility(false);
+	MuzzleNiagaraEffect->SetActive(false);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	bHeld = false;
 }
