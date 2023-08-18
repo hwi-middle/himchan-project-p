@@ -80,6 +80,12 @@ void APPGunBase::BeginPlay()
 	
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
 	FireSoundCueArray = SoundData->GunOnFireSoundCueArray;
+	if(FireSoundCueArray.IsEmpty())
+	{
+		// 배열이 비어있을 때 크래시 방지용.
+		USoundCue* TempSoundCue = nullptr;
+		FireSoundCueArray.Emplace(TempSoundCue);
+	}
 	GrabOnHandSoundCue = SoundData->GunGrabOnHandSoundCue;
 	CoolDownSoundCue = SoundData->GunCoolDownSoundCue;
 	IncreaseOverheatSoundCue = SoundData->IncreaseGunOverheatGaugeSoundCue;

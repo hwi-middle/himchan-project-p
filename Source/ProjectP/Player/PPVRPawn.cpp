@@ -67,6 +67,12 @@ void APPVRPawn::BeginPlay()
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPVRPawn::ClearAllTimerOnLevelChange);
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
 	WalkSoundCueArray = SoundData->PlayerWalkTypeASoundCueArray;
+	if(WalkSoundCueArray.IsEmpty())
+	{
+		// 배열이 비어있을 때 크래시 방지용.
+		USoundCue* TempSoundCue = nullptr;
+		WalkSoundCueArray.Emplace(TempSoundCue);
+	}
 	WalkSoundRate = SoundData->WalkSoundRate;
 	SprintSoundRate = SoundData->SprintSoundRate;
 }
