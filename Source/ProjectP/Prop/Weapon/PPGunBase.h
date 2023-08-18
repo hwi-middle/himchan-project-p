@@ -53,6 +53,9 @@ private:
 	TObjectPtr<class UStaticMeshComponent> CrossHairPlane;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TObjectPtr<class UNiagaraComponent> MuzzleNiagaraEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TObjectPtr<USpotLightComponent> Flashlight;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
@@ -98,6 +101,9 @@ private:
 	// uint32 bIsOverheated : 1;
 
 	UPROPERTY()
+	uint32 bIsOnShooting : 1;
+	
+	UPROPERTY()
 	uint32 bIsUnavailable : 1;
 
 	UPROPERTY()
@@ -108,7 +114,7 @@ private:
 	TObjectPtr<class UStaticMesh> DefaultCrossHair;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "CrossHair")
-	TObjectPtr<class UStaticMesh> DetectedCrossHair;
+	TObjectPtr<class UStaticMesh> OverheatedCrossHair;
 	
 private:
 	UPROPERTY()
@@ -128,6 +134,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class AActor> AimingActor;
+
+	UPROPERTY()
+	FColor LineColor;
 	
 	uint32 bIsFlashlightEnable : 1;
 

@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "InputCoreTypes.h"
+#include "NiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Character/PPCharacterBase.h"
 #include "ProjectP/Character/PPCharacterBoss.h"
@@ -25,7 +26,7 @@ APPGunBase::APPGunBase()
 
 	CrossHairPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrossHairPlane"));
 	DefaultCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair.SM_CrossHair'"), EAssertionLevel::Check);
-	DetectedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair_Detect.SM_CrossHair_Detect'"), EAssertionLevel::Check);
+	OverheatedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair_Detect.SM_CrossHair_Detect'"), EAssertionLevel::Check);
 	CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 	CrossHairPlane->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CrossHairPlane->SetCollisionObjectType(ECC_WorldStatic);
@@ -34,6 +35,11 @@ APPGunBase::APPGunBase()
 	CrossHairPlane->SetVisibility(false);
 	CrossHairPlane->SetupAttachment(WeaponMesh);
 
+	MuzzleNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MuzzleVFX"));
+	UNiagaraSystem* MuzzleNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(TEXT("/Script/Niagara.NiagaraSystem'/Game/Project-P/VFX/GUN_Fire/NS_Flash.NS_Flash'"), EAssertionLevel::Check);
+	MuzzleNiagaraEffect->SetAsset(MuzzleNiagaraSystem);
+	MuzzleNiagaraEffect->SetActive(false);
+	
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
 	Flashlight->SetupAttachment(WeaponMesh);
@@ -47,9 +53,11 @@ APPGunBase::APPGunBase()
 	LeftHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Left.IMC_Weapon_Left'"), EAssertionLevel::Check);
 	RightHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Right.IMC_Weapon_Right'"), EAssertionLevel::Check);
 
+	bIsOnShooting = false;
 	bIsFlashlightEnable = false;
 	bIsUnavailable = false;
 	bHeld = false;
+	LineColor = FColor::Green;
 	CurrentOverheat = 0;
 }
 
@@ -60,7 +68,8 @@ void APPGunBase::BeginPlay()
 	GrabComponentCasted->OnGrab.AddUObject(this, &APPGunBase::GrabOnHand);
 	GrabComponentCasted->OnRelease.AddUObject(this, &APPGunBase::ReleaseOnHand);
 	GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_GRIP));
-
+	MuzzleNiagaraEffect->SetActive(false);
+	
 	Flashlight->SetWorldLocation(WeaponMesh->GetSocketLocation(GUN_FLASH));
 	Flashlight->SetWorldRotation(WeaponMesh->GetSocketRotation(GUN_FLASH));
 }
@@ -73,6 +82,9 @@ void APPGunBase::Tick(float DeltaTime)
 	{
 		return;
 	}
+
+	MuzzleNiagaraEffect->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_MUZZLE));
+	MuzzleNiagaraEffect->SetRelativeRotation(WeaponMesh->GetSocketRotation(GUN_MUZZLE));
 	
 	WeaponMesh->SetScalarParameterValueOnMaterials(TEXT("Alpha"), CurrentOverheat / MaxOverheat);
 	
@@ -92,7 +104,6 @@ void APPGunBase::Tick(float DeltaTime)
 		ECC_Visibility,
 		CollisionParams
 	);
-	FColor LineColor = FColor::Green;
 
 	if (!bHit)
 	{
@@ -110,22 +121,15 @@ void APPGunBase::Tick(float DeltaTime)
 	{
 		return;
 	}
-	CrossHairPlane->SetVisibility(true);
+	
 	// 테스트용 태그. 나중에 태그 모음집 헤더파일 만들어서 관리하기?
 	if (AimingActor->Tags.Contains("DestructibleObject"))
 	{
-		if (CrossHairPlane->GetStaticMesh() != DetectedCrossHair)
-		{
-			CrossHairPlane->SetStaticMesh(DetectedCrossHair);
-		}
-		LineColor = FColor::Red;
+		CrossHairPlane->SetVisibility(true);
 	}
 	else
 	{
-		if (CrossHairPlane->GetStaticMesh() != DefaultCrossHair)
-		{
-			CrossHairPlane->SetStaticMesh(DefaultCrossHair);
-		}
+		CrossHairPlane->SetVisibility(false);
 	}
 	// FlushPersistentDebugLines(GetWorld());
 	DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, -1, 0, 1.0f);
@@ -165,7 +169,11 @@ void APPGunBase::PressTrigger()
 void APPGunBase::OnFire()
 {
 	const float DeltaTime = GetWorld()->DeltaTimeSeconds;
-
+	if(!bIsOnShooting)
+	{
+		bIsOnShooting = true;
+		MuzzleNiagaraEffect->SetActive(true);
+	}
 	// 게이지가 0인 상태에서 발사할 때 부터 게이지 감소가 시작
 	if (CurrentOverheat <= KINDA_SMALL_NUMBER)
 	{
@@ -217,12 +225,20 @@ void APPGunBase::OnFire()
 		bIsUnavailable = true;
 		// TestOnly
 		CurrentUnavailableTime = UnavailableTime;
+		if (CrossHairPlane->GetStaticMesh() != OverheatedCrossHair)
+		{
+			CrossHairPlane->SetStaticMesh(OverheatedCrossHair);
+		}
+		LineColor = FColor::Red;
+		
 		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
 			CurrentUnavailableTime -= 0.01f;
 			if(CurrentUnavailableTime <= 0.0f)
 			{
 				bIsUnavailable = false;
+				LineColor = FColor::Green;
+				CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 				GetWorldTimerManager().ClearTimer(BlockShootTimerHandle);
 			}
 		}), 0.01f, true);
@@ -239,6 +255,8 @@ void APPGunBase::OnFire()
 
 void APPGunBase::StopFire()
 {
+	bIsOnShooting = false;
+	MuzzleNiagaraEffect->SetActive(false);
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot;
 }
 
