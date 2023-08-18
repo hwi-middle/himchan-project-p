@@ -102,6 +102,7 @@ private:
 
 	UPROPERTY()
 	uint32 bIsOnShooting : 1;
+	
 	UPROPERTY()
 	uint32 bIsUnavailable : 1;
 
