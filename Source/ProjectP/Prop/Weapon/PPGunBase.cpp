@@ -17,6 +17,7 @@
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "Math/UnrealMathUtility.h"
+#include "ProjectP/Object/PPDestructible.h"
 
 // Sets default values
 APPGunBase::APPGunBase()
@@ -212,6 +213,11 @@ void APPGunBase::OnFire()
 				Enemy->DecreaseHealth(Damage);
 				UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), Damage);
 				UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
+			}
+			else if(UPPDestructible* Component = AimingActor->FindComponentByClass<UPPDestructible>())
+			{
+				const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
+				Component->DecreaseHealth(Damage);
 			}
 		}
 		else
