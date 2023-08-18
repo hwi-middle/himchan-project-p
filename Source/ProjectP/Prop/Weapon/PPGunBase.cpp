@@ -13,6 +13,7 @@
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "Math/UnrealMathUtility.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Object/PPDestructible.h"
 
 // Sets default values
@@ -70,6 +71,14 @@ void APPGunBase::BeginPlay()
 
 	Flashlight->SetWorldLocation(WeaponMesh->GetSocketLocation(GUN_FLASH));
 	Flashlight->SetWorldRotation(WeaponMesh->GetSocketRotation(GUN_FLASH));
+
+	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+
+	GrabOnHandSoundCue = GameInstance->GetSoundData()->GunGrabOnHandSoundCue;
+	OnFireSoundCue = GameInstance->GetSoundData()->GunOnFireTypeASoundCue;
+	CoolDownSoundCue = GameInstance->GetSoundData()->GunCoolDownSoundCue;
+	OverheatSoundCue = GameInstance->GetSoundData()->GunOverheatSoundCue;
+	ToggleFlashSoundCue = GameInstance->GetSoundData()->GunToggleFlashSoundCue;
 }
 
 void APPGunBase::Tick(float DeltaTime)
@@ -220,6 +229,7 @@ void APPGunBase::OnFire()
 	// 과열상태 처리
 	if (CurrentOverheat >= MaxOverheat)
 	{
+		UGameplayStatics::PlaySound2D(this, OverheatSoundCue);
 		bIsUnavailable = true;
 		LineColor = FColor::Red;
 		MuzzleNiagaraEffect->SetActive(false);
@@ -252,6 +262,7 @@ void APPGunBase::OnFire()
 
 void APPGunBase::StopFire()
 {
+	UGameplayStatics::PlaySound2D(this, CoolDownSoundCue);
 	bIsOnShooting = false;
 	MuzzleNiagaraEffect->SetActive(false);
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot;
@@ -273,9 +284,12 @@ void APPGunBase::StopFire()
 
 void APPGunBase::GrabOnHand(APPVRHand* InHand)
 {
-	CrossHairPlane->SetVisibility(true);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	bHeld = true;
+	if(!bHeld)
+	{
+		UGameplayStatics::PlaySound2D(this, GrabOnHandSoundCue);
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		bHeld = true;
+	}
 
 	//UE_LOG(LogTemp, Log, TEXT("OnGrab"));
 	//SetupInputMappingContextByHandType(InHand->GetHandType());
@@ -322,6 +336,7 @@ void APPGunBase::SetupInputMappingContextByHandType(const EControllerHand InHand
 
 void APPGunBase::ToggleFlash()
 {
+	UGameplayStatics::PlaySound2D(this, ToggleFlashSoundCue);
 	if (!bIsFlashlightEnable)
 	{
 		Flashlight->SetVisibility(true);

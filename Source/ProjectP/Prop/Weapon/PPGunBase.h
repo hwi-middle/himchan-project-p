@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ProjectP/Enumeration/PPGunState.h"
 #include "ProjectP/Prop/Weapon/PPWeaponData.h"
+#include "Sound/SoundCue.h"
 #include "Components/SpotLightComponent.h"
 #include "ProjectP/Constant/PPSkeletalMeshSocketName.h"
 #include "GameFramework/Actor.h"
@@ -102,7 +103,7 @@ private:
 
 	// UPROPERTY()
 	// uint32 bIsOverheated : 1;
-
+	
 	UPROPERTY()
 	uint32 bIsOnShooting : 1;
 	
@@ -118,6 +119,22 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "CrossHair")
 	TObjectPtr<class UStaticMesh> OverheatedCrossHair;
+
+private:
+	UPROPERTY()
+	TObjectPtr<USoundCue> GrabOnHandSoundCue;
+	
+	UPROPERTY()
+	TObjectPtr<USoundCue> OnFireSoundCue;
+
+	UPROPERTY()
+	TObjectPtr<USoundCue> CoolDownSoundCue;
+	
+	UPROPERTY()
+	TObjectPtr<USoundCue> OverheatSoundCue;
+
+	UPROPERTY()
+	TObjectPtr<USoundCue> ToggleFlashSoundCue;
 	
 private:
 	UPROPERTY()

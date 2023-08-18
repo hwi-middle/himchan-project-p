@@ -3,6 +3,9 @@
 
 #include "ProjectP/UI/Setting/PPSettingBaseActor.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "ProjectP/Game/PPGameInstance.h"
+
 // Sets default values
 APPSettingBaseActor::APPSettingBaseActor()
 {
@@ -20,6 +23,11 @@ void APPSettingBaseActor::BeginPlay()
 	SettingWidget->PassSubWidgetTypeDelegate.AddUObject(this, &APPSettingBaseActor::OpenSubWidget);
 	SettingWidget->LoadMainWidgetDelegate.AddUObject(this, &APPSettingBaseActor::ExitButtonBroadcast);
 	SettingWidget->SetSubWidgetPanelVisible(false);
+
+	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	WidgetOpenSoundCue = GameInstance->GetSoundData()->WidgetOpenSoundCue;
+	WidgetCloseSoundCue = GameInstance->GetSoundData()->WidgetCloseSoundCue;
+	
 	bSubWidgetOpened = false;
 	bIsFirstClick = true;
 }
@@ -41,20 +49,21 @@ void APPSettingBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 	if(bIsFirstClick)
 	{
 		SettingWidget->SetSubWidgetPanelVisible(true);
+		SettingWidget->SetSubWidgetContent(SubWidget);
 		SettingWidget->SetSubWidgetHeightOffset(SubWidgetHalfHeightValue);
+		OpenSubWidgetPanel();
 		bIsFirstClick = false;
+		return;
 	}
 	// 이미 서브위젯이 열려있는 상태로 해당 함수가 실행되면 닫기 애니메이션 후 서브위젯 변경
 	if(bSubWidgetOpened)
 	{
 		SwapSubWidget = SubWidget;
-		UE_LOG(LogTemp, Log, TEXT("PassSubWidgetTypeDelegate Worked And Toggle. %d"), SwapSubWidget);
 		SettingWidget->SaveSettingData();
 		CloseSubWidgetPanel();
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("PassSubWidgetTypeDelegate Worked."));
 		SettingWidget->SetSubWidgetContent(SubWidget);
 		OpenSubWidgetPanel();
 	}
@@ -62,6 +71,8 @@ void APPSettingBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 
 void APPSettingBaseActor::CloseSubWidgetPanel()
 {
+	UGameplayStatics::PlaySound2D(this, WidgetCloseSoundCue);
+	
 	SettingWidget->SetSubWidgetContentVisible(false);
 	SettingWidget->SetSubWidgetAnimationWorking(true);
 	// 서브위젯 닫기 애니메이션.
@@ -86,6 +97,8 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 
 void APPSettingBaseActor::OpenSubWidgetPanel()
 {
+	UGameplayStatics::PlaySound2D(this, WidgetOpenSoundCue);
+	
 	SettingWidget->SetSubWidgetAnimationWorking(true);
 	// 서브위젯 열기 애니메이션
 	GetWorldTimerManager().SetTimer(SubWidgetOpenTimer, FTimerDelegate::CreateLambda([&]()

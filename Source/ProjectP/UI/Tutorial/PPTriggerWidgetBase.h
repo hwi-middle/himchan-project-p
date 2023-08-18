@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Blueprint/UserWidgetBlueprint.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "ProjectP/UI/Tutorial/PPTutorialUIWidget.h"
 #include "GameFramework/Actor.h"
+#include "ProjectP/Enumeration/EventTriggerType.h"
+#include "Sound/SoundCue.h"
 #include "PPTriggerWidgetBase.generated.h"
 
 UCLASS()
@@ -37,11 +40,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UPPTutorialUIWidget> TutorialWidget;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	TSubclassOf<UUserWidget> TutorialWidgetClass;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> TriggerBox;
 
 	UPROPERTY()
 	TObjectPtr<AActor> OverlapActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Commander", DisplayName = "CommanderSoundEvent")
+	EEventTriggerType CommanderSoundTriggerType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Commander", DisplayName = "CommanderSound")
+	TObjectPtr<USoundCue> CommanderSoundCue;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
 	float WidgetHalfWidthValue;
@@ -66,4 +78,11 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
 	FTimerHandle TurnToPlayerTimer;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<USoundCue> TriggerEnterSoundCue;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<USoundCue> TriggerOutSoundCue;
+	
 };
