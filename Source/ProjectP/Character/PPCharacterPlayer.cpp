@@ -31,6 +31,14 @@ void APPCharacterPlayer::BeginPlay()
 	SetupCharacterStatusData(PlayerStatusData);
 }
 
+void APPCharacterPlayer::ClearAllTimerOnLevelChange()
+{
+	GetWorldTimerManager().ClearTimer(HitCheckTimer);
+	GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
+	HitCheckTimer.Invalidate();
+	RecoveryTickTimer.Invalidate();
+}
+
 float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	// TODO: ECharacterState 걷어내기

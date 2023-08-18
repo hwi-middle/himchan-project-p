@@ -32,8 +32,21 @@ void APPTriggerWidgetBase::BeginPlay()
 	TutorialWidget->SetGuidePanelOpacity(0.0f);
 	
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
-	TriggerEnterSoundCue = GameInstance->GetSoundData()->WidgetOpenSoundCue;
-	TriggerOutSoundCue = GameInstance->GetSoundData()->WidgetCloseSoundCue;
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPTriggerWidgetBase::ClearAllTimerOnLevelChange);
+
+	const UPPSoundData* SoundData = GameInstance->GetSoundData();
+	TriggerEnterSoundCue = SoundData->WidgetOpenSoundCue;
+	TriggerOutSoundCue = SoundData->WidgetCloseSoundCue;
+}
+
+void APPTriggerWidgetBase::ClearAllTimerOnLevelChange()
+{
+	GetWorldTimerManager().ClearTimer(BackgroundOpacityTimer);
+	GetWorldTimerManager().ClearTimer(GuidePanelOpacityTimer);
+	GetWorldTimerManager().ClearTimer(TurnToPlayerTimer);
+	BackgroundOpacityTimer.Invalidate();
+	GuidePanelOpacityTimer.Invalidate();
+	TurnToPlayerTimer.Invalidate();
 }
 
 // Called every frame

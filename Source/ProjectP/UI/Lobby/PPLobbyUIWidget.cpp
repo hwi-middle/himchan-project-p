@@ -2,6 +2,7 @@
 
 #include "ProjectP/UI/Lobby/PPLobbyUIWidget.h"
 #include "EngineUtils.h"
+#include "ProjectP/Game/PPGameInstance.h"
 
 void UPPLobbyUIWidget::NativeConstruct()
 {
@@ -21,10 +22,6 @@ void UPPLobbyUIWidget::SetButtonInteraction(bool bInteraction)
 
 void UPPLobbyUIWidget::EntryMainLevel()
 {
-	for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
-	{
-		AActor* Actor = *ActorItr;
-		Actor->GetWorldTimerManager().ClearAllTimersForObject(Actor);
-	}
+	GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
 	UGameplayStatics::OpenLevel(this, MAIN_LEVEL);
 }

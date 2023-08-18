@@ -8,6 +8,7 @@
 #include "InputMappingContext.h"
 #include "InputCoreTypes.h"
 #include "NiagaraComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "ProjectP/Grab/PPVRGrabComponent.h"
 #include "ProjectP/Player/PPVRHand.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
@@ -15,6 +16,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Object/PPDestructible.h"
+#include "ProjectP/Util/PPDrawLineHelper.h"
 
 // Sets default values
 APPGunBase::APPGunBase()
@@ -73,12 +75,22 @@ void APPGunBase::BeginPlay()
 	Flashlight->SetWorldRotation(WeaponMesh->GetSocketRotation(GUN_FLASH));
 
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPGunBase::ClearAllTimerOnLevelChange);
+	
+	const UPPSoundData* SoundData = GameInstance->GetSoundData();
+	GrabOnHandSoundCue = SoundData->GunGrabOnHandSoundCue;
+	OnFireSoundCue = SoundData->GunOnFireTypeASoundCue;
+	CoolDownSoundCue = SoundData->GunCoolDownSoundCue;
+	OverheatSoundCue = SoundData->GunOverheatSoundCue;
+	ToggleFlashSoundCue = SoundData->GunToggleFlashSoundCue;
+}
 
-	GrabOnHandSoundCue = GameInstance->GetSoundData()->GunGrabOnHandSoundCue;
-	OnFireSoundCue = GameInstance->GetSoundData()->GunOnFireTypeASoundCue;
-	CoolDownSoundCue = GameInstance->GetSoundData()->GunCoolDownSoundCue;
-	OverheatSoundCue = GameInstance->GetSoundData()->GunOverheatSoundCue;
-	ToggleFlashSoundCue = GameInstance->GetSoundData()->GunToggleFlashSoundCue;
+void APPGunBase::ClearAllTimerOnLevelChange()
+{
+	GetWorldTimerManager().ClearTimer(BlockShootTimerHandle);
+	GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
+	BlockShootTimerHandle.Invalidate();
+	OverheatCoolDownTimerHandle.Invalidate();
 }
 
 void APPGunBase::Tick(float DeltaTime)
@@ -118,7 +130,7 @@ void APPGunBase::Tick(float DeltaTime)
 		// UE_LOG(LogTemp, Warning, TEXT("Nothing hit along the raycast path"));
 		CrossHairPlane->SetVisibility(false);
 		// FlushPersistentDebugLines(GetWorld());
-		DrawDebugLine(GetWorld(), StartLocation, EndLocation, LineColor, false, -1, 0, 1.0f);
+		FPPDrawLineHelper::DrawLine(GetWorld(), StartLocation, EndLocation, LineColor, false, -1, 0, 1.0f);
 		return;
 	}
 
@@ -139,7 +151,7 @@ void APPGunBase::Tick(float DeltaTime)
 		CrossHairPlane->SetVisibility(false);
 	}
 	// FlushPersistentDebugLines(GetWorld());
-	DrawDebugLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, -1, 0, 1.0f);
+	FPPDrawLineHelper::DrawLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, -1, 0, 1.0f);
 
 	FString HitActorName = AimingActor->GetName();
 	FVector HitLocation = HitResult.ImpactPoint;
@@ -284,13 +296,10 @@ void APPGunBase::StopFire()
 
 void APPGunBase::GrabOnHand(APPVRHand* InHand)
 {
-	if(!bHeld)
-	{
-		UGameplayStatics::PlaySound2D(this, GrabOnHandSoundCue);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		bHeld = true;
-	}
-
+	UGameplayStatics::PlaySound2D(this, GrabOnHandSoundCue);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	bHeld = true;
+	
 	//UE_LOG(LogTemp, Log, TEXT("OnGrab"));
 	//SetupInputMappingContextByHandType(InHand->GetHandType());
 }
