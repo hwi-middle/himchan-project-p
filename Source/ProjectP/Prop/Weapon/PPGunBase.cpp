@@ -213,7 +213,7 @@ void APPGunBase::OnFire()
 	// 발사 이펙트 적용
 	bIsOnShooting = true;
 	MuzzleNiagaraEffect->SetActive(true);
-
+	UGameplayStatics::PlaySound2D(this, OnFireSoundCue);
 
 	CurrentOverheat += OverheatAmountPerSingleShoot;
 
