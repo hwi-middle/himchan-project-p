@@ -89,7 +89,7 @@ private:
 
 	// UPROPERTY()
 	// uint32 bIsOverheated : 1;
-
+	
 	UPROPERTY()
 	uint32 bIsUnavailable : 1;
 

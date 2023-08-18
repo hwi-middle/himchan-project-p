@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Blueprint/UserWidgetBlueprint.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "ProjectP/UI/Tutorial/PPTutorialUIWidget.h"
 #include "GameFramework/Actor.h"
+#include "ProjectP/Enumeration/EventTriggerType.h"
 #include "Sound/SoundCue.h"
 #include "PPTriggerWidgetBase.generated.h"
 
@@ -38,11 +40,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UPPTutorialUIWidget> TutorialWidget;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	TSubclassOf<UUserWidget> TutorialWidgetClass;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> TriggerBox;
 
 	UPROPERTY()
 	TObjectPtr<AActor> OverlapActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Commander", DisplayName = "CommanderSoundEvent")
+	EEventTriggerType CommanderSoundTriggerType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Commander", DisplayName = "CommanderSound")
+	TObjectPtr<USoundCue> CommanderSoundCue;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
 	float WidgetHalfWidthValue;
@@ -58,9 +69,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
 	float WidgetRotateDelay;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	uint32 bIsFirstTriggered : 1;
 	
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
 	FTimerHandle BackgroundOpacityTimer;
@@ -76,7 +84,5 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<USoundCue> TriggerOutSoundCue;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<USoundCue> CommanderSoundCue;
+	
 };

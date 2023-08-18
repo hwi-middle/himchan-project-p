@@ -239,10 +239,12 @@ void APPGunBase::StopFire()
 
 void APPGunBase::GrabOnHand(APPVRHand* InHand)
 {
-	CrossHairPlane->SetVisibility(true);
-	UGameplayStatics::PlaySound2D(this, GrabOnHandSoundCue);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	bHeld = true;
+	if(!bHeld)
+	{
+		UGameplayStatics::PlaySound2D(this, GrabOnHandSoundCue);
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		bHeld = true;
+	}
 
 	//UE_LOG(LogTemp, Log, TEXT("OnGrab"));
 	//SetupInputMappingContextByHandType(InHand->GetHandType());
