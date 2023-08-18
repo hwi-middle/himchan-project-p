@@ -16,10 +16,16 @@ class PROJECTP_API UPPMovementData : public UPrimaryDataAsset
 
 public:
 	UPROPERTY(EditAnywhere, Category="VR Move")
-	float MoveSpeed;
+	float WalkSpeed;
 
 	UPROPERTY(EditAnywhere, Category="VR Move")
 	float SprintSpeed;
+
+	UPROPERTY(EditAnywhere, Category="VR Move")
+	float WalkSoundRate;
+
+	UPROPERTY(EditAnywhere, Category="VR Move")
+	float SprintSoundRate;
 	
 	UPROPERTY(EditAnywhere, Category="VR Move")
 	float SnapTurnDegrees;

@@ -2,7 +2,11 @@
 
 
 #include "ProjectP/UI/Tutorial/PPTriggerWidgetBase.h"
+
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
+#include "ProjectP/Game/PPGameInstance.h"
+#include "ProjectP/Player/PPVRPawn.h"
 
 // Sets default values
 APPTriggerWidgetBase::APPTriggerWidgetBase()
@@ -21,10 +25,15 @@ APPTriggerWidgetBase::APPTriggerWidgetBase()
 void APPTriggerWidgetBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TutorialWidgetComponent->SetWidgetClass(TutorialWidgetClass);
 	TutorialWidget = CastChecked<UPPTutorialUIWidget>(TutorialWidgetComponent->GetUserWidgetObject());
-	//TutorialWidget->SetBackgroundOpacity(0.0f);
 	TutorialWidget->SetPadding(FMargin(WidgetHalfWidthValue, TutorialWidget->GetPadding().Top, WidgetHalfWidthValue, TutorialWidget->GetPadding().Bottom));
 	TutorialWidget->SetGuidePanelOpacity(0.0f);
+	
+	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	TriggerEnterSoundCue = GameInstance->GetSoundData()->WidgetOpenSoundCue;
+	TriggerOutSoundCue = GameInstance->GetSoundData()->WidgetCloseSoundCue;
 }
 
 // Called every frame
@@ -37,12 +46,27 @@ void APPTriggerWidgetBase::Tick(float DeltaTime)
 void APPTriggerWidgetBase::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-
-	TObjectPtr<ACharacter> Player = Cast<ACharacter>(OtherActor);
+	
+	TObjectPtr<APPVRPawn> Player = Cast<APPVRPawn>(OtherActor);
 	if(Player)
 	{
 		OverlapActor = OtherActor;
-
+		switch (CommanderSoundTriggerType)
+		{
+		case EEventTriggerType::None:
+			break;
+		case  EEventTriggerType::OneTimeOnly:
+			UGameplayStatics::PlaySound2D(this, CommanderSoundCue);
+			CommanderSoundTriggerType = EEventTriggerType::None;
+			break;
+		case EEventTriggerType::AnyTime:
+			UGameplayStatics::PlaySound2D(this, CommanderSoundCue);
+			break;
+		default:
+			checkNoEntry();
+		}
+		UGameplayStatics::PlaySound2D(this, TriggerEnterSoundCue);
+		
 		// 애니메이션 도중 이벤트 발생시 기존 애니메이션 중지
 		if(GetWorldTimerManager().IsTimerActive(BackgroundOpacityTimer) || GetWorldTimerManager().IsTimerActive(GuidePanelOpacityTimer))
 		{
@@ -75,9 +99,11 @@ void APPTriggerWidgetBase::NotifyActorEndOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorEndOverlap(OtherActor);
 	GetWorldTimerManager().ClearTimer(TurnToPlayerTimer);
-	TObjectPtr<ACharacter> Player = Cast<ACharacter>(OtherActor);
+	TObjectPtr<APPVRPawn> Player = Cast<APPVRPawn>(OtherActor);
 	if(Player)
 	{
+		UGameplayStatics::PlaySound2D(this, TriggerOutSoundCue);
+		
 		// 애니메이션 도중 이벤트 발생시 기존 애니메이션 중지
 		if(GetWorldTimerManager().IsTimerActive(BackgroundOpacityTimer) || GetWorldTimerManager().IsTimerActive(GuidePanelOpacityTimer))
 		{

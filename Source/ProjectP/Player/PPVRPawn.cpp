@@ -14,9 +14,10 @@
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
 #include "EnhancedInput/Public/EnhancedInputComponent.h"
 #include "EnhancedInput/Public/InputMappingContext.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Prop/Weapon/PPGunBase.h"
-
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
@@ -49,7 +50,9 @@ APPVRPawn::APPVRPawn()
 	LeftXButtonPressAction = MovementData->LeftXButtonPressAction;
 	RightBButtonPressAction = MovementData->RightBButtonPressAction;
 	
-	MoveSpeed = MovementData->MoveSpeed;
+	MoveSpeed = MovementData->WalkSpeed;
+	WalkSoundRate = MovementData->WalkSoundRate;
+	SprintSoundRate = MovementData->SprintSoundRate;
 	SnapTurnDegrees = MovementData->SnapTurnDegrees;
 	WidgetInteractionDistance = MovementData->WidgetInteractionDistance;
 }
@@ -61,6 +64,10 @@ void APPVRPawn::BeginPlay()
 	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
 	InitVROrigin();
 	InitVRHands();
+
+	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	WalkSoundCue = GameInstance->GetSoundData()->PlayerWalkSoundCue;
+	SprintSoundCue = GameInstance->GetSoundData()->PlayerSprintSoundCue;
 }
 
 // Called every frame
@@ -80,8 +87,9 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	SubSystem->AddMappingContext(InputMappingContext, 0);
 
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
+	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Started, this, &APPVRPawn::StartMove);
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APPVRPawn::Move);
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &APPVRPawn::DisableSprint);
+	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &APPVRPawn::CompleteMove);
 	EnhancedInputComponent->BindAction(TurnAction, ETriggerEvent::Started, this, &APPVRPawn::Turn);
 	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleSprint);
 
@@ -262,17 +270,53 @@ void APPVRPawn::ThumbUpRight(const FInputActionValue& Value)
 	RightHand->SetPoseAlphaThumbUp(0);
 }
 
-void APPVRPawn::DisableSprint(const FInputActionValue& Value)
+void APPVRPawn::StartMove(const FInputActionValue& Value)
 {
+	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
+	{
+		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
+	}
+	GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
+	{
+		UGameplayStatics::PlaySound2D(this, WalkSoundCue);
+	}), WalkSoundRate, true);
+}
+
+void APPVRPawn::CompleteMove(const FInputActionValue& Value)
+{
+	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
+	{
+		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
+	}
+	
 	if (MoveSpeed == MovementData->SprintSpeed)
 	{
-		MoveSpeed = MovementData->MoveSpeed;
+		MoveSpeed = MovementData->WalkSpeed;
 	}
 }
 
 void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 {
-	MoveSpeed == MovementData->MoveSpeed ? MoveSpeed = MovementData->SprintSpeed : MoveSpeed = MovementData->MoveSpeed;
+	MoveSpeed == MovementData->WalkSpeed ? MoveSpeed = MovementData->SprintSpeed : MoveSpeed = MovementData->WalkSpeed;
+	
+	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
+	{
+		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
+	}
+	if(MoveSpeed == MovementData->WalkSpeed)
+	{
+		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			UGameplayStatics::PlaySound2D(this, WalkSoundCue);
+		}), WalkSoundRate, true);
+	}
+	else
+	{
+		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			UGameplayStatics::PlaySound2D(this, SprintSoundCue);
+		}), SprintSoundRate, true);
+	}
 }
 
 void APPVRPawn::ToggleFlash(const FInputActionValue& Value)

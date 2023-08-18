@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ProjectP/Enumeration/PPGunState.h"
 #include "ProjectP/Prop/Weapon/PPWeaponData.h"
+#include "Sound/SoundCue.h"
 #include "Components/SpotLightComponent.h"
 #include "ProjectP/Constant/PPSkeletalMeshSocketName.h"
 #include "GameFramework/Actor.h"
@@ -33,9 +34,9 @@ public:
 	void ToggleFlash();
 	
 	// Test Only
-	float CurrentUnavailableTime;
+	float ElapsedUnavailableTime;
 	FORCEINLINE float GetCurrentOverheatGauge() const { return CurrentOverheat; }
-	FORCEINLINE float GetUnavailableTimeRemains() const { return bIsUnavailable ? CurrentUnavailableTime : 0; }
+	FORCEINLINE float GetUnavailableTimeRemains() const { return bIsUnavailable ? (UnavailableTime - ElapsedUnavailableTime) : 0; }
 	FORCEINLINE FString GetAimingActorName() const { return AimingActor != nullptr ? AimingActor->GetActorNameOrLabel() : FString::Printf(TEXT("None")); }
 	//
 	
@@ -52,6 +53,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TObjectPtr<class UStaticMeshComponent> CrossHairPlane;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	TObjectPtr<class UNiagaraComponent> MuzzleNiagaraEffect;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TObjectPtr<USpotLightComponent> Flashlight;
 	
@@ -87,6 +91,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	float ShootDelayPerShoot;
+
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
+	float CooldownDelay;
 	
 	UPROPERTY()
 	float OverheatCoolDownPerSecond;
@@ -96,7 +103,10 @@ private:
 
 	// UPROPERTY()
 	// uint32 bIsOverheated : 1;
-
+	
+	UPROPERTY()
+	uint32 bIsOnShooting : 1;
+	
 	UPROPERTY()
 	uint32 bIsUnavailable : 1;
 
@@ -108,7 +118,23 @@ private:
 	TObjectPtr<class UStaticMesh> DefaultCrossHair;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "CrossHair")
-	TObjectPtr<class UStaticMesh> DetectedCrossHair;
+	TObjectPtr<class UStaticMesh> OverheatedCrossHair;
+
+private:
+	UPROPERTY()
+	TObjectPtr<USoundCue> GrabOnHandSoundCue;
+	
+	UPROPERTY()
+	TObjectPtr<USoundCue> OnFireSoundCue;
+
+	UPROPERTY()
+	TObjectPtr<USoundCue> CoolDownSoundCue;
+	
+	UPROPERTY()
+	TObjectPtr<USoundCue> OverheatSoundCue;
+
+	UPROPERTY()
+	TObjectPtr<USoundCue> ToggleFlashSoundCue;
 	
 private:
 	UPROPERTY()
@@ -128,6 +154,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class AActor> AimingActor;
+
+	UPROPERTY()
+	FColor LineColor;
 	
 	uint32 bIsFlashlightEnable : 1;
 

@@ -46,7 +46,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
 	float ShootPerSecond;
-
+	
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	float CooldownDelay;
 
 	// UPROPERTY(EditDefaultsOnly, Category = Sound)
 	// TObjectPtr<class USoundBase> ReloadSound;

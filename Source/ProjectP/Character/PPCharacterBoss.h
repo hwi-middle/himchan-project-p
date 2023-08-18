@@ -6,6 +6,7 @@
 #include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Enumeration/PPBossPattern.h"
 #include "ProjectP/Interface/CharacterStatusInterface.h"
+#include "Sound/SoundCue.h"
 #include "PPCharacterBoss.generated.h"
 
 
@@ -22,7 +23,7 @@ public:
 	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	// TestOnly
-	void TestPattern(EBossPattern Pattern, uint32 Num = 0);
+	void TestPattern(EBossPattern Pattern);
 	
 protected:
 	//virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
@@ -60,11 +61,17 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	float VG_MaxDistance;
+
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
+	TObjectPtr<USoundCue> VG_OmenSound;
 	
 	// 기믹 - 리프 템페스트
 	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
 	uint32 LT_LeafNum;
 
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	TObjectPtr<USoundCue> LT_OmenSound;
+	
 	// 기믹 - 녹빛 안개
 	UPROPERTY()
 	FTimerHandle GreenFogTimerHandle;
@@ -80,4 +87,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
 	float GF_Radius;
+
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	TObjectPtr<USoundCue> GF_OmenSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	TObjectPtr<USoundCue> GF_SpawnSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
+	uint32 bHasGFSpawned : 1;
 };

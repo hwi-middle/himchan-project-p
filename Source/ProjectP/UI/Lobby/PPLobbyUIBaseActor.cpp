@@ -2,7 +2,6 @@
 
 #include "ProjectP/UI/Lobby/PPLobbyUIBaseActor.h"
 
-#include "ProjectP/Constant/PPSoundName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/UI/Lobby/PPLobbyUIWidget.h"
 #include "Sound/SoundCue.h"
@@ -39,13 +38,14 @@ void APPLobbyUIBaseActor::BeginPlay()
 	}
 	SettingWidgetActor->SetVisibility(false);
 	ExitWidgetComponent->SetVisibility(false);
+
+	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	WidgetMoveSoundCue = GameInstance->GetSoundData()->WidgetMoveSoundCue;
 }
 
 void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 {
-	const TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	TObjectPtr<USoundCue> SoundCue = CurrentGI->GetSoundCue(TEST_SOUND);
-	UGameplayStatics::PlaySound2D(GetWorld(), SoundCue);
+	UGameplayStatics::PlaySound2D(GetWorld(), WidgetMoveSoundCue);
 	
 	if(SubWidget == ESubWidgetType::Setting)
 	{
@@ -76,6 +76,8 @@ void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 
 void APPLobbyUIBaseActor::ReturnFromSettingToLobby()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), WidgetMoveSoundCue);
+	
 	CurrentLocation = GetActorLocation();
 	LobbyWidgetComponent->SetVisibility(true);
 	GetWorldTimerManager().SetTimer(WidgetAnimationTimer, FTimerDelegate::CreateLambda([&]()

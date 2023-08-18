@@ -4,4 +4,10 @@
 
 #include "CoreMinimal.h"
 
-#define TEST_SOUND "SC_TestSound"
+UENUM()
+enum class EEventTriggerType : uint8
+{
+	None,
+	OneTimeOnly,
+	AnyTime
+};

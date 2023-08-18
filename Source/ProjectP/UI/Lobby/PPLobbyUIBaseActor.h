@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/WidgetComponent.h"
+#include "Sound/SoundCue.h"
 #include "GameFramework/Actor.h"
-#include "ProjectP/Enumeration/PPSubWidgetType.h"
+#include "Components/WidgetComponent.h"
 #include "ProjectP/UI/Lobby/PPLobbyUIWidget.h"
+#include "ProjectP/Enumeration/PPSubWidgetType.h"
 #include "ProjectP/UI/Setting/PPSettingBaseActor.h"
 #include "PPLobbyUIBaseActor.generated.h"
 
@@ -45,6 +46,9 @@ protected:
 	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Widget")
 	TObjectPtr<APPSettingBaseActor> SettingWidget;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<USoundCue> WidgetMoveSoundCue;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 	float WidgetAnimationTick;
