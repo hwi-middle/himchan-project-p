@@ -30,11 +30,14 @@ public:
 	//void Init(AActor* Player, float Damage);
 
 	void StartTracing();
-	void BlinkAndExplode();
-	bool CheckPlayerWithSphere(float InRadius, FHitResult& Result);
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
 	const virtual float GetCurrentHealth() override { return Health; }
+
+private:
+	void BlinkAndExplode();
+	bool CheckPlayerWithSphere(float InRadius, FHitResult& Result);
+	void FadeOutAndDestroy();
 
 private:
 	UPROPERTY()
@@ -80,7 +83,10 @@ private:
 	float ElapsedBlinkTime;
 
 	UPROPERTY()
-	float DestroySpeed;
+	float FadeOutDuration;
+
+	UPROPERTY()
+	float ElapsedFadeOutTime;
 	
 	UPROPERTY()
 	uint32 bIsActivated : 1;

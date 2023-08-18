@@ -21,7 +21,7 @@ ALeaf::ALeaf()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeafMesh"));
 	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Material/BossGimmick/Leaf/SM_Cube.SM_Cube'"));
 	Mesh->SetStaticMesh(MeshObj);
-	
+
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
 	Damage = BossGimmickData->LT_Damage;
 	RotateSpeed = FMath::RandRange(BossGimmickData->LT_MinRotateSpeed, BossGimmickData->LT_MaxRotateSpeed);
@@ -31,8 +31,8 @@ ALeaf::ALeaf()
 	ElapsedTraceTime = 0.f;
 	BlinkDuration = BossGimmickData->LT_BlinkDuration;
 	MaxBlinkSpeed = BossGimmickData->LT_BlinkSpeed;
-	DestroySpeed = BossGimmickData->LT_DestroySpeed;
-	
+	FadeOutDuration = BossGimmickData->LT_FadeOutDuration;
+
 	Tags.Add(TEXT("DestructibleObject"));
 	Mesh->SetSimulatePhysics(false);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -45,11 +45,11 @@ ALeaf::ALeaf()
 void ALeaf::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	const UPPSoundData* SoundData = GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->GetSoundData();
 	ExplodeSoundCue = SoundData->BossLeafTempestExplodeSoundCue;
 	DestroySoundCue = SoundData->BossLeafTempestDestroySoundCue;
-	
+
 	Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 }
 
@@ -108,7 +108,8 @@ void ALeaf::BlinkAndExplode()
 			}
 			UGameplayStatics::PlaySound2D(this, ExplodeSoundCue);
 			GetWorldTimerManager().ClearTimer(BlinkTimerHandle);
-			Destroy();
+			FadeOutAndDestroy();
+			return;
 		}
 
 		CurrentBlinkSpeed = FMath::Lerp(0.f, MaxBlinkSpeed, Alpha);
@@ -152,24 +153,33 @@ void ALeaf::DecreaseHealth(const float Value)
 	Health -= Value;
 	if (Health <= 0)
 	{
-		if(GetWorldTimerManager().IsTimerActive(BlinkTimerHandle))
+		if (GetWorldTimerManager().IsTimerActive(BlinkTimerHandle))
 		{
 			GetWorldTimerManager().ClearTimer(BlinkTimerHandle);
 		}
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		UGameplayStatics::PlaySound2D(this, DestroySoundCue);
 		bIsActivated = false;
-		
-		GetWorldTimerManager().SetTimer(DestroyEffectTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			float CurrentOpacity = 0.0f;
-			Mesh->GetMaterial(0)->GetScalarParameterValue(TEXT("Opacity"), CurrentOpacity);
-			if(CurrentOpacity <= 0.0f)
-			{
-				GetWorldTimerManager().ClearTimer(DestroyEffectTimerHandle);
-				Destroy();
-			}
-			Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), CurrentOpacity - DestroySpeed);
-		}), 0.01f, true);
+
+		FadeOutAndDestroy();
 	}
+}
+
+void ALeaf::FadeOutAndDestroy()
+{
+	ElapsedFadeOutTime = 0.f;
+	Mesh->SetScalarParameterValueOnMaterials(TEXT("BlinkSpeed"), 0.f);
+	
+	GetWorldTimerManager().SetTimer(DestroyEffectTimerHandle, FTimerDelegate::CreateLambda([&]()
+	{
+		float CurrentOpacity = 0.0f;
+		Mesh->GetMaterial(0)->GetScalarParameterValue(TEXT("Opacity"), CurrentOpacity);
+		if (CurrentOpacity <= 0.0f)
+		{
+			GetWorldTimerManager().ClearTimer(DestroyEffectTimerHandle);
+			Destroy();
+		}
+		Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), FMath::Lerp(1.f, 0.f, ElapsedFadeOutTime / FadeOutDuration));
+		ElapsedFadeOutTime += 0.01f;
+	}), 0.01f, true);
 }
