@@ -27,8 +27,10 @@ private:
 
 
 
-public:	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess=true))
+public:
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess=true))
 	TObjectPtr<UBlueprint> Destroyer;
+	
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
 	const virtual float GetCurrentHealth() override { return Health; };
