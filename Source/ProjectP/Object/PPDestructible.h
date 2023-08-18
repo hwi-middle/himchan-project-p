@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-#include "Interface/CharacterStatusInterface.h"
+#include "ProjectP/Interface/CharacterStatusInterface.h"
 #include "PPDestructible.generated.h"
 
 
@@ -24,8 +24,6 @@ protected:
 private:
 	UPROPERTY()
 	float Health;
-
-
 
 public:
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess=true))

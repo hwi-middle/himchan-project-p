@@ -3,7 +3,7 @@
 
 #include "PPDestructible.h"
 
-#include "Util/PPConstructorHelper.h"
+#include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values for this component's properties
 UPPDestructible::UPPDestructible()
@@ -15,7 +15,6 @@ UPPDestructible::UPPDestructible()
 	Destroyer = FPPConstructorHelper::FindAndGetObject<UBlueprint>(TEXT("/Script/Engine.Blueprint'/Engine/EditorResources/FieldNodes/FS_MasterField.FS_MasterField'"));
 }
 
-
 // Called when the game starts
 void UPPDestructible::BeginPlay()
 {
@@ -26,8 +25,6 @@ void UPPDestructible::BeginPlay()
 	AActor* OuterActor = Cast<AActor>(GetOuter());
 	OuterActor->Tags.Add(TEXT("DestructibleObject"));
 }
-
-
 
 void UPPDestructible::IncreaseHealth(const float Value)
 {

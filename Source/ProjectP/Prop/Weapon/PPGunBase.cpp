@@ -16,7 +16,7 @@
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "Math/UnrealMathUtility.h"
-#include "ProjectP/PPDestructible.h"
+#include "ProjectP/Object/PPDestructible.h"
 
 // Sets default values
 APPGunBase::APPGunBase()
