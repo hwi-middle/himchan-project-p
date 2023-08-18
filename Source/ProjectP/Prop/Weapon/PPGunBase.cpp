@@ -19,6 +19,7 @@
 APPGunBase::APPGunBase()
 {
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	WeaponMesh->SetCollisionObjectType(ECC_GIMMICK);
 
 	CrossHairPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrossHairPlane"));

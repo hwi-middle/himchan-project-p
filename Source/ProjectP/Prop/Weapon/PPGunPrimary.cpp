@@ -9,10 +9,8 @@ APPGunPrimary::APPGunPrimary()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
-	FPPConstructorHelper::FindObjectAndInitialize<UPPWeaponData>(TEXT("/Script/ProjectP.PPWeaponData'/Game/DataAssets/Weapon/PrimaryWeaponData.PrimaryWeaponData'"), [&](UPPWeaponData* Data)
-	{
-		SetupWeaponData(Data);
-	}, EAssertionLevel::Check);
+	PrimaryWeaponData = FPPConstructorHelper::FindAndGetObject<UPPWeaponData>(TEXT("/Script/ProjectP.PPWeaponData'/Game/DataAssets/Weapon/PrimaryWeaponData.PrimaryWeaponData'"), EAssertionLevel::Check);
+	SetupWeaponData(PrimaryWeaponData);
 }
 
 void APPGunPrimary::Tick(float DeltaTime)
@@ -23,4 +21,5 @@ void APPGunPrimary::Tick(float DeltaTime)
 void APPGunPrimary::BeginPlay()
 {
 	Super::BeginPlay();
+	SetupWeaponData(PrimaryWeaponData);
 }
