@@ -22,13 +22,13 @@ public:
 
 protected:
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void StartLeafTempestPattern() { BossCharacter->TestPattern(EBossPattern::LeafTempest, LeafTempestNum); }
+	FORCEINLINE void StartLeafTempestPattern() { BossCharacter->TestPattern(EBossPattern::LeafTempest); }
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void StartGreenFogPattern() { BossCharacter->TestPattern(EBossPattern::GreenFog); }
 	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void StartGardenPattern() { BossCharacter->TestPattern(EBossPattern::VineGarden, VineGardenNum); }
+	FORCEINLINE void StartGardenPattern() { BossCharacter->TestPattern(EBossPattern::VineGarden); }
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI", meta =(BindWidget))
 	TObjectPtr<UButton> LeafButton;
@@ -39,11 +39,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI", meta =(BindWidget))
 	TObjectPtr<UButton> FogButton;
 
-	UPROPERTY(EditAnywhere)
-	int LeafTempestNum;
-
-	UPROPERTY(EditAnywhere)
-	int VineGardenNum;
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<APPCharacterBoss> BossCharacter;

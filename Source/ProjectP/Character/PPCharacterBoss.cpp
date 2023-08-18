@@ -216,7 +216,7 @@ void APPCharacterBoss::DecreaseHealth(const float Value)
 	Health -= Value;
 }
 
-void APPCharacterBoss::TestPattern(EBossPattern Pattern, uint32 Num)
+void APPCharacterBoss::TestPattern(EBossPattern Pattern)
 {
 	switch (Pattern)
 	{
@@ -224,10 +224,10 @@ void APPCharacterBoss::TestPattern(EBossPattern Pattern, uint32 Num)
 		GenerateToxicFog();
 		break;
 	case EBossPattern::LeafTempest:
-		GenerateLeafTempestOnRandomLocation(Num);
+		GenerateLeafTempestOnRandomLocation(LT_LeafNum);
 		break;
 	case EBossPattern::VineGarden:
-		GenerateTentaclesOnRandomLocation(Num);
+		GenerateTentaclesOnRandomLocation(VG_TentacleNum);
 		break;
 	default:
 		checkNoEntry();
