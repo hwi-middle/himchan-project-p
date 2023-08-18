@@ -140,14 +140,14 @@ void APPVRHand::InitHand()
 	case EControllerHand::Left:
 		HandMesh->SetRelativeRotation(FRotator(0.f, 180.f, 90.f));
 		Path = TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_left.SKM_MannyXR_left'");
-		SetActorLabel(TEXT("LeftHand"));
+		// SetActorLabel(TEXT("LeftHand"));
 		SetupWidgetComponent();
 		SetupDebugWidget();
 		break;
 	case EControllerHand::Right:
 		HandMesh->SetRelativeRotation(FRotator(0.f, 0.f, 90.f));
 		Path = TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_right.SKM_MannyXR_right'");
-		SetActorLabel(TEXT("RightHand"));
+		// SetActorLabel(TEXT("RightHand"));
 		HandWidgetInteraction->DestroyComponent();
 		DebugWidgetComponent->DestroyComponent();
 		break;
