@@ -109,6 +109,9 @@ private:
 	
 	UPROPERTY()
 	uint32 bIsOnShooting : 1;
+
+	UPROPERTY()
+	uint32 bIsCooldownStart : 1;
 	
 	UPROPERTY()
 	uint32 bIsUnavailable : 1;
@@ -128,14 +131,20 @@ private:
 	TObjectPtr<USoundCue> GrabOnHandSoundCue;
 	
 	UPROPERTY()
-	TObjectPtr<USoundCue> OnFireSoundCue;
+	TArray<USoundCue*> FireSoundCueArray;
 
+	UPROPERTY()
+	TObjectPtr<USoundCue> OnFireSoundCue;
+	
 	UPROPERTY()
 	TObjectPtr<USoundCue> CoolDownSoundCue;
 	
 	UPROPERTY()
-	TObjectPtr<USoundCue> OverheatSoundCue;
+	TObjectPtr<USoundCue> IncreaseOverheatSoundCue;
 
+	UPROPERTY()
+	TObjectPtr<USoundCue> OverheatGaugeMaxSoundCue;
+	
 	UPROPERTY()
 	TObjectPtr<USoundCue> ToggleFlashSoundCue;
 	

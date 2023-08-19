@@ -22,12 +22,6 @@ public:
 	float SprintSpeed;
 
 	UPROPERTY(EditAnywhere, Category="VR Move")
-	float WalkSoundRate;
-
-	UPROPERTY(EditAnywhere, Category="VR Move")
-	float SprintSoundRate;
-	
-	UPROPERTY(EditAnywhere, Category="VR Move")
 	float SnapTurnDegrees;
 
 	UPROPERTY(EditAnywhere, Category="VR Interaction")
