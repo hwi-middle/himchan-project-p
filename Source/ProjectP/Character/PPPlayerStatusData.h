@@ -30,5 +30,10 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	float ReturnToIdleStateTime;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = Misc)
+	float DamageFXFadeInDuration;
+
+	UPROPERTY(EditDefaultsOnly, Category = Misc)
+	float DamageFXFadeOutDuration;
 };
