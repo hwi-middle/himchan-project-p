@@ -27,7 +27,9 @@ APPVRHand::APPVRHand()
 	HandMesh->SetAnimInstanceClass(HandAnimInstanceClass);
 
 	HandWidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteraction"));
+	HandWidgetInteraction->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	HandWidgetInteraction->SetupAttachment(MotionController);
+	HandWidgetInteraction->TraceChannel = ECC_Visibility;
 	HandWidgetInteraction->InteractionDistance = 0.0f;
 	
 	// Test Only
@@ -51,13 +53,8 @@ void APPVRHand::BeginPlay()
 void APPVRHand::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if(!HandWidgetInteraction)
-	{
-		return;
-	}
 	
-	if (HandWidgetInteraction->InteractionDistance <= 0.0f)
+	if (!HandWidgetInteraction->IsActive() || HandWidgetInteraction->InteractionDistance <= 0.0f)
 	{
 		return;
 	}
@@ -150,7 +147,7 @@ void APPVRHand::WidgetInteractionToggle(const float Value)
 {
 	// SetActive로 제어하려니 작동이 제대로 안되서 크기 조정으로 대체
 	bool bIsActivated = abs(HandWidgetInteraction->InteractionDistance - Value) <= KINDA_SMALL_NUMBER;
-	HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;
+	HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;	
 }
 
 void APPVRHand::InitHand()
@@ -163,6 +160,7 @@ void APPVRHand::InitHand()
 	case EControllerHand::Left:
 		HandMesh->SetRelativeRotation(FRotator(0.f, 180.f, 90.f));
 		Path = TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_left.SKM_MannyXR_left'");
+		
 		SetupDebugWidget();
 		break;
 	case EControllerHand::Right:
@@ -186,30 +184,15 @@ void APPVRHand::ResetHandMesh()
 	HandMesh->SetRelativeTransform(InitHandMeshRelativeTransform, false, nullptr, ETeleportType::TeleportPhysics);
 }
 
-void APPVRHand::DestroyWidgetComponent() const
+void APPVRHand::DisableWidgetComponent() const
 {
 	HandWidgetInteraction->InteractionDistance = 0.0f;
-	HandWidgetInteraction->DestroyComponent();
+	HandWidgetInteraction->SetActive(false);
 }
 
 void APPVRHand::SetupWidgetComponent(const float Value)
 {
-	if(!HandWidgetInteraction)
-	{
-		TObjectPtr<UWidgetInteractionComponent> WidgetInteractionComponent = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteraction"));
-		HandWidgetInteraction = WidgetInteractionComponent;
-		HandWidgetInteraction->SetupAttachment(MotionController);
-	}
-	HandWidgetInteraction->TraceChannel = ECC_Visibility;
 	HandWidgetInteraction->InteractionDistance = Value;
-	
-	FRotator HandWidgetRotator(-90.0f, 0.0f, 0.0f);
-	FRotator ControllerRotator = MotionController->GetForwardVector().Rotation();
-	FMatrix HandWidgetMatrix = FRotationMatrix(HandWidgetRotator);
-	FMatrix ControllerMatrix = FRotationMatrix(ControllerRotator);
-	FMatrix ResultMatrix = HandWidgetMatrix * ControllerMatrix;
-	HandWidgetInteraction->SetRelativeRotation(ResultMatrix.Rotator());
-	//HandWidgetInteraction->bShowDebug = true;
 	HandWidgetInteraction->SetActive(true);
 }
 

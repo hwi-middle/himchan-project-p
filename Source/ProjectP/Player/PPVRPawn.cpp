@@ -508,11 +508,12 @@ void APPVRPawn::SwapWidgetInteraction() const
 {
 	if(bIsRightHandMainly)
 	{
-		LeftHand->DestroyWidgetComponent();
-		RightHand->SetupWidgetComponent(WidgetInteractionDistance);
-	}
-	{
 		LeftHand->SetupWidgetComponent(WidgetInteractionDistance);
-		RightHand->DestroyWidgetComponent();
+		RightHand->DisableWidgetComponent();
+	}
+	else
+	{
+		LeftHand->DisableWidgetComponent();
+		RightHand->SetupWidgetComponent(WidgetInteractionDistance);
 	}
 }
