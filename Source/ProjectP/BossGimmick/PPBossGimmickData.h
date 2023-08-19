@@ -37,6 +37,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData, DisplayName="WarningDuration")
 	float VG_WarningDuration;
 
+	UPROPERTY(EditDefaultsOnly, Category = VineGardenData, DisplayName="DamageRadius")
+	float VG_DamageRadius;
+
 	// 리프 템페스트
 	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="Damage")
 	float LT_Damage;
@@ -68,8 +71,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="BlinkSpeed")
 	float LT_BlinkSpeed;
 
-	UPROPERTY(EditDefaultsOnly, Category = LeafTempest, DisplayName="FadeOutDuration")
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="FadeOutDuration")
 	float LT_FadeOutDuration;
+
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="DetectRangeRadius")
+	float LT_DetectRangeRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempestData, DisplayName="ExplodeRangeRadius")
+	float LT_ExplodeRangeRadius;
 	
 	// 녹빛 안개
 	UPROPERTY(EditDefaultsOnly, Category = GreenFogData, DisplayName="Damage")
