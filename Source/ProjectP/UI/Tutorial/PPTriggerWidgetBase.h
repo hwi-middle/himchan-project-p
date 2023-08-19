@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "ProjectP/UI/Tutorial/PPTutorialUIWidget.h"
+#include "ProjectP/Util/StringDataTable.h"
 #include "GameFramework/Actor.h"
 #include "ProjectP/Enumeration/EventTriggerType.h"
 #include "Sound/SoundCue.h"
@@ -20,9 +21,6 @@ class PROJECTP_API APPTriggerWidgetBase : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APPTriggerWidgetBase();
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
@@ -33,6 +31,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	
 private:
 	void ClearAllTimerOnLevelChange();
 	
@@ -43,12 +44,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UPPTutorialUIWidget> TutorialWidget;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<UUserWidget> TutorialWidgetClass;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> TriggerBox;
 
+protected:
 	UPROPERTY()
 	TObjectPtr<AActor> OverlapActor;
 
@@ -72,20 +74,29 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
 	float WidgetRotateDelay;
-	
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+
+private:
+	UPROPERTY()
 	FTimerHandle BackgroundOpacityTimer;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
-	FTimerHandle GuidePanelOpacityTimer;
+	UPROPERTY()
+	FTimerHandle TutorialPanelOpacityTimer;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY()
 	FTimerHandle TurnToPlayerTimer;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	TObjectPtr<USoundCue> TriggerEnterSoundCue;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	TObjectPtr<USoundCue> TriggerOutSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "TutorialWidget", DisplayName = "Tutorial Info Image")
+	TObjectPtr<UTexture2D> TutorialImage;
 	
+	UPROPERTY(EditAnywhere, Category = "TutorialWidget", DisplayName = "Title")
+	FDataTableRowHandle TitleStringDataHandle;
+	
+	UPROPERTY(EditAnywhere, Category = "TutorialWidget", DisplayName = "Info")
+	FDataTableRowHandle InfoStringDataHandle;
 };
