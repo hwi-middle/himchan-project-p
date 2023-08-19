@@ -50,8 +50,10 @@ void APPCharacterPlayer::ClearAllTimerOnLevelChange()
 {
 	GetWorldTimerManager().ClearTimer(HitCheckTimer);
 	GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
+	GetWorldTimerManager().ClearTimer(DamageFXFadeTimer);
 	HitCheckTimer.Invalidate();
 	RecoveryTickTimer.Invalidate();
+	DamageFXFadeTimer.Invalidate();
 }
 
 float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
