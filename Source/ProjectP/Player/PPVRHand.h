@@ -77,9 +77,7 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetHandMesh() const { return HandMesh; }
 	FORCEINLINE EControllerHand GetHandType() const { return HandType; }
 	FORCEINLINE class UPPVRGrabComponent* GetHeldComponent() const { return HeldComponent; }
-
-	// TestOnly
-private:
-	void SetupWidgetComponent();
+	void DestroyWidgetComponent() const;
+	void SetupWidgetComponent(const float Value);
 	void SetupDebugWidget();
 };

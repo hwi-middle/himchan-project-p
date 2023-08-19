@@ -17,7 +17,7 @@ public:
 			LineBatcher->DrawLine(LineStart, LineEnd, Color, 0, Thickness, LifeTime);
 		}
 	}
-
+	
 	static void DrawSphere(const UWorld* InWorld, FVector const& Center, float Radius, int32 Segments, FColor const& Color, bool bPersistentLines, float LifeTime, uint8 DepthPriority, float Thickness)
 	{
 		// this means foreground lines can't be persistent 
@@ -72,8 +72,7 @@ public:
 		}
 
 	}
-
-private:
+	
 	static ULineBatchComponent* GetLineBatcher(const UWorld* InWorld, bool bPersistentLines, float LifeTime, bool bDepthIsForeground)
 	{
 		return (InWorld ? (bDepthIsForeground ? InWorld->ForegroundLineBatcher : ((bPersistentLines || (LifeTime > 0.f)) ? InWorld->PersistentLineBatcher : InWorld->LineBatcher)) : nullptr);

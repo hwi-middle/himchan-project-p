@@ -28,6 +28,8 @@ APPVRHand::APPVRHand()
 
 	HandWidgetInteraction = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteraction"));
 	HandWidgetInteraction->SetupAttachment(MotionController);
+	HandWidgetInteraction->InteractionDistance = 0.0f;
+	
 	// Test Only
 	DebugWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugWidget"));
 	DebugWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPDebugWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/30-Level-Design/TestOnlyBlueprint/DebugViewWidget.DebugViewWidget_C'"), EAssertionLevel::Check));
@@ -50,7 +52,12 @@ void APPVRHand::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (HandType != EControllerHand::Left)
+	if(!HandWidgetInteraction)
+	{
+		return;
+	}
+	
+	if (HandWidgetInteraction->InteractionDistance <= 0.0f)
 	{
 		return;
 	}
@@ -122,7 +129,7 @@ void APPVRHand::SetPoseAlphaGrasp(const float Value)
 void APPVRHand::SetPoseAlphaIndexCurl(const float Value)
 {
 	AnimInstance->SetPoseAlphaIndexCurl(Value);
-	if (GetHandType() == EControllerHand::Left)
+	if (HandWidgetInteraction->InteractionDistance > 0.0f)
 	{
 		static constexpr float WidgetInteractionThreshold = 0.2f;
 		Value > WidgetInteractionThreshold ? this->HandWidgetInteraction->PressPointerKey(TEXT("LeftMouseButton")) : this->HandWidgetInteraction->ReleasePointerKey(TEXT("LeftMouseButton"));
@@ -142,11 +149,8 @@ void APPVRHand::SetPoseAlphaPoint(const float Value)
 void APPVRHand::WidgetInteractionToggle(const float Value)
 {
 	// SetActive로 제어하려니 작동이 제대로 안되서 크기 조정으로 대체
-	if (GetHandType() == EControllerHand::Left)
-	{
-		bool bIsActivated = abs(HandWidgetInteraction->InteractionDistance - Value) <= KINDA_SMALL_NUMBER;
-		HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;
-	}
+	bool bIsActivated = abs(HandWidgetInteraction->InteractionDistance - Value) <= KINDA_SMALL_NUMBER;
+	HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;
 }
 
 void APPVRHand::InitHand()
@@ -159,13 +163,11 @@ void APPVRHand::InitHand()
 	case EControllerHand::Left:
 		HandMesh->SetRelativeRotation(FRotator(0.f, 180.f, 90.f));
 		Path = TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_left.SKM_MannyXR_left'");
-		SetupWidgetComponent();
 		SetupDebugWidget();
 		break;
 	case EControllerHand::Right:
 		HandMesh->SetRelativeRotation(FRotator(0.f, 0.f, 90.f));
 		Path = TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_right.SKM_MannyXR_right'");
-		HandWidgetInteraction->DestroyComponent();
 		DebugWidgetComponent->DestroyComponent();
 		break;
 	default:
@@ -184,12 +186,29 @@ void APPVRHand::ResetHandMesh()
 	HandMesh->SetRelativeTransform(InitHandMeshRelativeTransform, false, nullptr, ETeleportType::TeleportPhysics);
 }
 
-void APPVRHand::SetupWidgetComponent()
+void APPVRHand::DestroyWidgetComponent() const
 {
-	// 히히 매직넘버 발사
+	HandWidgetInteraction->InteractionDistance = 0.0f;
+	HandWidgetInteraction->DestroyComponent();
+}
+
+void APPVRHand::SetupWidgetComponent(const float Value)
+{
+	if(!HandWidgetInteraction)
+	{
+		TObjectPtr<UWidgetInteractionComponent> WidgetInteractionComponent = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("WidgetInteraction"));
+		HandWidgetInteraction = WidgetInteractionComponent;
+		HandWidgetInteraction->SetupAttachment(MotionController);
+	}
 	HandWidgetInteraction->TraceChannel = ECC_Visibility;
-	HandWidgetInteraction->InteractionDistance = 300.0f;
-	HandWidgetInteraction->SetRelativeRotation(FRotator(-90.0f, 0.0f, 0.0f));
+	HandWidgetInteraction->InteractionDistance = Value;
+	
+	FRotator HandWidgetRotator(-90.0f, 0.0f, 0.0f);
+	FRotator ControllerRotator = MotionController->GetForwardVector().Rotation();
+	FMatrix HandWidgetMatrix = FRotationMatrix(HandWidgetRotator);
+	FMatrix ControllerMatrix = FRotationMatrix(ControllerRotator);
+	FMatrix ResultMatrix = HandWidgetMatrix * ControllerMatrix;
+	HandWidgetInteraction->SetRelativeRotation(ResultMatrix.Rotator());
 	//HandWidgetInteraction->bShowDebug = true;
 	HandWidgetInteraction->SetActive(true);
 }

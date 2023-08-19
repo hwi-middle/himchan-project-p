@@ -34,6 +34,11 @@ APPVRPawn::APPVRPawn()
 
 	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovement"));
 
+	PauseOverlayMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PauseOverlay"));
+	PauseOverlayMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PauseOverlayMesh->SetVisibility(false);
+	PauseOverlayMesh->SetActive(false);
+
 	MovementData = FPPConstructorHelper::FindAndGetObject<UPPMovementData>(TEXT("/Script/ProjectP.PPMovementData'/Game/DataAssets/Player/PlayerData.PlayerData'"), EAssertionLevel::Check);
 	InputMappingContext = MovementData->InputMappingContext;
 	MoveAction = MovementData->MoveAction;
@@ -48,6 +53,8 @@ APPVRPawn::APPVRPawn()
 	ThumbUpLeftAction = MovementData->ThumbUpLeftAction;
 	ThumbUpRightAction = MovementData->ThumbUpRightAction;
 	LeftXButtonPressAction = MovementData->LeftXButtonPressAction;
+	LeftYButtonPressAction = MovementData->LeftYButtonPressAction;
+	RightAButtonPressAction = MovementData->RightAButtonPressAction;
 	RightBButtonPressAction = MovementData->RightBButtonPressAction;
 	
 	MoveSpeed = MovementData->WalkSpeed;
@@ -133,8 +140,11 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Triggered, this, &APPVRPawn::ThumbUpRight);
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Completed, this, &APPVRPawn::CompleteThumbUpRight);
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Canceled, this, &APPVRPawn::ThumbUpRight);
-	EnhancedInputComponent->BindAction(LeftXButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleWidgetInteraction);
-	EnhancedInputComponent->BindAction(RightBButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleFlash);
+	
+	EnhancedInputComponent->BindAction(LeftYButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressYButtonAction);
+	EnhancedInputComponent->BindAction(LeftXButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressXButtonAction);
+	EnhancedInputComponent->BindAction(RightBButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressBButtonAction);
+	EnhancedInputComponent->BindAction(RightAButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressAButtonAction);
 }
 
 void APPVRPawn::InitVROrigin()
@@ -283,86 +293,6 @@ void APPVRPawn::ThumbUpRight(const FInputActionValue& Value)
 	RightHand->SetPoseAlphaThumbUp(0);
 }
 
-void APPVRPawn::StartMove(const FInputActionValue& Value)
-{
-	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
-	{
-		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
-	}
-	GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
-	{
-		WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
-		UGameplayStatics::PlaySound2D(this, WalkSoundCue);
-	}), WalkSoundRate, true);
-}
-
-void APPVRPawn::CompleteMove(const FInputActionValue& Value)
-{
-	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
-	{
-		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
-	}
-	
-	if (MoveSpeed == MovementData->SprintSpeed)
-	{
-		MoveSpeed = MovementData->WalkSpeed;
-	}
-}
-
-void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
-{
-	MoveSpeed == MovementData->WalkSpeed ? MoveSpeed = MovementData->SprintSpeed : MoveSpeed = MovementData->WalkSpeed;
-	
-	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
-	{
-		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
-	}
-	if(MoveSpeed == MovementData->WalkSpeed)
-	{
-		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
-			UGameplayStatics::PlaySound2D(this, WalkSoundCue);
-		}), WalkSoundRate, true);
-	}
-	else
-	{
-		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
-			UGameplayStatics::PlaySound2D(this, WalkSoundCue);
-		}), SprintSoundRate, true);
-	}
-}
-
-void APPVRPawn::ToggleFlash(const FInputActionValue& Value)
-{
-	UPPVRGrabComponent* LeftHeldComponent = LeftHand->GetHeldComponent();
-	UPPVRGrabComponent* RightHeldComponent = RightHand->GetHeldComponent();
-	if (LeftHeldComponent)
-	{
-		APPGunBase* Weapon = Cast<APPGunBase>(LeftHeldComponent->GetOuter());
-		if (Weapon)
-		{
-			Weapon->ToggleFlash();
-		}
-	}
-	else if(RightHeldComponent)
-	{
-		APPGunBase* Weapon = Cast<APPGunBase>(RightHeldComponent->GetOuter());
-		if (Weapon)
-		{
-			Weapon->ToggleFlash();
-		}
-	}
-}
-
-void APPVRPawn::ToggleWidgetInteraction(const FInputActionValue& Value)
-{
-	// 나중에 주로 사용하는 손 바꾸기 구현되면 수정 예정
-	LeftHand->WidgetInteractionToggle(WidgetInteractionDistance);
-}
-
 void APPVRPawn::CancelOrCompleteGrabLeft()
 {
 	LeftHand->SetPoseAlphaGrasp(0);
@@ -423,4 +353,166 @@ void APPVRPawn::CompleteThumbUpLeft()
 void APPVRPawn::CompleteThumbUpRight()
 {
 	RightHand->SetPoseAlphaThumbUp(1);
+}
+
+void APPVRPawn::StartMove(const FInputActionValue& Value)
+{
+	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
+	{
+		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
+	}
+	GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
+	{
+		WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
+		UGameplayStatics::PlaySound2D(this, WalkSoundCue);
+	}), WalkSoundRate, true);
+}
+
+void APPVRPawn::CompleteMove(const FInputActionValue& Value)
+{
+	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
+	{
+		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
+	}
+	
+	if (MoveSpeed == MovementData->SprintSpeed)
+	{
+		MoveSpeed = MovementData->WalkSpeed;
+	}
+}
+
+void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
+{
+	MoveSpeed == MovementData->WalkSpeed ? MoveSpeed = MovementData->SprintSpeed : MoveSpeed = MovementData->WalkSpeed;
+	
+	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
+	{
+		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
+	}
+	if(MoveSpeed == MovementData->WalkSpeed)
+	{
+		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
+			UGameplayStatics::PlaySound2D(this, WalkSoundCue);
+		}), WalkSoundRate, true);
+	}
+	else
+	{
+		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
+			UGameplayStatics::PlaySound2D(this, WalkSoundCue);
+		}), SprintSoundRate, true);
+	}
+}
+
+void APPVRPawn::PressAButtonAction(const FInputActionValue& Value)
+{
+	if(bIsRightHandMainly)
+	{
+		ToggleFlash();
+	}
+	else
+	{
+		ToggleWidgetInteraction();
+	}
+}
+
+void APPVRPawn::PressBButtonAction(const FInputActionValue& Value)
+{
+	if(bIsRightHandMainly)
+	{
+		// 매핑된게 없서요
+	}
+	else
+	{
+		// ToggleGamePauseState();
+	}
+}
+
+void APPVRPawn::PressXButtonAction(const FInputActionValue& Value)
+{
+	if(bIsRightHandMainly)
+	{
+		ToggleWidgetInteraction();
+	}
+	else
+	{
+		ToggleFlash();
+	}
+}
+
+
+void APPVRPawn::PressYButtonAction(const FInputActionValue& Value)
+{
+	if(bIsRightHandMainly)
+	{
+		// ToggleGamePauseState();
+	}
+	else
+	{
+		// 매핑된게 없서요
+	}
+}
+
+void APPVRPawn::ToggleWidgetInteraction() const
+{
+	if(bIsRightHandMainly)
+	{
+		LeftHand->WidgetInteractionToggle(WidgetInteractionDistance);
+	}
+	else
+	{
+		RightHand->WidgetInteractionToggle(WidgetInteractionDistance);
+	}
+}
+
+void APPVRPawn::ToggleGamePauseState() const
+{
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		PauseOverlayMesh->SetVisibility(false);
+		UGameplayStatics::SetGamePaused(GetWorld(),false);
+	}
+	else
+	{
+		PauseOverlayMesh->SetVisibility(true);
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+	}
+}
+
+void APPVRPawn::ToggleFlash() const
+{
+	UPPVRGrabComponent* LeftHeldComponent = LeftHand->GetHeldComponent();
+	UPPVRGrabComponent* RightHeldComponent = RightHand->GetHeldComponent();
+	if (LeftHeldComponent)
+	{
+		APPGunBase* Weapon = Cast<APPGunBase>(LeftHeldComponent->GetOuter());
+		if (Weapon)
+		{
+			Weapon->ToggleFlash();
+		}
+	}
+	else if(RightHeldComponent)
+	{
+		APPGunBase* Weapon = Cast<APPGunBase>(RightHeldComponent->GetOuter());
+		if (Weapon)
+		{
+			Weapon->ToggleFlash();
+		}
+	}
+}
+
+void APPVRPawn::SwapWidgetInteraction() const
+{
+	if(bIsRightHandMainly)
+	{
+		LeftHand->DestroyWidgetComponent();
+		RightHand->SetupWidgetComponent(WidgetInteractionDistance);
+	}
+	{
+		LeftHand->SetupWidgetComponent(WidgetInteractionDistance);
+		RightHand->DestroyWidgetComponent();
+	}
 }
