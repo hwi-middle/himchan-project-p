@@ -31,18 +31,19 @@ void APPCharacterPlayer::BeginPlay()
 	Super::BeginPlay();
 	SetupCharacterStatusData(PlayerStatusData);
 
+	DamageFXFadeInDuration = PlayerStatusData->DamageFXFadeInDuration;
+	DamageFXFadeOutDuration = PlayerStatusData->DamageFXFadeOutDuration;
+	
 	APostProcessVolume* PostProcessVolume = Cast<APostProcessVolume>(GetWorld()->PostProcessVolumes[0]);
 	FPostProcessSettings Settings = PostProcessVolume->Settings;
 
 	UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/Project-P/Material/PostProcess/PPTest.PPTest'"));
-	UMaterialInstanceDynamic* MID = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
+	UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
 	
 	Settings.WeightedBlendables.Array.Empty();
-	Settings.WeightedBlendables.Array.Add(FWeightedBlendable(1.0f, MID));
+	Settings.WeightedBlendables.Array.Add(FWeightedBlendable(1.0f, MaterialInstanceDynamic));
 	PostProcessVolume->Settings = Settings;
-	DynamicMaterialInstance = MID;
-
-	ShowDamageFX();
+	DynamicMaterialInstance = MaterialInstanceDynamic;
 }
 
 void APPCharacterPlayer::ClearAllTimerOnLevelChange()
@@ -130,8 +131,6 @@ void APPCharacterPlayer::EnableRecoveryHealthTimer()
 
 void APPCharacterPlayer::ShowDamageFX()
 {
-	DamageFXFadeInDuration = 0.1f;
-	DamageFXFadeOutDuration = 0.2f;
 	DamageFXIntensity = 0.f;
 	ElapsedDamageFXFadeTime = 0.f;
 	GetWorldTimerManager().ClearTimer(DamageFXFadeTimer);
@@ -141,20 +140,20 @@ void APPCharacterPlayer::ShowDamageFX()
 		// 페이드 인
 		if (ElapsedDamageFXFadeTime <= DamageFXFadeInDuration)
 		{
-			CurrentIntensity = FMath::Lerp(0.f, 1.f, ElapsedDamageFXFadeTime / DamageFXFadeInDuration);
+			CurrentIntensity = ElapsedDamageFXFadeTime / DamageFXFadeInDuration;
 		}
 		// 페이드 아웃
 		else
 		{
-			CurrentIntensity = FMath::Lerp(1.f, 0.f, (ElapsedDamageFXFadeTime - DamageFXFadeInDuration) / DamageFXFadeOutDuration);
+			CurrentIntensity = 1 - (ElapsedDamageFXFadeTime - DamageFXFadeInDuration) / DamageFXFadeOutDuration;
 		}
 		DynamicMaterialInstance->SetScalarParameterValue("Intensity", CurrentIntensity);
 		ElapsedDamageFXFadeTime += GetWorld()->DeltaTimeSeconds;
 		
 		if (ElapsedDamageFXFadeTime >= DamageFXFadeInDuration + DamageFXFadeOutDuration)
 		{
+			DynamicMaterialInstance->SetScalarParameterValue("Intensity", 0.f);
 			GetWorldTimerManager().ClearTimer(DamageFXFadeTimer);
-			ShowDamageFX();
 		}
 	}), 0.01f, true);
 }
