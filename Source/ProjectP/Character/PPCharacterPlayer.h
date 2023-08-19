@@ -69,6 +69,25 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	FTimerHandle HitCheckTimer;
 
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	FTimerHandle DamageFXFadeTimer;
+	
+	UPROPERTY()
+	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterialInstance;
+
+	UPROPERTY()
+	float DamageFXIntensity;
+	
+	UPROPERTY()
+	float ElapsedDamageFXFadeTime;
+	
+	UPROPERTY()
+	float DamageFXFadeInDuration;
+	
+	UPROPERTY()
+	float DamageFXFadeOutDuration;
+
 private:
 	void EnableRecoveryHealthTimer();
+	void ShowDamageFX();
 };
