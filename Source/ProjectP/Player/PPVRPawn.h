@@ -6,6 +6,7 @@
 #include "InputActionValue.h"
 #include "GameFramework/Pawn.h"
 #include "Sound/SoundCue.h"
+#include "ProjectP/Util/PPSoundData.h"
 #include "PPVRPawn.generated.h"
 
 UCLASS()
@@ -56,13 +57,13 @@ private:
 
 	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true))
 	TObjectPtr<class UFloatingPawnMovement> FloatingPawnMovement;
-
+	
 private:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USoundCue> WalkSoundCue;
-
+	TArray<USoundCue*> WalkSoundCueArray;
+	
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USoundCue> SprintSoundCue;
+	TObjectPtr<USoundCue> WalkSoundCue;
 	
 private:
 	UPROPERTY()

@@ -50,8 +50,8 @@ void ALeaf::BeginPlay()
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &ALeaf::ClearAllTimerOnLevelChange);
 	
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
-	ExplodeSoundCue = SoundData->BossLeafTempestExplodeSoundCue;
-	DestroySoundCue = SoundData->BossLeafTempestDestroySoundCue;
+	ExplodeSoundCue = SoundData->BossLTExplodeSoundCue;
+	DestroySoundCue = SoundData->BossLTDestroySoundCue;
 
 	Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 }
