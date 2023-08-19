@@ -19,7 +19,7 @@ ALeaf::ALeaf()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeafMesh"));
-	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Material/BossGimmick/Leaf/SM_Cube.SM_Cube'"));
+	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Material/BossGimmick/Leaf/cube.cube'"));
 	Mesh->SetStaticMesh(MeshObj);
 
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
@@ -32,6 +32,8 @@ ALeaf::ALeaf()
 	BlinkDuration = BossGimmickData->LT_BlinkDuration;
 	MaxBlinkSpeed = BossGimmickData->LT_BlinkSpeed;
 	FadeOutDuration = BossGimmickData->LT_FadeOutDuration;
+	DetectRangeRadius = BossGimmickData->LT_DetectRangeRadius;
+	ExplodeRangeRadius = BossGimmickData->LT_ExplodeRangeRadius;
 
 	Tags.Add(TEXT("DestructibleObject"));
 	Mesh->SetSimulatePhysics(false);
@@ -73,6 +75,9 @@ void ALeaf::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	DrawDebugSphere(GetWorld(), GetActorLocationWithOffset(), DetectRangeRadius, 16, FColor::Green, false, -1.f);
+	DrawDebugSphere(GetWorld(), GetActorLocationWithOffset(), ExplodeRangeRadius, 16, FColor::Red, false, -1.f);
+	
 	if (!bIsActivated || !Target)
 	{
 		return;
@@ -81,7 +86,7 @@ void ALeaf::Tick(float DeltaTime)
 	ElapsedTraceTime += DeltaTime;
 
 	FHitResult HitResult;
-	if (ElapsedTraceTime > TraceDuration || CheckPlayerWithSphere(50.f, HitResult))
+	if (ElapsedTraceTime > TraceDuration || CheckPlayerWithSphere(DetectRangeRadius, HitResult))
 	{
 		BlinkAndExplode();
 		bIsActivated = false;
@@ -116,10 +121,10 @@ void ALeaf::BlinkAndExplode()
 		if (Alpha >= 1.f)
 		{
 			FHitResult HitResult;
-			if (CheckPlayerWithSphere(50.f, HitResult))
+			if (CheckPlayerWithSphere(ExplodeRangeRadius, HitResult))
 			{
 				FDamageEvent DamageEvent;
-				HitResult.GetActor()->TakeDamage(10.f, DamageEvent, nullptr, this);
+				HitResult.GetActor()->TakeDamage(Damage, DamageEvent, nullptr, this);
 			}
 			UGameplayStatics::PlaySound2D(this, ExplodeSoundCue);
 			GetWorldTimerManager().ClearTimer(BlinkTimerHandle);
@@ -141,8 +146,8 @@ bool ALeaf::CheckPlayerWithSphere(const float InRadius, FHitResult& Result)
 
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		Result,
-		GetActorLocation(),
-		GetActorLocation(),
+		GetActorLocationWithOffset(),
+		GetActorLocationWithOffset(),
 		FQuat::Identity,
 		ECC_CHECK_PAWN,
 		FCollisionShape::MakeSphere(InRadius),
@@ -197,4 +202,11 @@ void ALeaf::FadeOutAndDestroy()
 		Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), FMath::Lerp(1.f, 0.f, ElapsedFadeOutTime / FadeOutDuration));
 		ElapsedFadeOutTime += 0.01f;
 	}), 0.01f, true);
+}
+
+FVector ALeaf::GetActorLocationWithOffset() const
+{
+	FVector Result = GetActorLocation();
+	Result.Z += 50.f; // 테스트용 Cube 모델링의 Pivot이 바닥에 있어서 1m의 절반인 50cm만큼 위로 올려서 Trace등을 수행 
+	return Result;
 }
