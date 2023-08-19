@@ -3,6 +3,7 @@
 
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "Engine/DamageEvents.h"
+#include "Engine/PostProcessVolume.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
@@ -29,6 +30,19 @@ void APPCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	SetupCharacterStatusData(PlayerStatusData);
+
+	APostProcessVolume* PostProcessVolume = Cast<APostProcessVolume>(GetWorld()->PostProcessVolumes[0]);
+	FPostProcessSettings Settings = PostProcessVolume->Settings;
+
+	UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/Project-P/Material/PostProcess/PPTest.PPTest'"));
+	UMaterialInstanceDynamic* MID = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
+	
+	Settings.WeightedBlendables.Array.Empty();
+	Settings.WeightedBlendables.Array.Add(FWeightedBlendable(1.0f, MID));
+	PostProcessVolume->Settings = Settings;
+	DynamicMaterialInstance = MID;
+
+	ShowDamageFX();
 }
 
 void APPCharacterPlayer::ClearAllTimerOnLevelChange()
@@ -70,6 +84,9 @@ float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 			GetWorldTimerManager().ClearTimer(HitCheckTimer);
 		}
 	}
+
+	ShowDamageFX();
+	
 	return DamageAmount;
 }
 
@@ -109,4 +126,35 @@ void APPCharacterPlayer::EnableRecoveryHealthTimer()
 			}
 		}), RecoveryHealthTick, true);
 	}
+}
+
+void APPCharacterPlayer::ShowDamageFX()
+{
+	DamageFXFadeInDuration = 0.1f;
+	DamageFXFadeOutDuration = 0.2f;
+	DamageFXIntensity = 0.f;
+	ElapsedDamageFXFadeTime = 0.f;
+	GetWorldTimerManager().ClearTimer(DamageFXFadeTimer);
+	GetWorldTimerManager().SetTimer(DamageFXFadeTimer, FTimerDelegate::CreateLambda([&]()
+	{
+		float CurrentIntensity;
+		// 페이드 인
+		if (ElapsedDamageFXFadeTime <= DamageFXFadeInDuration)
+		{
+			CurrentIntensity = FMath::Lerp(0.f, 1.f, ElapsedDamageFXFadeTime / DamageFXFadeInDuration);
+		}
+		// 페이드 아웃
+		else
+		{
+			CurrentIntensity = FMath::Lerp(1.f, 0.f, (ElapsedDamageFXFadeTime - DamageFXFadeInDuration) / DamageFXFadeOutDuration);
+		}
+		DynamicMaterialInstance->SetScalarParameterValue("Intensity", CurrentIntensity);
+		ElapsedDamageFXFadeTime += GetWorld()->DeltaTimeSeconds;
+		
+		if (ElapsedDamageFXFadeTime >= DamageFXFadeInDuration + DamageFXFadeOutDuration)
+		{
+			GetWorldTimerManager().ClearTimer(DamageFXFadeTimer);
+			ShowDamageFX();
+		}
+	}), 0.01f, true);
 }
