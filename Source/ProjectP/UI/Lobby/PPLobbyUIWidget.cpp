@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectP/UI/Lobby/PPLobbyUIWidget.h"
-#include "EngineUtils.h"
-#include "ProjectP/Game/PPGameInstance.h"
 
 void UPPLobbyUIWidget::NativeConstruct()
 {
@@ -22,6 +20,5 @@ void UPPLobbyUIWidget::SetButtonInteraction(bool bInteraction)
 
 void UPPLobbyUIWidget::EntryMainLevel()
 {
-	GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-	UGameplayStatics::OpenLevel(this, MAIN_LEVEL);
+	StartGameDelegate.Broadcast();
 }

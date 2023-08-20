@@ -11,6 +11,7 @@
 #include "PPLobbyUIWidget.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FPassSubWidgetTypeDelegate, ESubWidgetType);
+DECLARE_MULTICAST_DELEGATE(FStartGameDelegate);
 /**
  * 
  */
@@ -19,9 +20,12 @@ class PROJECTP_API UPPLobbyUIWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-
 	void SetButtonInteraction(bool bInteraction);
+	
 	FPassSubWidgetTypeDelegate PassSubWidgetTypeDelegate;
+	
+	FStartGameDelegate StartGameDelegate;
+	
 protected:
 	virtual void NativeConstruct() override;
 

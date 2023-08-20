@@ -58,7 +58,6 @@ void APPSettingBaseActor::ExitButtonBroadcast()
 
 void APPSettingBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 {
-	UE_LOG(LogTemp, Log, TEXT("SubWidget = %d"), SubWidget);
 	if(bIsFirstClick)
 	{
 		SettingWidget->SetSubWidgetPanelVisible(true);
@@ -88,6 +87,7 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 	
 	SettingWidget->SetSubWidgetContentVisible(false);
 	SettingWidget->SetSubWidgetAnimationWorking(true);
+
 	// 서브위젯 닫기 애니메이션.
 	GetWorldTimerManager().SetTimer(SubWidgetCloseTimer, FTimerDelegate::CreateLambda([&]()
 	{
@@ -111,7 +111,7 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 void APPSettingBaseActor::OpenSubWidgetPanel()
 {
 	UGameplayStatics::PlaySound2D(this, WidgetOpenSoundCue);
-	
+
 	SettingWidget->SetSubWidgetAnimationWorking(true);
 	// 서브위젯 열기 애니메이션
 	GetWorldTimerManager().SetTimer(SubWidgetOpenTimer, FTimerDelegate::CreateLambda([&]()

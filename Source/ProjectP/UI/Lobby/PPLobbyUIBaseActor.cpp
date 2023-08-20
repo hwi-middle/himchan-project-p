@@ -36,6 +36,7 @@ void APPLobbyUIBaseActor::BeginPlay()
 	if(LobbyWidget && SettingWidget)
 	{
 		LobbyWidget->PassSubWidgetTypeDelegate.AddUObject(this, &APPLobbyUIBaseActor::OpenSubWidget);
+		LobbyWidget->StartGameDelegate.AddUObject(this, &APPLobbyUIBaseActor::EntryMainLevelSequence);
 		SettingWidget->MainWidgetDelegate.AddUObject(this, &APPLobbyUIBaseActor::ReturnFromSettingToLobby);
 	}
 	SettingWidgetActor->SetVisibility(false);
@@ -51,7 +52,9 @@ void APPLobbyUIBaseActor::BeginPlay()
 void APPLobbyUIBaseActor::ClearAllTimerOnLevelChange()
 {
 	GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
+	GetWorldTimerManager().ClearTimer(EntryMainLevelAnimationTimer);
 	WidgetAnimationTimer.Invalidate();
+	EntryMainLevelAnimationTimer.Invalidate();
 }
 
 void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
@@ -102,6 +105,18 @@ void APPLobbyUIBaseActor::ReturnFromSettingToLobby()
 			GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
 		}
 	}), WidgetAnimationTick, true);
+}
+
+void APPLobbyUIBaseActor::EntryMainLevelSequence()
+{
+	GetWorldTimerManager().SetTimer(EntryMainLevelAnimationTimer, FTimerDelegate::CreateLambda([&]()
+	{
+		if(true)
+		{
+			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+			UGameplayStatics::OpenLevel(this, MAIN_LEVEL);
+		}
+	}), 0.01f, true);
 }
 
 

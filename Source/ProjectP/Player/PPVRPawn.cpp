@@ -16,6 +16,7 @@
 #include "EnhancedInput/Public/InputMappingContext.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "ProjectP/Constant/PPLevelName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Prop/Weapon/PPGunBase.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
@@ -509,15 +510,20 @@ void APPVRPawn::ToggleWidgetInteraction() const
 
 void APPVRPawn::ToggleGamePauseState() const
 {
-	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	// 임시로 메인 레벨에서만 일시정지 가능하게 제한
+	FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
+	if(LevelName == MAIN_LEVEL)
 	{
-		PauseOverlayMesh->SetVisibility(false);
-		UGameplayStatics::SetGamePaused(GetWorld(),false);
-	}
-	else
-	{
-		PauseOverlayMesh->SetVisibility(true);
-		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		if(UGameplayStatics::IsGamePaused(GetWorld()))
+		{
+			PauseOverlayMesh->SetVisibility(false);
+			UGameplayStatics::SetGamePaused(GetWorld(),false);
+		}
+		else
+		{
+			PauseOverlayMesh->SetVisibility(true);
+			UGameplayStatics::SetGamePaused(GetWorld(), true);
+		}
 	}
 }
 

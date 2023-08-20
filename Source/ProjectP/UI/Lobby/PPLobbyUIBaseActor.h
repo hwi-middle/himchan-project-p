@@ -33,6 +33,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void ReturnFromSettingToLobby();
+
+	UFUNCTION(BlueprintCallable)
+	void EntryMainLevelSequence();
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
@@ -67,4 +70,7 @@ protected:
 	
 	UPROPERTY()
 	FTimerHandle WidgetAnimationTimer;
+
+	UPROPERTY()
+	FTimerHandle EntryMainLevelAnimationTimer;
 };
