@@ -84,6 +84,18 @@ void APPSettingBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 void APPSettingBaseActor::CloseSubWidgetPanel()
 {
 	UGameplayStatics::PlaySound2D(this, WidgetCloseSoundCue);
+
+	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
+	{
+		SettingWidget->SetSubWidgetContentVisible(false);
+		SettingWidget->SetSubWidgetHeightOffset(SubWidgetHalfHeightValue);
+		bSubWidgetOpened = false;
+		if(SwapSubWidget != ESubWidgetType::None)
+		{
+			OpenSubWidget(SwapSubWidget);
+			return;
+		}
+	}
 	
 	SettingWidget->SetSubWidgetContentVisible(false);
 	SettingWidget->SetSubWidgetAnimationWorking(true);
@@ -112,6 +124,14 @@ void APPSettingBaseActor::OpenSubWidgetPanel()
 {
 	UGameplayStatics::PlaySound2D(this, WidgetOpenSoundCue);
 
+	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
+	{
+		SettingWidget->SetSubWidgetHeightOffset(0.0f);
+		SettingWidget->SetSubWidgetContentVisible(true);
+		bSubWidgetOpened = true;
+		return;
+	}
+	
 	SettingWidget->SetSubWidgetAnimationWorking(true);
 	// 서브위젯 열기 애니메이션
 	GetWorldTimerManager().SetTimer(SubWidgetOpenTimer, FTimerDelegate::CreateLambda([&]()

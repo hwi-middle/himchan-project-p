@@ -99,6 +99,11 @@ void APPVRPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) == 1.0f && PauseOverlayMesh->IsActive())
+	{
+		PauseOverlayMesh->SetVisibility(false);
+		PauseOverlayMesh->SetActive(false);
+	}
 }
 
 // Called to bind functionality to input
@@ -510,33 +515,18 @@ void APPVRPawn::ToggleWidgetInteraction() const
 
 void APPVRPawn::ToggleGamePauseState() const
 {
-	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
-	{
-		PauseOverlayMesh->SetVisibility(false);
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
-	}
-	else
+	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) == 1.0f)
 	{
 		PauseOverlayMesh->SetVisibility(true);
+		PauseOverlayMesh->SetActive(true);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.000001f);
 	}
-	/*
-	// 메인 레벨에서만 일시정지 가능하게 제한
-	FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
-	if(LevelName == MAIN_LEVEL)
+	else // TestOnly
 	{
-		if(UGameplayStatics::IsGamePaused(GetWorld()))
-		{
-			PauseOverlayMesh->SetVisibility(false);
-			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.000001f);
-		}
-		else
-		{
-			PauseOverlayMesh->SetVisibility(true);
-			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
-		}
+		PauseOverlayMesh->SetVisibility(false);
+		PauseOverlayMesh->SetActive(false);
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 	}
-	*/
 }
 
 void APPVRPawn::ToggleFlash() const

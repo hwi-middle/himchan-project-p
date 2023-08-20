@@ -8,30 +8,29 @@
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Constant/PPLevelName.h"
 #include "ProjectP/Enumeration/PPSubWidgetType.h"
-#include "PPLobbyUIWidget.generated.h"
+#include "PPPauseWidget.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FPassSubWidgetTypeDelegate, ESubWidgetType);
-DECLARE_MULTICAST_DELEGATE(FStartGameDelegate);
+DECLARE_MULTICAST_DELEGATE(FExitGameDelegate);
+
 /**
  * 
  */
 UCLASS()
-class PROJECTP_API UPPLobbyUIWidget : public UUserWidget
+class PROJECTP_API UPPPauseWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
 public:
-	void SetButtonInteraction(bool bInteraction);
-	
 	FPassSubWidgetTypeDelegate PassSubWidgetTypeDelegate;
 	
-	FStartGameDelegate StartGameDelegate;
+	FExitGameDelegate ExitGameDelegate;
 	
 protected:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION(BlueprintCallable)
-	void EntryMainLevel();
+	FORCEINLINE void ResumeGame() { UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f); }
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void ActivateSettingWidget() { PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Setting); }
@@ -40,9 +39,9 @@ protected:
 	FORCEINLINE void ActivateExitWidget() { PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Exit); }
 	
 	// Widget
-protected:
+	protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
-	TObjectPtr<class UButton> StartButton;
+	TObjectPtr<class UButton> ResumeButton;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<class UButton> SettingButton;

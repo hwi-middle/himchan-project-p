@@ -14,11 +14,11 @@ void UPPSettingUIWidget::NativeConstruct()
 	OpenSoundSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateSoundSettingWidget);
 	OpenDisplaySettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateDisplaySettingWidget);
 	OpenGraphicSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateGraphicSettingWidget);
-	
 	OpenAccessibilitySettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateAccessibilitySettingWidget);
 	/*
 	OpenSubtitleSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateSubtitleSettingWidget);
 	*/
+	
 	ExitSettingUIButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ExitSettingUI);
 	SubWidgetPanelSlot = CastChecked<UCanvasPanelSlot>(SubWidgetPanel->Slot);
 	
