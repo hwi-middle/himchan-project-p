@@ -29,6 +29,8 @@ APPLobbyUIBaseActor::APPLobbyUIBaseActor()
 void APPLobbyUIBaseActor::BeginPlay()
 {
 	Super::BeginPlay();
+	SetTickableWhenPaused(true);
+	
 	LobbyWidget = CastChecked<UPPLobbyUIWidget>(LobbyWidgetComponent->GetUserWidgetObject());
 	SettingWidget = CastChecked<APPSettingBaseActor>(SettingWidgetActor->GetChildActor());
 	if(LobbyWidget && SettingWidget)

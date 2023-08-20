@@ -47,6 +47,7 @@ void APPVRHand::BeginPlay()
 	Super::BeginPlay();
 	InitHand();
 	InitHandMeshRelativeTransform = HandMesh->GetRelativeTransform();
+	SetTickableWhenPaused(true);
 }
 
 // Called every frame
@@ -128,7 +129,7 @@ void APPVRHand::SetPoseAlphaIndexCurl(const float Value)
 	AnimInstance->SetPoseAlphaIndexCurl(Value);
 	if (HandWidgetInteraction->InteractionDistance > 0.0f)
 	{
-		static constexpr float WidgetInteractionThreshold = 0.2f;
+		static constexpr float WidgetInteractionThreshold = 0.1f;
 		Value > WidgetInteractionThreshold ? this->HandWidgetInteraction->PressPointerKey(TEXT("LeftMouseButton")) : this->HandWidgetInteraction->ReleasePointerKey(TEXT("LeftMouseButton"));
 	}
 }

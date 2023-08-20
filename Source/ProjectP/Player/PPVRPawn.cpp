@@ -35,6 +35,9 @@ APPVRPawn::APPVRPawn()
 	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovement"));
 
 	PauseOverlayMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PauseOverlay"));
+	PauseOverlayMesh->SetStaticMesh(FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Material/Player/SM_PauseOverlayCylinder.SM_PauseOverlayCylinder'")));
+	PauseOverlayMesh->SetRelativeScale3D(FVector(0.75f, 0.75f, 1.0f));
+	PauseOverlayMesh->SetupAttachment(VROrigin);
 	PauseOverlayMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	PauseOverlayMesh->SetVisibility(false);
 	PauseOverlayMesh->SetActive(false);
@@ -151,6 +154,7 @@ void APPVRPawn::InitVROrigin()
 {
 	const float DistanceToFloor = GetActorLocation().Z;
 	VROrigin->SetRelativeLocation(FVector{0, 0, -DistanceToFloor});
+	PauseOverlayMesh->SetRelativeLocation(FVector{0, 0, DistanceToFloor});
 }
 
 void APPVRPawn::InitVRHands()
@@ -173,6 +177,10 @@ void APPVRPawn::InitVRHands()
 
 void APPVRPawn::Move(const FInputActionValue& Value)
 {
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
 	const FVector2D InputVector = Value.Get<FVector2D>();
 
 	FVector ActorUp = GetActorUpVector();
@@ -212,6 +220,11 @@ void APPVRPawn::GrabLeft(const FInputActionValue& Value)
 	const float Alpha = Value.Get<float>();
 	LeftHand->SetPoseAlphaGrasp(Alpha);
 
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
 	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
 	static constexpr float GrabThreshold = 0.2f;
 	if (HeldComponent && Alpha < GrabThreshold)
@@ -229,6 +242,11 @@ void APPVRPawn::GrabRight(const FInputActionValue& Value)
 	const float Alpha = Value.Get<float>();
 	RightHand->SetPoseAlphaGrasp(Alpha);
 
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
 	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
 	static constexpr float GrabThreshold = 0.2f;
 	if (HeldComponent && Alpha < GrabThreshold)
@@ -245,6 +263,12 @@ void APPVRPawn::IndexCurlLeft(const FInputActionValue& Value)
 {
 	const float Alpha = Value.Get<float>();
 	LeftHand->SetPoseAlphaIndexCurl(Alpha);
+	
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
 	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
 	if (HeldComponent)
 	{
@@ -262,6 +286,11 @@ void APPVRPawn::IndexCurlRight(const FInputActionValue& Value)
 	RightHand->SetPoseAlphaIndexCurl(Alpha);
 	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
 
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
 	static constexpr float ShootThreshold = 0.2f;
 	if (HeldComponent)
 	{
@@ -310,6 +339,11 @@ void APPVRPawn::CancelOrCompleteIndexCurlLeft()
 	LeftHand->SetPoseAlphaIndexCurl(0);
 	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
 
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
 	if (HeldComponent)
 	{
 		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
@@ -325,6 +359,11 @@ void APPVRPawn::CancelOrCompleteIndexCurlRight()
 	RightHand->SetPoseAlphaIndexCurl(0);
 	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
 
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
 	if (HeldComponent)
 	{
 		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
@@ -427,7 +466,7 @@ void APPVRPawn::PressBButtonAction(const FInputActionValue& Value)
 	}
 	else
 	{
-		// ToggleGamePauseState();
+		ToggleGamePauseState();
 	}
 }
 
@@ -448,7 +487,7 @@ void APPVRPawn::PressYButtonAction(const FInputActionValue& Value)
 {
 	if(bIsRightHandMainly)
 	{
-		// ToggleGamePauseState();
+		ToggleGamePauseState();
 	}
 	else
 	{

@@ -19,6 +19,8 @@ APPSettingBaseActor::APPSettingBaseActor()
 void APPSettingBaseActor::BeginPlay()
 {
 	Super::BeginPlay();
+	SetTickableWhenPaused(true);
+	
 	SettingWidget = CastChecked<UPPSettingUIWidget>(SettingWidgetComponent->GetUserWidgetObject());
 	SettingWidget->PassSubWidgetTypeDelegate.AddUObject(this, &APPSettingBaseActor::OpenSubWidget);
 	SettingWidget->LoadMainWidgetDelegate.AddUObject(this, &APPSettingBaseActor::ExitButtonBroadcast);
