@@ -29,13 +29,16 @@ private:
 	
 protected:
 	UFUNCTION(BlueprintCallable)
+	void ResumeGame();
+	
+ 	UFUNCTION(BlueprintCallable)
 	void OpenSubWidget(ESubWidgetType SubWidget = ESubWidgetType::None);
 
 	UFUNCTION(BlueprintCallable)
 	void ReturnFromSettingToPause();
 
 	UFUNCTION(BlueprintCallable)
-	void EntryLobbyLevelSequence();
+	void EntryLobbyLevel();
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")

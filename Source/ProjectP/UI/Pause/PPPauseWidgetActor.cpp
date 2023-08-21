@@ -34,12 +34,12 @@ void APPPauseWidgetActor::BeginPlay()
 	SettingWidget = CastChecked<APPSettingBaseActor>(SettingWidgetActor->GetChildActor());
 	if(PauseWidget && SettingWidget)
 	{
+		PauseWidget->ResumeGameDelegate.AddUObject(this, &APPPauseWidgetActor::ResumeGame);
 		PauseWidget->PassSubWidgetTypeDelegate.AddUObject(this, &APPPauseWidgetActor::OpenSubWidget);
-		PauseWidget->ExitGameDelegate.AddUObject(this, &APPPauseWidgetActor::EntryLobbyLevelSequence);
+		PauseWidget->ExitGameDelegate.AddUObject(this, &APPPauseWidgetActor::EntryLobbyLevel);
 		SettingWidget->MainWidgetDelegate.AddUObject(this, &APPPauseWidgetActor::ReturnFromSettingToPause);
 	}
 	SettingWidgetActor->SetVisibility(false);
-	SettingWidgetActor->SetActive(false);
 	
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPPauseWidgetActor::ClearAllTimerOnLevelChange);
@@ -53,6 +53,12 @@ void APPPauseWidgetActor::ClearAllTimerOnLevelChange()
 	EntryLobbyLevelAnimationTimer.Invalidate();
 }
 
+void APPPauseWidgetActor::ResumeGame()
+{
+	SetActorLocation(GetActorLocation() + FVector(0.0f, 0.0f, -10000.0f));
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+}
+
 void APPPauseWidgetActor::OpenSubWidget(ESubWidgetType SubWidget)
 {
 	UGameplayStatics::PlaySound2D(GetWorld(), WidgetMoveSoundCue);
@@ -60,18 +66,20 @@ void APPPauseWidgetActor::OpenSubWidget(ESubWidgetType SubWidget)
 	if(SubWidget == ESubWidgetType::Setting)
 	{
 		PauseWidgetComponent->SetVisibility(false);
-		PauseWidgetComponent->SetActive(false);
-		PauseWidgetComponent->SetRelativeLocation(PauseWidgetComponent->GetRelativeLocation() + FVector(-2.0f,0.0f,0.0f));
+		PauseWidgetComponent->AddRelativeLocation(FVector(5.0f,0.0f,0.0f));
 		SettingWidgetActor->SetVisibility(true);
-		SettingWidgetActor->SetActive(true);
-		SettingWidgetActor->SetRelativeLocation(SettingWidgetActor->GetRelativeLocation() + FVector(2.0f,0.0f,0.0f));
+		SettingWidgetActor->AddRelativeLocation(FVector(-5.0f,0.0f,0.0f));
 	}
 	else // (SubWidget == ESubWidgetType::Exit)
 	{
 		// 시간 되면 위젯 추가로 만들고 일단은 패스
 		// ExitWidgetComponent->SetVisibility(true);
-		GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-		UGameplayStatics::OpenLevel(this, MAIN_LEVEL);
+		FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
+		if(LevelName == MAIN_LEVEL)
+		{
+			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+			UGameplayStatics::OpenLevel(this, LOBBY_LEVEL);
+		}
 	}
 }
 
@@ -80,22 +88,18 @@ void APPPauseWidgetActor::ReturnFromSettingToPause()
 	UGameplayStatics::PlaySound2D(GetWorld(), WidgetMoveSoundCue);
 
 	PauseWidgetComponent->SetVisibility(true);
-	PauseWidgetComponent->SetActive(true);
-	PauseWidgetComponent->SetRelativeLocation(PauseWidgetComponent->GetRelativeLocation() + FVector(2.0f,0.0f,0.0f));
+	PauseWidgetComponent->AddRelativeLocation(FVector(-5.0f,0.0f,0.0f));
 	SettingWidgetActor->SetVisibility(false);
-	SettingWidgetActor->SetActive(false);
-	SettingWidgetActor->SetRelativeLocation(SettingWidgetActor->GetRelativeLocation() + FVector(-2.0f,0.0f,0.0f));
+	SettingWidgetActor->AddRelativeLocation(FVector(5.0f,0.0f,0.0f));
 }
 
-void APPPauseWidgetActor::EntryLobbyLevelSequence()
+void APPPauseWidgetActor::EntryLobbyLevel()
 {
-	GetWorldTimerManager().SetTimer(EntryLobbyLevelAnimationTimer, FTimerDelegate::CreateLambda([&]()
+	FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
+	if(LevelName == MAIN_LEVEL)
 	{
-		if(true)
-		{
-			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-			UGameplayStatics::OpenLevel(this, MAIN_LEVEL);
-		}
-	}), 0.01f, true);
+		GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+		UGameplayStatics::OpenLevel(this, LOBBY_LEVEL);
+	}
 }
 

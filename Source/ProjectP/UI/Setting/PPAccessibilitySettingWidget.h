@@ -93,6 +93,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> CameraTurnValueHighButton;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
+	TObjectPtr<USlider> PauseWidgetDistanceSlider;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
+	TObjectPtr<USlider> PauseWidgetHeightSlider;
+	
 protected:
 	UPROPERTY()
 	float NewCameraTurnValue;

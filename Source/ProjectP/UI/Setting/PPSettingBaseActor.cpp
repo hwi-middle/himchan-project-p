@@ -88,13 +88,14 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
 		SettingWidget->SetSubWidgetContentVisible(false);
+		SettingWidget->SetSubWidgetAnimationWorking(false);
 		SettingWidget->SetSubWidgetHeightOffset(SubWidgetHalfHeightValue);
 		bSubWidgetOpened = false;
 		if(SwapSubWidget != ESubWidgetType::None)
 		{
 			OpenSubWidget(SwapSubWidget);
-			return;
 		}
+		return;
 	}
 	
 	SettingWidget->SetSubWidgetContentVisible(false);
@@ -128,6 +129,7 @@ void APPSettingBaseActor::OpenSubWidgetPanel()
 	{
 		SettingWidget->SetSubWidgetHeightOffset(0.0f);
 		SettingWidget->SetSubWidgetContentVisible(true);
+		SettingWidget->SetSubWidgetAnimationWorking(false);
 		bSubWidgetOpened = true;
 		return;
 	}

@@ -19,6 +19,7 @@
 #include "ProjectP/Constant/PPLevelName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Prop/Weapon/PPGunBase.h"
+#include "ProjectP/UI/Pause/PPPauseWidgetActor.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
@@ -34,14 +35,6 @@ APPVRPawn::APPVRPawn()
 	Camera->SetupAttachment(VROrigin);
 
 	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovement"));
-
-	PauseOverlayMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PauseOverlay"));
-	PauseOverlayMesh->SetStaticMesh(FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Material/Player/SM_PauseOverlayCylinder.SM_PauseOverlayCylinder'")));
-	PauseOverlayMesh->SetRelativeScale3D(FVector(0.75f, 0.75f, 1.0f));
-	PauseOverlayMesh->SetupAttachment(VROrigin);
-	PauseOverlayMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	PauseOverlayMesh->SetVisibility(false);
-	PauseOverlayMesh->SetActive(false);
 
 	MovementData = FPPConstructorHelper::FindAndGetObject<UPPMovementData>(TEXT("/Script/ProjectP.PPMovementData'/Game/DataAssets/Player/PlayerData.PlayerData'"), EAssertionLevel::Check);
 	InputMappingContext = MovementData->InputMappingContext;
@@ -73,7 +66,14 @@ void APPVRPawn::BeginPlay()
 	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
 	InitVROrigin();
 	InitVRHands();
-
+	
+	TArray<AActor*> PauseWidgets;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APPPauseWidgetActor::StaticClass(), PauseWidgets);
+	if(PauseWidgets.Num() > 0)
+	{
+		PauseWidget = CastChecked<APPPauseWidgetActor>(PauseWidgets[0]);
+	}
+	
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPVRPawn::ClearAllTimerOnLevelChange);
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
@@ -98,12 +98,6 @@ void APPVRPawn::ClearAllTimerOnLevelChange()
 void APPVRPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) == 1.0f && PauseOverlayMesh->IsActive())
-	{
-		PauseOverlayMesh->SetVisibility(false);
-		PauseOverlayMesh->SetActive(false);
-	}
 }
 
 // Called to bind functionality to input
@@ -160,7 +154,6 @@ void APPVRPawn::InitVROrigin()
 {
 	const float DistanceToFloor = GetActorLocation().Z;
 	VROrigin->SetRelativeLocation(FVector{0, 0, -DistanceToFloor});
-	PauseOverlayMesh->SetRelativeLocation(FVector{0, 0, DistanceToFloor});
 }
 
 void APPVRPawn::InitVRHands()
@@ -517,14 +510,13 @@ void APPVRPawn::ToggleGamePauseState() const
 {
 	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) == 1.0f)
 	{
-		PauseOverlayMesh->SetVisibility(true);
-		PauseOverlayMesh->SetActive(true);
+		PauseWidget->SetActorRotation(this->GetActorForwardVector().Rotation());
+		PauseWidget->SetActorLocation(this->GetActorLocation() + this->GetActorForwardVector() * 200 + PauseWidgetCustomPosition);
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.000001f);
 	}
 	else // TestOnly
 	{
-		PauseOverlayMesh->SetVisibility(false);
-		PauseOverlayMesh->SetActive(false);
+		PauseWidget->SetActorLocation(PauseWidget->GetActorLocation() + FVector(0.0f, 0.0f, -10000.0f));
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 	}
 }

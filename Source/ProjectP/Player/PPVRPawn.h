@@ -63,14 +63,14 @@ private:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UStaticMeshComponent> PauseOverlayMesh;
-	
-private:
-	UPROPERTY(VisibleAnywhere)
 	TArray<USoundCue*> WalkSoundCueArray;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USoundCue> WalkSoundCue;
+
+private:
+	UPROPERTY()
+	TObjectPtr<AActor> PauseWidget;
 	
 private:
 	UPROPERTY()
@@ -139,6 +139,9 @@ private:
 	UPROPERTY()
 	float WidgetInteractionDistance;
 
+	UPROPERTY()
+	FVector PauseWidgetCustomPosition;
+	
 	UPROPERTY()
 	uint32 bIsRightHandMainly : 1;
 	

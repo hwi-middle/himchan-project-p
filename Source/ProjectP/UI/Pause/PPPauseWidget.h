@@ -10,6 +10,7 @@
 #include "ProjectP/Enumeration/PPSubWidgetType.h"
 #include "PPPauseWidget.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FResumeGameDelegate);
 DECLARE_MULTICAST_DELEGATE_OneParam(FPassSubWidgetTypeDelegate, ESubWidgetType);
 DECLARE_MULTICAST_DELEGATE(FExitGameDelegate);
 
@@ -22,6 +23,8 @@ class PROJECTP_API UPPPauseWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	FResumeGameDelegate ResumeGameDelegate;
+	
 	FPassSubWidgetTypeDelegate PassSubWidgetTypeDelegate;
 	
 	FExitGameDelegate ExitGameDelegate;
@@ -30,7 +33,7 @@ protected:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ResumeGame() { UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f); }
+	FORCEINLINE void ResumeGame() { ResumeGameDelegate.Broadcast(); }
 	
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void ActivateSettingWidget() { PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Setting); }

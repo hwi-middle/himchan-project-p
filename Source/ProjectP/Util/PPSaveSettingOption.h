@@ -78,6 +78,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float CameraTurnValue;
 
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	FVector PauseWidgetDistance;
+	
 	// Subtitle Section
 public:
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
