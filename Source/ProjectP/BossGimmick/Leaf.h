@@ -41,6 +41,7 @@ private:
 	void BlinkAndExplode();
 	bool CheckPlayerWithSphere(float InRadius, FHitResult& Result);
 	void FadeOutAndDestroy();
+	FVector GetActorLocationWithOffset() const;
 
 private:
 	UPROPERTY()
@@ -90,6 +91,12 @@ private:
 
 	UPROPERTY()
 	float ElapsedFadeOutTime;
+
+	UPROPERTY()
+	float DetectRangeRadius;
+
+	UPROPERTY()
+	float ExplodeRangeRadius;
 	
 	UPROPERTY()
 	uint32 bIsActivated : 1;

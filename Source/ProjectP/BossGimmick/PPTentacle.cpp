@@ -19,19 +19,25 @@ APPTentacle::APPTentacle()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
-	Damage = BossGimmickData->VG_Damage;
-	WarningFadeInDuration = BossGimmickData->VG_WarningFadeInDuration;
-	WarningFadeOutDuration = BossGimmickData->VG_WarningFadeOutDuration;
-	WarningDuration = BossGimmickData->VG_WarningDuration;
 }
 
 // Called when the game starts or when spawned
 void APPTentacle::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Damage = BossGimmickData->VG_Damage;
+	WarningFadeInDuration = BossGimmickData->VG_WarningFadeInDuration;
+	WarningFadeOutDuration = BossGimmickData->VG_WarningFadeOutDuration;
+	WarningDuration = BossGimmickData->VG_WarningDuration;
+	DamageRadius = BossGimmickData->VG_DamageRadius;
 	
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPTentacle::ClearAllTimerOnLevelChange);
+	
+	float TempAnimationDuration = 0.5f; // 임시 값
+	float DebugSphereLifeTime = WarningDuration + WarningFadeInDuration + WarningFadeOutDuration + TempAnimationDuration;
+	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 16, FColor::Red, false, DebugSphereLifeTime);
 }
 
 void APPTentacle::ClearAllTimerOnLevelChange()
@@ -80,7 +86,7 @@ void APPTentacle::HideWarningSignAndAttack()
 			GetActorLocation(),
 			FQuat::Identity,
 			ECC_CHECK_PAWN,
-			FCollisionShape::MakeSphere(50.f),
+			FCollisionShape::MakeSphere(DamageRadius),
 			CollisionParams
 		);
 

@@ -54,6 +54,9 @@ private:
 	UPROPERTY()
 	float Damage;
 
+	UPROPERTY()
+	float DamageRadius;
+
 public:
 	void ShowWarningSign();
 
