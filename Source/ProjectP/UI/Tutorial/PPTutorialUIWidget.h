@@ -7,6 +7,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "ProjectP/Util/StringDataTable.h"
 #include "PPTutorialUIWidget.generated.h"
 
 /**
@@ -26,14 +27,29 @@ public:
 	FORCEINLINE void AddWidgetWidthValue(const float Value) { SetPadding(FMargin(GetPadding().Left + Value, GetPadding().Top, GetPadding().Right + Value, GetPadding().Bottom)); }
 	FORCEINLINE float GetWidgetWidthValue() { return GetPadding().Left; }
 	
-	FORCEINLINE void SetGuidePanelOpacity(const float Opacity) { GuidePanel->SetRenderOpacity(Opacity); }
-	FORCEINLINE float GetGuidePanelOpacity() const { return GuidePanel->GetRenderOpacity(); }
+	FORCEINLINE void SetTutorialPanelOpacity(const float Opacity) { TutorialPanel->SetRenderOpacity(Opacity); }
+	FORCEINLINE float GetTutorialPanelOpacity() const { return TutorialPanel->GetRenderOpacity(); }
+
+	FORCEINLINE void SetTutorialImage(UTexture2D* Image) const { TutorialImage->SetBrushFromTexture(Image); }
+	FORCEINLINE void SetTitleText(const FString TitleString) const { TutorialTitleTextBlock->SetText(FText::FromString(TitleString)); }
+	FORCEINLINE void SetInfoText(const FString InfoString) const { TutorialInfoTextBlock->SetText(FText::FromString(InfoString)); }
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UImage> BackgroundImage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UCanvasPanel> GuidePanel;
+	TObjectPtr<UCanvasPanel> TutorialPanel;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UImage> TutorialImage;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> TutorialTitleTextBlock;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> TutorialInfoTextBlock; 
+	
 };
 
 
