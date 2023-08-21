@@ -508,16 +508,19 @@ void APPVRPawn::ToggleWidgetInteraction() const
 
 void APPVRPawn::ToggleGamePauseState() const
 {
-	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) == 1.0f)
+	if(PauseWidget)
 	{
-		PauseWidget->SetActorRotation(this->GetActorForwardVector().Rotation());
-		PauseWidget->SetActorLocation(this->GetActorLocation() + this->GetActorForwardVector() * 200 + PauseWidgetCustomPosition);
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.000001f);
-	}
-	else // TestOnly
-	{
-		PauseWidget->SetActorLocation(PauseWidget->GetActorLocation() + FVector(0.0f, 0.0f, -10000.0f));
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+		if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) == 1.0f)
+		{
+			PauseWidget->SetActorRotation(this->GetActorForwardVector().Rotation());
+			PauseWidget->SetActorLocation(this->GetActorLocation() + this->GetActorForwardVector() * 200 + PauseWidgetCustomPosition);
+			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.000001f);
+		}
+		else // TestOnly
+		{
+			PauseWidget->SetActorLocation(PauseWidget->GetActorLocation() + FVector(0.0f, 0.0f, -10000.0f));
+			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+		}
 	}
 }
 
