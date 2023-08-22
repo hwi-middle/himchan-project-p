@@ -53,23 +53,8 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Widget")
 	TObjectPtr<APPSettingBaseActor> SettingWidget;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TObjectPtr<USoundCue> WidgetMoveSoundCue;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Widget")
-	float WidgetAnimationTick;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Widget")
-	float WidgetAnimationMoveValue;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 	float WidgetMaximumMovementAmount;
-
-	UPROPERTY()
-	FVector CurrentLocation;
-	
-	UPROPERTY()
-	FTimerHandle WidgetAnimationTimer;
 
 	UPROPERTY()
 	FTimerHandle EntryLobbyLevelAnimationTimer;

@@ -47,9 +47,7 @@ void APPPauseWidgetActor::BeginPlay()
 
 void APPPauseWidgetActor::ClearAllTimerOnLevelChange()
 {
-	GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
 	GetWorldTimerManager().ClearTimer(EntryLobbyLevelAnimationTimer);
-	WidgetAnimationTimer.Invalidate();
 	EntryLobbyLevelAnimationTimer.Invalidate();
 }
 
@@ -61,8 +59,6 @@ void APPPauseWidgetActor::ResumeGame()
 
 void APPPauseWidgetActor::OpenSubWidget(ESubWidgetType SubWidget)
 {
-	UGameplayStatics::PlaySound2D(GetWorld(), WidgetMoveSoundCue);
-	
 	if(SubWidget == ESubWidgetType::Setting)
 	{
 		PauseWidgetComponent->SetVisibility(false);
@@ -85,8 +81,6 @@ void APPPauseWidgetActor::OpenSubWidget(ESubWidgetType SubWidget)
 
 void APPPauseWidgetActor::ReturnFromSettingToPause()
 {
-	UGameplayStatics::PlaySound2D(GetWorld(), WidgetMoveSoundCue);
-
 	PauseWidgetComponent->SetVisibility(true);
 	PauseWidgetComponent->AddRelativeLocation(FVector(-5.0f,0.0f,0.0f));
 	SettingWidgetActor->SetVisibility(false);
