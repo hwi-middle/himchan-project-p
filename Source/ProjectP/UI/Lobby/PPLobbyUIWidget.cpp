@@ -5,7 +5,8 @@
 void UPPLobbyUIWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
+
+	WidgetPanelSlot = Cast<UCanvasPanelSlot>(WidgetPanel->Slot);
 	StartButton->OnClicked.AddDynamic(this, &UPPLobbyUIWidget::EntryMainLevel);
 	SettingButton->OnClicked.AddDynamic(this, &UPPLobbyUIWidget::ActivateSettingWidget);
 	ExitButton->OnClicked.AddDynamic(this, &UPPLobbyUIWidget::ActivateExitWidget);

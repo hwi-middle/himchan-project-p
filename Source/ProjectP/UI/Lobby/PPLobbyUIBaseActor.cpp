@@ -111,10 +111,13 @@ void APPLobbyUIBaseActor::EntryMainLevelSequence()
 {
 	GetWorldTimerManager().SetTimer(EntryMainLevelAnimationTimer, FTimerDelegate::CreateLambda([&]()
 	{
-		if(true)
+		LobbyWidget->AddWidgetHeightOffset(5.0f);
+		if(LobbyWidget->GetSubWidgetHeight() >= LobbyWidgetMaximumHeight)
 		{
+			LobbyWidget->SetWidgetHeightOffset(LobbyWidgetMaximumHeight);
+			EntryMainLevelDelegate.Broadcast();
 			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-			UGameplayStatics::OpenLevel(this, MAIN_LEVEL);
+			// Level Blueprint Delegate
 		}
 	}), 0.01f, true);
 }
