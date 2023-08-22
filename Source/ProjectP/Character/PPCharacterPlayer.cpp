@@ -33,13 +33,18 @@ void APPCharacterPlayer::BeginPlay()
 
 	DamageFXFadeInDuration = PlayerStatusData->DamageFXFadeInDuration;
 	DamageFXFadeOutDuration = PlayerStatusData->DamageFXFadeOutDuration;
-	
+
+	if (GetWorld()->PostProcessVolumes.IsEmpty())
+	{
+		return;
+	}
+
 	APostProcessVolume* PostProcessVolume = Cast<APostProcessVolume>(GetWorld()->PostProcessVolumes[0]);
 	FPostProcessSettings Settings = PostProcessVolume->Settings;
 
 	UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/Project-P/Material/PostProcess/PPTest.PPTest'"));
 	UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
-	
+
 	Settings.WeightedBlendables.Array.Empty();
 	Settings.WeightedBlendables.Array.Add(FWeightedBlendable(1.0f, MaterialInstanceDynamic));
 	PostProcessVolume->Settings = Settings;
@@ -89,7 +94,7 @@ float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	}
 
 	ShowDamageFX();
-	
+
 	return DamageAmount;
 }
 
@@ -151,7 +156,7 @@ void APPCharacterPlayer::ShowDamageFX()
 		}
 		DynamicMaterialInstance->SetScalarParameterValue("Intensity", CurrentIntensity);
 		ElapsedDamageFXFadeTime += GetWorld()->DeltaTimeSeconds;
-		
+
 		if (ElapsedDamageFXFadeTime >= DamageFXFadeInDuration + DamageFXFadeOutDuration)
 		{
 			DynamicMaterialInstance->SetScalarParameterValue("Intensity", 0.f);

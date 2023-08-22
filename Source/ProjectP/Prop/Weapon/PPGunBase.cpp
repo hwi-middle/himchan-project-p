@@ -48,7 +48,7 @@ APPGunBase::APPGunBase()
 
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
-	
+
 	LeftShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootLeft.IA_VRShootLeft'"), EAssertionLevel::Check);
 	RightShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootRight.IA_VRShootRight'"), EAssertionLevel::Check);
 	LeftHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Left.IMC_Weapon_Left'"), EAssertionLevel::Check);
@@ -69,7 +69,7 @@ void APPGunBase::BeginPlay()
 	UPPVRGrabComponent* GrabComponentCasted = Cast<UPPVRGrabComponent>(GrabComponent);
 	GrabComponentCasted->OnGrab.AddUObject(this, &APPGunBase::GrabOnHand);
 	GrabComponentCasted->OnRelease.AddUObject(this, &APPGunBase::ReleaseOnHand);
-	GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_GRIP));
+	// GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketTransform(GUN_GRIP, ERelativeTransformSpace::RTS_Actor).GetLocation());
 	MuzzleNiagaraEffect->SetActive(false);
 
 	Flashlight->SetWorldLocation(WeaponMesh->GetSocketLocation(GUN_FLASH));
@@ -77,10 +77,10 @@ void APPGunBase::BeginPlay()
 
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPGunBase::ClearAllTimerOnLevelChange);
-	
+
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
 	FireSoundCueArray = SoundData->GunOnFireSoundCueArray;
-	if(FireSoundCueArray.IsEmpty())
+	if (FireSoundCueArray.IsEmpty())
 	{
 		// 배열이 비어있을 때 크래시 방지용.
 		USoundCue* TempSoundCue = nullptr;
@@ -225,7 +225,7 @@ void APPGunBase::OnFire()
 	OnFireSoundCue = FireSoundCueArray[FMath::RandRange(0, FireSoundCueArray.Num() - 1)];
 	UGameplayStatics::PlaySound2D(this, OnFireSoundCue);
 	UGameplayStatics::PlaySound2D(this, IncreaseOverheatSoundCue);
-	
+
 	CurrentOverheat += OverheatAmountPerSingleShoot;
 
 	if (AimingActor)
@@ -292,7 +292,7 @@ void APPGunBase::StopFire()
 	// 정지 후 CooldownDelay 만큼의 시간이 흐르면 Cooldown 시작
 	GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
-		if(!bIsCooldownStart)
+		if (!bIsCooldownStart)
 		{
 			bIsCooldownStart = true;
 			UGameplayStatics::PlaySound2D(this, CoolDownSoundCue);
@@ -315,7 +315,7 @@ void APPGunBase::GrabOnHand(APPVRHand* InHand)
 	UGameplayStatics::PlaySound2D(this, GrabOnHandSoundCue);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	bHeld = true;
-	
+
 	//UE_LOG(LogTemp, Log, TEXT("OnGrab"));
 	//SetupInputMappingContextByHandType(InHand->GetHandType());
 }
