@@ -70,7 +70,7 @@ public:
 	float PauseInterfaceHeightValue;
 	
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
-	uint32 bUseLeftHandedSetting : 1;
+	uint32 bIsRightHandMainly : 1;
 
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	uint32 bUseControllerVibration : 1;
@@ -78,6 +78,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
 	float CameraTurnValue;
 
+	UPROPERTY(EditDefaultsOnly, Category = SettingOption)
+	FVector PauseWidgetDistance;
+	
 	// Subtitle Section
 public:
 	UPROPERTY(EditDefaultsOnly, Category = SettingOption)

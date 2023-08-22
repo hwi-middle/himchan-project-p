@@ -21,7 +21,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -77,9 +77,7 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetHandMesh() const { return HandMesh; }
 	FORCEINLINE EControllerHand GetHandType() const { return HandType; }
 	FORCEINLINE class UPPVRGrabComponent* GetHeldComponent() const { return HeldComponent; }
-
-	// TestOnly
-private:
-	void SetupWidgetComponent();
+	void DisableWidgetComponent() const;
+	void SetupWidgetComponent(const float Value);
 	void SetupDebugWidget();
 };

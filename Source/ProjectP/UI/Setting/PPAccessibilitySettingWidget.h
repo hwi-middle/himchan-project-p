@@ -39,7 +39,7 @@ public:
 
 	FCameraTurnValueSettingDelegate CameraTurnValueSettingDelegate;
 	FVibrationOptionDelegate VibrationOptionDelegate;
-	FLeftHandedOptionDelegate LeftHandedOptionDelegate;
+	FLeftHandedOptionDelegate RightHandMainlyDelegate;
 	
 	// Accessibility Option Function Section
 public:
@@ -75,10 +75,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
 	TObjectPtr<USlider> PauseInterfaceHeightSlider;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> LeftHandedSettingButton;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> RightHandedSettingButton;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
@@ -93,10 +93,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> CameraTurnValueHighButton;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
+	TObjectPtr<USlider> PauseWidgetDistanceSlider;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
+	TObjectPtr<USlider> PauseWidgetHeightSlider;
+	
 protected:
 	UPROPERTY()
 	float NewCameraTurnValue;
 
 	UPROPERTY()
-	uint32 bUseLeftHandedSetting : 1;
+	uint32 IsRightHandMainly : 1;
 };

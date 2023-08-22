@@ -14,22 +14,22 @@ void UPPSettingUIWidget::NativeConstruct()
 	OpenSoundSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateSoundSettingWidget);
 	OpenDisplaySettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateDisplaySettingWidget);
 	OpenGraphicSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateGraphicSettingWidget);
-	
 	OpenAccessibilitySettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateAccessibilitySettingWidget);
 	/*
 	OpenSubtitleSettingWidgetButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ActivateSubtitleSettingWidget);
 	*/
+	
 	ExitSettingUIButton->OnClicked.AddDynamic(this, &UPPSettingUIWidget::ExitSettingUI);
 	SubWidgetPanelSlot = CastChecked<UCanvasPanelSlot>(SubWidgetPanel->Slot);
 	
 	SoundSettingWidget->SetIsEnabled(false);
-	SoundSettingWidget->SetRenderOpacity(0.0f);
+	SoundSettingWidget->SetVisibility(ESlateVisibility::Hidden);
 	DisplaySettingWidget->SetIsEnabled(false);
-	DisplaySettingWidget->SetRenderOpacity(0.0f);
+	DisplaySettingWidget->SetVisibility(ESlateVisibility::Hidden);
 	GraphicSettingWidget->SetIsEnabled(false);
-	GraphicSettingWidget->SetRenderOpacity(0.0f);
+	GraphicSettingWidget->SetVisibility(ESlateVisibility::Hidden);
 	AccessibilitySettingWidget->SetIsEnabled(false);
-	AccessibilitySettingWidget->SetRenderOpacity(0.0f);
+	AccessibilitySettingWidget->SetVisibility(ESlateVisibility::Hidden);
 	/*
 	SubtitleSettingWidget->SetIsEnabled(false);
 	SubtitleSettingWidget->SetRenderOpacity(0.0f);
@@ -115,13 +115,13 @@ void UPPSettingUIWidget::SetSubWidgetContentVisible(const bool IsActivate)
 	if(IsActivate)
 	{
 		EnabledSubWidget->SetIsEnabled(true);
-		EnabledSubWidget->SetRenderOpacity(1.0f);
+		EnabledSubWidget->SetVisibility(ESlateVisibility::Visible);
 		Cast<UCanvasPanelSlot>(EnabledSubWidget->Slot)->SetZOrder(1);
 	}
 	else
 	{
 		EnabledSubWidget->SetIsEnabled(false);
-		EnabledSubWidget->SetRenderOpacity(0.0f);
+		EnabledSubWidget->SetVisibility(ESlateVisibility::Hidden);
 		Cast<UCanvasPanelSlot>(EnabledSubWidget->Slot)->SetZOrder(0);
 	}
 }

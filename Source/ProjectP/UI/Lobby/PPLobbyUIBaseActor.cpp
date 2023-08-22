@@ -29,11 +29,14 @@ APPLobbyUIBaseActor::APPLobbyUIBaseActor()
 void APPLobbyUIBaseActor::BeginPlay()
 {
 	Super::BeginPlay();
+	SetTickableWhenPaused(true);
+	
 	LobbyWidget = CastChecked<UPPLobbyUIWidget>(LobbyWidgetComponent->GetUserWidgetObject());
 	SettingWidget = CastChecked<APPSettingBaseActor>(SettingWidgetActor->GetChildActor());
 	if(LobbyWidget && SettingWidget)
 	{
 		LobbyWidget->PassSubWidgetTypeDelegate.AddUObject(this, &APPLobbyUIBaseActor::OpenSubWidget);
+		LobbyWidget->StartGameDelegate.AddUObject(this, &APPLobbyUIBaseActor::EntryMainLevelSequence);
 		SettingWidget->MainWidgetDelegate.AddUObject(this, &APPLobbyUIBaseActor::ReturnFromSettingToLobby);
 	}
 	SettingWidgetActor->SetVisibility(false);
@@ -49,7 +52,9 @@ void APPLobbyUIBaseActor::BeginPlay()
 void APPLobbyUIBaseActor::ClearAllTimerOnLevelChange()
 {
 	GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
+	GetWorldTimerManager().ClearTimer(EntryMainLevelAnimationTimer);
 	WidgetAnimationTimer.Invalidate();
+	EntryMainLevelAnimationTimer.Invalidate();
 }
 
 void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
@@ -100,6 +105,21 @@ void APPLobbyUIBaseActor::ReturnFromSettingToLobby()
 			GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
 		}
 	}), WidgetAnimationTick, true);
+}
+
+void APPLobbyUIBaseActor::EntryMainLevelSequence()
+{
+	GetWorldTimerManager().SetTimer(EntryMainLevelAnimationTimer, FTimerDelegate::CreateLambda([&]()
+	{
+		LobbyWidget->AddWidgetHeightOffset(5.0f);
+		if(LobbyWidget->GetSubWidgetHeight() >= LobbyWidgetMaximumHeight)
+		{
+			LobbyWidget->SetWidgetHeightOffset(LobbyWidgetMaximumHeight);
+			EntryMainLevelDelegate.Broadcast();
+			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+			// Level Blueprint Delegate
+		}
+	}), 0.01f, true);
 }
 
 

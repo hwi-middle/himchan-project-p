@@ -20,7 +20,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FPassSubWidgetTypeDelegate, ESubWidgetType);
 /*
  * 
  */
-UCLASS(meta =(DisableNativeTick))
+UCLASS()
 class PROJECTP_API UPPSettingUIWidget : public UUserWidget
 {
 	GENERATED_BODY()
@@ -38,7 +38,7 @@ public:
 
 	void SetSubWidgetContent(ESubWidgetType SubWidget);
 	void SetSubWidgetContentVisible(const bool IsActivate);
-	FORCEINLINE void SetSubWidgetPanelVisible(const bool Visible) { Visible == true ? SubWidgetPanel->SetRenderOpacity(1.0f) : SubWidgetPanel->SetRenderOpacity(0.0f); }
+	FORCEINLINE void SetSubWidgetPanelVisible(const bool Visible) { Visible == true ? SubWidgetPanel->SetVisibility(ESlateVisibility::Visible) : SubWidgetPanel->SetVisibility(ESlateVisibility::Hidden); }
 	FORCEINLINE void SetSubWidgetAnimationWorking(const bool Work) { Work == true? bSubWidgetAnimationWork = true : bSubWidgetAnimationWork = false; }
 	
 	FLoadMainWidgetDelegate LoadMainWidgetDelegate;
