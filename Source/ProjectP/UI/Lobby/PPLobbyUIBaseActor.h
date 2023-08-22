@@ -11,6 +11,8 @@
 #include "ProjectP/UI/Setting/PPSettingBaseActor.h"
 #include "PPLobbyUIBaseActor.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEntryMainLevelDelegate);
+
 UCLASS()
 class PROJECTP_API APPLobbyUIBaseActor : public AActor
 {
@@ -20,6 +22,9 @@ public:
 	// Sets default values for this actor's properties
 	APPLobbyUIBaseActor();
 
+	UPROPERTY(BlueprintAssignable)
+	FEntryMainLevelDelegate EntryMainLevelDelegate;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -33,6 +38,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void ReturnFromSettingToLobby();
+
+	UFUNCTION(BlueprintCallable)
+	void EntryMainLevelSequence();
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
@@ -62,9 +70,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 	float WidgetMaximumMovementAmount;
 
+	UPROPERTY(EditDefaultsOnly,Category = "Widget")
+	float LobbyWidgetMaximumHeight;
+	
 	UPROPERTY()
 	FVector CurrentLocation;
 	
 	UPROPERTY()
 	FTimerHandle WidgetAnimationTimer;
+
+	UPROPERTY()
+	FTimerHandle EntryMainLevelAnimationTimer;
 };
