@@ -62,10 +62,17 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<class UInputAction> ThumbUpRightAction;
-	
+
 	UPROPERTY(EditAnywhere, Category = "Input")
-	TObjectPtr<class UInputAction> LeftXButtonPressAction;
+	TObjectPtr<class UInputAction> RightAButtonPressAction;
 	
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<class UInputAction> RightBButtonPressAction;
+	
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<class UInputAction> LeftXButtonPressAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<class UInputAction> LeftYButtonPressAction;
+
 };

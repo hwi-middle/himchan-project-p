@@ -16,8 +16,10 @@
 #include "EnhancedInput/Public/InputMappingContext.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "ProjectP/Constant/PPLevelName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Prop/Weapon/PPGunBase.h"
+#include "ProjectP/UI/Pause/PPPauseWidgetActor.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
@@ -48,6 +50,8 @@ APPVRPawn::APPVRPawn()
 	ThumbUpLeftAction = MovementData->ThumbUpLeftAction;
 	ThumbUpRightAction = MovementData->ThumbUpRightAction;
 	LeftXButtonPressAction = MovementData->LeftXButtonPressAction;
+	LeftYButtonPressAction = MovementData->LeftYButtonPressAction;
+	RightAButtonPressAction = MovementData->RightAButtonPressAction;
 	RightBButtonPressAction = MovementData->RightBButtonPressAction;
 	
 	MoveSpeed = MovementData->WalkSpeed;
@@ -62,7 +66,14 @@ void APPVRPawn::BeginPlay()
 	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
 	InitVROrigin();
 	InitVRHands();
-
+	
+	TArray<AActor*> PauseWidgets;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APPPauseWidgetActor::StaticClass(), PauseWidgets);
+	if(PauseWidgets.Num() > 0)
+	{
+		PauseWidget = CastChecked<APPPauseWidgetActor>(PauseWidgets[0]);
+	}
+	
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPVRPawn::ClearAllTimerOnLevelChange);
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
@@ -87,7 +98,6 @@ void APPVRPawn::ClearAllTimerOnLevelChange()
 void APPVRPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -133,8 +143,11 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Triggered, this, &APPVRPawn::ThumbUpRight);
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Completed, this, &APPVRPawn::CompleteThumbUpRight);
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Canceled, this, &APPVRPawn::ThumbUpRight);
-	EnhancedInputComponent->BindAction(LeftXButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleWidgetInteraction);
-	EnhancedInputComponent->BindAction(RightBButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleFlash);
+	
+	EnhancedInputComponent->BindAction(LeftYButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressYButtonAction);
+	EnhancedInputComponent->BindAction(LeftXButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressXButtonAction);
+	EnhancedInputComponent->BindAction(RightBButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressBButtonAction);
+	EnhancedInputComponent->BindAction(RightAButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressAButtonAction);
 }
 
 void APPVRPawn::InitVROrigin()
@@ -163,6 +176,10 @@ void APPVRPawn::InitVRHands()
 
 void APPVRPawn::Move(const FInputActionValue& Value)
 {
+	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
+	{
+		return;
+	}
 	const FVector2D InputVector = Value.Get<FVector2D>();
 
 	FVector ActorUp = GetActorUpVector();
@@ -202,6 +219,11 @@ void APPVRPawn::GrabLeft(const FInputActionValue& Value)
 	const float Alpha = Value.Get<float>();
 	LeftHand->SetPoseAlphaGrasp(Alpha);
 
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
 	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
 	static constexpr float GrabThreshold = 0.2f;
 	if (HeldComponent && Alpha < GrabThreshold)
@@ -219,6 +241,11 @@ void APPVRPawn::GrabRight(const FInputActionValue& Value)
 	const float Alpha = Value.Get<float>();
 	RightHand->SetPoseAlphaGrasp(Alpha);
 
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
 	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
 	static constexpr float GrabThreshold = 0.2f;
 	if (HeldComponent && Alpha < GrabThreshold)
@@ -235,6 +262,12 @@ void APPVRPawn::IndexCurlLeft(const FInputActionValue& Value)
 {
 	const float Alpha = Value.Get<float>();
 	LeftHand->SetPoseAlphaIndexCurl(Alpha);
+	
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
 	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
 	if (HeldComponent)
 	{
@@ -252,6 +285,11 @@ void APPVRPawn::IndexCurlRight(const FInputActionValue& Value)
 	RightHand->SetPoseAlphaIndexCurl(Alpha);
 	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
 
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
 	static constexpr float ShootThreshold = 0.2f;
 	if (HeldComponent)
 	{
@@ -281,6 +319,78 @@ void APPVRPawn::ThumbUpLeft(const FInputActionValue& Value)
 void APPVRPawn::ThumbUpRight(const FInputActionValue& Value)
 {
 	RightHand->SetPoseAlphaThumbUp(0);
+}
+
+void APPVRPawn::CancelOrCompleteGrabLeft()
+{
+	LeftHand->SetPoseAlphaGrasp(0);
+	LeftHand->HandleRelease();
+}
+
+void APPVRPawn::CancelOrCompleteGrabRight()
+{
+	RightHand->SetPoseAlphaGrasp(0);
+	RightHand->HandleRelease();
+}
+
+void APPVRPawn::CancelOrCompleteIndexCurlLeft()
+{
+	LeftHand->SetPoseAlphaIndexCurl(0);
+	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
+
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
+	if (HeldComponent)
+	{
+		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
+		if (Weapon)
+		{
+			Weapon->StopFire();
+		}
+	}
+}
+
+void APPVRPawn::CancelOrCompleteIndexCurlRight()
+{
+	RightHand->SetPoseAlphaIndexCurl(0);
+	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
+
+	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	{
+		return;
+	}
+	
+	if (HeldComponent)
+	{
+		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
+		if (Weapon)
+		{
+			Weapon->StopFire();
+		}
+	}
+}
+
+void APPVRPawn::CompletePointLeft()
+{
+	LeftHand->SetPoseAlphaPoint(1);
+}
+
+void APPVRPawn::CompletePointRight()
+{
+	RightHand->SetPoseAlphaPoint(1);
+}
+
+void APPVRPawn::CompleteThumbUpLeft()
+{
+	LeftHand->SetPoseAlphaThumbUp(1);
+}
+
+void APPVRPawn::CompleteThumbUpRight()
+{
+	RightHand->SetPoseAlphaThumbUp(1);
 }
 
 void APPVRPawn::StartMove(const FInputActionValue& Value)
@@ -335,7 +445,86 @@ void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 	}
 }
 
-void APPVRPawn::ToggleFlash(const FInputActionValue& Value)
+void APPVRPawn::PressAButtonAction(const FInputActionValue& Value)
+{
+	if(bIsRightHandMainly)
+	{
+		ToggleFlash();
+	}
+	else
+	{
+		ToggleWidgetInteraction();
+	}
+}
+
+void APPVRPawn::PressBButtonAction(const FInputActionValue& Value)
+{
+	if(bIsRightHandMainly)
+	{
+		// 매핑된게 없서요
+	}
+	else
+	{
+		ToggleGamePauseState();
+	}
+}
+
+void APPVRPawn::PressXButtonAction(const FInputActionValue& Value)
+{
+	if(bIsRightHandMainly)
+	{
+		ToggleWidgetInteraction();
+	}
+	else
+	{
+		ToggleFlash();
+	}
+}
+
+
+void APPVRPawn::PressYButtonAction(const FInputActionValue& Value)
+{
+	if(bIsRightHandMainly)
+	{
+		ToggleGamePauseState();
+	}
+	else
+	{
+		// 매핑된게 없서요
+	}
+}
+
+void APPVRPawn::ToggleWidgetInteraction() const
+{
+	if(bIsRightHandMainly)
+	{
+		LeftHand->WidgetInteractionToggle(WidgetInteractionDistance);
+	}
+	else
+	{
+		RightHand->WidgetInteractionToggle(WidgetInteractionDistance);
+	}
+}
+
+void APPVRPawn::ToggleGamePauseState() const
+{
+	if(PauseWidget)
+	{
+		if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) == 1.0f)
+		{
+			PauseWidget->SetActorRotation(this->GetActorForwardVector().Rotation());
+			PauseWidget->SetActorLocation(this->GetActorLocation() + this->GetActorForwardVector() * 200 + PauseWidgetCustomPosition);
+			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.000001f);
+		}
+		else // TestOnly
+		{
+			PauseWidget->SetActorLocation(PauseWidget->GetActorLocation() + FVector(0.0f, 0.0f, -10000.0f));
+			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+		}
+	}
+}
+
+void APPVRPawn::ToggleFlash() const
 {
 	UPPVRGrabComponent* LeftHeldComponent = LeftHand->GetHeldComponent();
 	UPPVRGrabComponent* RightHeldComponent = RightHand->GetHeldComponent();
@@ -357,70 +546,16 @@ void APPVRPawn::ToggleFlash(const FInputActionValue& Value)
 	}
 }
 
-void APPVRPawn::ToggleWidgetInteraction(const FInputActionValue& Value)
+void APPVRPawn::SwapWidgetInteraction() const
 {
-	// 나중에 주로 사용하는 손 바꾸기 구현되면 수정 예정
-	LeftHand->WidgetInteractionToggle(WidgetInteractionDistance);
-}
-
-void APPVRPawn::CancelOrCompleteGrabLeft()
-{
-	LeftHand->SetPoseAlphaGrasp(0);
-	LeftHand->HandleRelease();
-}
-
-void APPVRPawn::CancelOrCompleteGrabRight()
-{
-	RightHand->SetPoseAlphaGrasp(0);
-	RightHand->HandleRelease();
-}
-
-void APPVRPawn::CancelOrCompleteIndexCurlLeft()
-{
-	LeftHand->SetPoseAlphaIndexCurl(0);
-	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
-
-	if (HeldComponent)
+	if(bIsRightHandMainly)
 	{
-		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
-		if (Weapon)
-		{
-			Weapon->StopFire();
-		}
+		LeftHand->SetupWidgetComponent(WidgetInteractionDistance);
+		RightHand->DisableWidgetComponent();
 	}
-}
-
-void APPVRPawn::CancelOrCompleteIndexCurlRight()
-{
-	RightHand->SetPoseAlphaIndexCurl(0);
-	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
-
-	if (HeldComponent)
+	else
 	{
-		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
-		if (Weapon)
-		{
-			Weapon->StopFire();
-		}
+		LeftHand->DisableWidgetComponent();
+		RightHand->SetupWidgetComponent(WidgetInteractionDistance);
 	}
-}
-
-void APPVRPawn::CompletePointLeft()
-{
-	LeftHand->SetPoseAlphaPoint(1);
-}
-
-void APPVRPawn::CompletePointRight()
-{
-	RightHand->SetPoseAlphaPoint(1);
-}
-
-void APPVRPawn::CompleteThumbUpLeft()
-{
-	LeftHand->SetPoseAlphaThumbUp(1);
-}
-
-void APPVRPawn::CompleteThumbUpRight()
-{
-	RightHand->SetPoseAlphaThumbUp(1);
 }

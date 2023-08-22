@@ -19,6 +19,8 @@ APPSettingBaseActor::APPSettingBaseActor()
 void APPSettingBaseActor::BeginPlay()
 {
 	Super::BeginPlay();
+	SetTickableWhenPaused(true);
+	
 	SettingWidget = CastChecked<UPPSettingUIWidget>(SettingWidgetComponent->GetUserWidgetObject());
 	SettingWidget->PassSubWidgetTypeDelegate.AddUObject(this, &APPSettingBaseActor::OpenSubWidget);
 	SettingWidget->LoadMainWidgetDelegate.AddUObject(this, &APPSettingBaseActor::ExitButtonBroadcast);
@@ -56,7 +58,6 @@ void APPSettingBaseActor::ExitButtonBroadcast()
 
 void APPSettingBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 {
-	UE_LOG(LogTemp, Log, TEXT("SubWidget = %d"), SubWidget);
 	if(bIsFirstClick)
 	{
 		SettingWidget->SetSubWidgetPanelVisible(true);
@@ -83,9 +84,23 @@ void APPSettingBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 void APPSettingBaseActor::CloseSubWidgetPanel()
 {
 	UGameplayStatics::PlaySound2D(this, WidgetCloseSoundCue);
+
+	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
+	{
+		SettingWidget->SetSubWidgetContentVisible(false);
+		SettingWidget->SetSubWidgetAnimationWorking(false);
+		SettingWidget->SetSubWidgetHeightOffset(SubWidgetHalfHeightValue);
+		bSubWidgetOpened = false;
+		if(SwapSubWidget != ESubWidgetType::None)
+		{
+			OpenSubWidget(SwapSubWidget);
+		}
+		return;
+	}
 	
 	SettingWidget->SetSubWidgetContentVisible(false);
 	SettingWidget->SetSubWidgetAnimationWorking(true);
+
 	// 서브위젯 닫기 애니메이션.
 	GetWorldTimerManager().SetTimer(SubWidgetCloseTimer, FTimerDelegate::CreateLambda([&]()
 	{
@@ -109,6 +124,15 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 void APPSettingBaseActor::OpenSubWidgetPanel()
 {
 	UGameplayStatics::PlaySound2D(this, WidgetOpenSoundCue);
+
+	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
+	{
+		SettingWidget->SetSubWidgetHeightOffset(0.0f);
+		SettingWidget->SetSubWidgetContentVisible(true);
+		SettingWidget->SetSubWidgetAnimationWorking(false);
+		bSubWidgetOpened = true;
+		return;
+	}
 	
 	SettingWidget->SetSubWidgetAnimationWorking(true);
 	// 서브위젯 열기 애니메이션

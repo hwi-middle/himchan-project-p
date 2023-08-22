@@ -3,6 +3,7 @@
 
 #include "PPDestructible.h"
 
+#include "Field/FieldSystemComponent.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values for this component's properties
@@ -11,8 +12,8 @@ UPPDestructible::UPPDestructible()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
-	Destroyer = FPPConstructorHelper::FindAndGetObject<UBlueprint>(TEXT("/Script/Engine.Blueprint'/Engine/EditorResources/FieldNodes/FS_MasterField.FS_MasterField'"));
+	//Destroyer = FPPConstructorHelper::FindAndGetObject<UBlueprint>(TEXT("/Script/Engine.Blueprint'/Engine/EditorResources/FieldNodes/FS_MasterField.FS_MasterField'"));
+	bIsDestructed = false;
 }
 
 // Called when the game starts
@@ -34,10 +35,12 @@ void UPPDestructible::IncreaseHealth(const float Value)
 void UPPDestructible::DecreaseHealth(const float Value)
 {
 	Health -= Value;
-	if (Health <= 0.f)
+	if (Health <= 0.f &&  !bIsDestructed)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Spawn"));
-		AActor* SpawnedDestroyer = GetWorld()->SpawnActor<AActor>((UClass*)Destroyer->GeneratedClass, GetComponentLocation(), FRotator::ZeroRotator);
-		SpawnedDestroyer->SetActorScale3D(FVector(2.f));
+		DestructDelegate.Broadcast();
+		bIsDestructed = true;
+		//AActor* SpawnedDestroyer = GetWorld()->SpawnActor<AActor>((UClass*)Destroyer->GeneratedClass, GetComponentLocation(), FRotator::ZeroRotator);
+		//SpawnedDestroyer->SetActorScale3D(FVector(DestroyerScale));
 	}
 }

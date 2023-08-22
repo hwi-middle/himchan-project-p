@@ -20,9 +20,10 @@ UPPSaveSettingOption::UPPSaveSettingOption()
 	AAQualityValue = 2;
 	PauseInterfaceDistanceValue = 0.5f;
 	PauseInterfaceHeightValue = 0.5f;
-	bUseLeftHandedSetting = false;
+	bIsRightHandMainly = true;
 	bUseControllerVibration = true;
 	CameraTurnValue = 30.0f;
+	PauseWidgetDistance = FVector(0.0f,0.0f,0.0f);
 	SubtitleFontSize = 30;
 	bUseSubtitle = true;
 }
