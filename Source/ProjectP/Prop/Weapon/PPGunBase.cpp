@@ -264,7 +264,6 @@ void APPGunBase::OnFire()
 			CrossHairPlane->SetStaticMesh(OverheatedCrossHair);
 		}
 
-		// UE_LOG(LogTemp, Warning, TEXT("%d:%d:%d.%d"), FDateTime::Now().GetHour(), FDateTime::Now().GetMinute(), FDateTime::Now().GetSecond(), FDateTime::Now().GetMillisecond());
 		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
 			GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
@@ -273,7 +272,6 @@ void APPGunBase::OnFire()
 
 			if (ElapsedUnavailableTime >= UnavailableTime)
 			{
-				// UE_LOG(LogTemp, Warning, TEXT("%d:%d:%d.%d"), FDateTime::Now().GetHour(), FDateTime::Now().GetMinute(), FDateTime::Now().GetSecond(), FDateTime::Now().GetMillisecond());
 				bIsUnavailable = false;
 				LineColor = FColor::Green;
 				CurrentOverheat = 0.f;
