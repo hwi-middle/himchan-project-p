@@ -99,6 +99,7 @@ void APPGunBase::ClearAllTimerOnLevelChange()
 	GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
 	BlockShootTimerHandle.Invalidate();
 	OverheatCoolDownTimerHandle.Invalidate();
+	Destroy();
 }
 
 void APPGunBase::Tick(float DeltaTime)
