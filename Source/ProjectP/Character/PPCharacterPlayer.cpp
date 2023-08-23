@@ -53,6 +53,7 @@ void APPCharacterPlayer::BeginPlay()
 
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	UPPSoundData* SoundData = GameInstance->GetSoundData();
+	CommanderHealthWaringSoundCue = SoundData->CommanderHealthWaringSoundCue;
 	LowHealthSoundCue = SoundData->PlayerLowHealthSoundCue;
 	HitSoundCue = SoundData->PlayerHitSoundCue;
 	DeadSoundCue = SoundData->PlayerDeadSoundCue;
@@ -82,7 +83,8 @@ float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	
 	if(Health <= LowHealthWarningValue && !GetWorldTimerManager().IsTimerActive(LowHealthWarningTimer))
 	{
-		
+		UGameplayStatics::PlaySound2D(this, CommanderHealthWaringSoundCue);
+		EnableLowHealthWarning();
 	}
 	
 	if (Health <= 0)

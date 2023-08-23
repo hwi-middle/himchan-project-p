@@ -84,6 +84,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USoundCue> HitSoundCue;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USoundCue> CommanderHealthWaringSoundCue;
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USoundCue> LowHealthSoundCue;
