@@ -4,6 +4,7 @@
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "Engine/DamageEvents.h"
 #include "Engine/PostProcessVolume.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
@@ -39,7 +40,7 @@ void APPCharacterPlayer::BeginPlay()
 		return;
 	}
 
-	APostProcessVolume* PostProcessVolume = Cast<APostProcessVolume>(GetWorld()->PostProcessVolumes[0]);
+	PostProcessVolume = Cast<APostProcessVolume>(GetWorld()->PostProcessVolumes[0]);
 	FPostProcessSettings Settings = PostProcessVolume->Settings;
 
 	UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/Project-P/Material/PostProcess/PPTest.PPTest'"));
@@ -49,6 +50,12 @@ void APPCharacterPlayer::BeginPlay()
 	Settings.WeightedBlendables.Array.Add(FWeightedBlendable(1.0f, MaterialInstanceDynamic));
 	PostProcessVolume->Settings = Settings;
 	DynamicMaterialInstance = MaterialInstanceDynamic;
+
+	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	UPPSoundData* SoundData = GameInstance->GetSoundData();
+	LowHealthSoundCue = SoundData->PlayerLowHealthSoundCue;
+	HitSoundCue = SoundData->PlayerHitSoundCue;
+	DeadSoundCue = SoundData->PlayerDeadSoundCue;
 }
 
 void APPCharacterPlayer::ClearAllTimerOnLevelChange()
@@ -56,9 +63,13 @@ void APPCharacterPlayer::ClearAllTimerOnLevelChange()
 	GetWorldTimerManager().ClearTimer(HitCheckTimer);
 	GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
 	GetWorldTimerManager().ClearTimer(DamageFXFadeTimer);
+	GetWorldTimerManager().ClearTimer(LevelRestartTimer);
+	GetWorldTimerManager().ClearTimer(LowHealthWarningTimer);
 	HitCheckTimer.Invalidate();
 	RecoveryTickTimer.Invalidate();
 	DamageFXFadeTimer.Invalidate();
+	LevelRestartTimer.Invalidate();
+	LowHealthWarningTimer.Invalidate();
 }
 
 float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -67,8 +78,19 @@ float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Health -= DamageAmount;
 	UE_LOG(LogTemp, Log, TEXT("%f만큼의 피해를 입음"), DamageAmount);
+	
+	UGameplayStatics::PlaySound2D(this, HitSoundCue);
+	
+	if(Health <= LowHealthWarningValue && !GetWorldTimerManager().IsTimerActive(LowHealthWarningTimer))
+	{
+		
+	}
+	
 	if (Health <= 0)
 	{
+		Health = 0;
+		SetActorEnableCollision(false);
+		RestartLevelSequence();
 		CurrentState = ECharacterState::Dead;
 		return DamageAmount;
 	}
@@ -103,6 +125,7 @@ void APPCharacterPlayer::SetupCharacterStatusData(UDataAsset* CharacterStatusDat
 	// CharacterStatusData를 기반으로 PlayerCharacter 초기 상태 셋업
 	UPPPlayerStatusData* PlayerData = Cast<UPPPlayerStatusData>(CharacterStatusData);
 	Health = PlayerData->MaximumHealth;
+	LowHealthWarningValue = PlayerData->WarningHealth;
 	RecoveryHealthAmountOnIdle = PlayerData->RecoveryHealthValueOnIdle;
 	RecoveryHealthTick = PlayerData->RecoveryHealthTick;
 	ReturnToIdleStateTime = PlayerData->ReturnToIdleStateTime;
@@ -117,6 +140,38 @@ void APPCharacterPlayer::IncreaseHealth(const float Value)
 void APPCharacterPlayer::DecreaseHealth(const float Value)
 {
 	Health -= Value;
+}
+
+void APPCharacterPlayer::RestartLevelSequence()
+{
+	UGameplayStatics::PlaySound2D(this, DeadSoundCue);
+	DisableInput(GetWorld()->GetFirstPlayerController());
+	GetWorldTimerManager().SetTimer(LevelRestartTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			if(PostProcessVolume->Settings.AutoExposureBias <= -5.0f && PostProcessVolume->Settings.VignetteIntensity >= 2.5f)
+			{
+				GetWorldTimerManager().ClearTimer(LevelRestartTimer);
+				GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+				FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
+				UGameplayStatics::OpenLevel(this, FName(*LevelName));
+				return;
+			}
+			PostProcessVolume->Settings.AutoExposureBias -= 0.02f;
+			PostProcessVolume->Settings.VignetteIntensity += 0.01f;
+		}), 0.01f, true);
+}
+
+void APPCharacterPlayer::EnableLowHealthWarning()
+{
+	GetWorldTimerManager().SetTimer(LowHealthWarningTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			if(Health > LowHealthWarningValue)
+			{
+				GetWorldTimerManager().ClearTimer(LowHealthWarningTimer);
+				return;
+			}
+			UGameplayStatics::PlaySound2D(this, LowHealthSoundCue);
+		}), 0.5f, true);
 }
 
 void APPCharacterPlayer::EnableRecoveryHealthTimer()

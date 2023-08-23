@@ -18,6 +18,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	uint32 MaximumHealth;
+
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	uint32 WarningHealth;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	uint32 MaximumInfectionGauge;

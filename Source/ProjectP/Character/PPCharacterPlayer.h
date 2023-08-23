@@ -7,6 +7,7 @@
 #include "ProjectP/Enumeration/PPCharacterState.h"
 #include "ProjectP/Character/PPPlayerStatusData.h"
 #include "Components/CapsuleComponent.h"
+#include "Engine/PostProcessVolume.h"
 #include "ProjectP/Player/PPVRPawn.h"
 #include "PPCharacterPlayer.generated.h"
 
@@ -52,6 +53,9 @@ private:
 	uint32 Health;
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	uint32 LowHealthWarningValue;
+	
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	uint32 RecoveryHealthAmountOnIdle;
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
@@ -71,10 +75,28 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	FTimerHandle DamageFXFadeTimer;
+
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	FTimerHandle LowHealthWarningTimer;
+
+	UPROPERTY(EditDefaultsOnly)
+	FTimerHandle LevelRestartTimer;
+
+	UPROPERTY()
+	TObjectPtr<APostProcessVolume> PostProcessVolume;
 	
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterialInstance;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USoundCue> HitSoundCue;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USoundCue> LowHealthSoundCue;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USoundCue> DeadSoundCue;
+	
 	UPROPERTY()
 	float DamageFXIntensity;
 	
@@ -88,6 +110,8 @@ private:
 	float DamageFXFadeOutDuration;
 
 private:
+	void RestartLevelSequence();
+	void EnableLowHealthWarning();
 	void EnableRecoveryHealthTimer();
 	void ShowDamageFX();
 };
