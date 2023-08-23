@@ -21,14 +21,12 @@ public:
 
 		if (!DeltaTimeMap.Contains(InHandle))
 		{
-			UE_LOG(LogTemp, Log, TEXT("emplace"));
 			DeltaTimeMap.Emplace(InHandle, Time);
 		}
 
 		const FDuration Result = Time - DeltaTimeMap[InHandle];
 		DeltaTimeMap[InHandle] = Time;
 
-		UE_LOG(LogTemp, Log, TEXT("Delta: %f"), Result.count());
 		return Result.count();
 	}
 
