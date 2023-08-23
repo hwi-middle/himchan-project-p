@@ -290,7 +290,6 @@ void APPGunBase::StopFire()
 	bIsOnShooting = false;
 	MuzzleNiagaraEffect->SetActive(false);
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot;
-	UE_LOG(LogTemp, Warning, TEXT("%d:%d:%d.%d"), FDateTime::Now().GetHour(), FDateTime::Now().GetMinute(), FDateTime::Now().GetSecond(), FDateTime::Now().GetMillisecond());
 
 	// 정지 후 CooldownDelay 만큼의 시간이 흐르면 Cooldown 시작
 	GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
