@@ -301,20 +301,12 @@ void APPGunBase::StopFire()
 		{
 			return;
 		}
-		// ElapsedCooldownDelay += DeltaTime;
-		//
-		// if (ElapsedCooldownDelay < CooldownDelay)
-		// {
-		// 	return;
-		// }
 
 		if (!bIsCooldownStart)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("%d:%d:%d.%d"), FDateTime::Now().GetHour(), FDateTime::Now().GetMinute(), FDateTime::Now().GetSecond(), FDateTime::Now().GetMillisecond());
 			bIsCooldownStart = true;
 			UGameplayStatics::PlaySound2D(this, CoolDownSoundCue);
 		}
-		UE_LOG(LogTemp, Warning, TEXT("%d:%d:%d.%d"), FDateTime::Now().GetHour(), FDateTime::Now().GetMinute(), FDateTime::Now().GetSecond(), FDateTime::Now().GetMillisecond());
 
 		const float DeltaTime = FPPTimerHelper::GetActualDeltaTime(OverheatCoolDownTimerHandle);
 		CurrentOverheat -= OverheatCoolDownPerSecond * DeltaTime;
