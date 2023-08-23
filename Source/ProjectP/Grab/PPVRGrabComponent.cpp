@@ -46,10 +46,12 @@ bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 
 			// 회전 보정
 			GetAttachParent()->SetRelativeRotation(GetRelativeRotation().GetInverse(), false, nullptr, ETeleportType::TeleportPhysics);
-
+			const FRotator CurrentRotation = GetAttachParent()->GetRelativeRotation();
+			GetAttachParent()->SetRelativeRotation(FRotator(CurrentRotation.Pitch - 90.f, CurrentRotation.Yaw, CurrentRotation.Roll), false, nullptr, ETeleportType::TeleportPhysics);
+			
 			// 위치 보정
 			const FVector ComponentToParentDir = GetAttachParent()->GetComponentLocation() - GetComponentLocation();
-			const FVector NewLocation = GetComponentLocation() + ComponentToParentDir;
+			const FVector NewLocation = InHand->GetMotionController()->GetComponentLocation() + ComponentToParentDir;
 			GetAttachParent()->SetWorldLocation(NewLocation, false, nullptr, ETeleportType::TeleportPhysics);
 			break;
 		}
