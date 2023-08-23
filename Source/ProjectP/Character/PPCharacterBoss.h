@@ -42,9 +42,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UPPVRBossData> BossData;
 	
-	UPROPERTY()
-	TObjectPtr<class UStaticMeshComponent> TempMesh;
-	
 	// 기믹
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	TMap<EBossPattern, uint32> BossPatternDamage;
