@@ -50,22 +50,16 @@ private:
 	TObjectPtr<UPPPlayerStatusData> PlayerStatusData;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 Health;
+	float Health;
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	uint32 LowHealthWarningValue;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 RecoveryHealthAmountOnIdle;
-
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	float RecoveryHealthTick;
+	uint32 RecoveryHealthAmountPerSecond;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	FTimerHandle RecoveryTickTimer;
-	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	ECharacterState CurrentState;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	float ReturnToIdleStateTime;
@@ -112,6 +106,7 @@ private:
 private:
 	void RestartLevelSequence();
 	void EnableLowHealthWarning();
+	void EnableHitCheckTimer();
 	void EnableRecoveryHealthTimer();
 	void ShowDamageFX();
 };

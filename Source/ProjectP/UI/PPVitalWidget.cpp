@@ -30,15 +30,17 @@ void UPPVitalWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		PlayerCurrentHealth = PlayerCharacter->GetCurrentHealth();
 		VitalRadialSlider->SetValue(PlayerCurrentHealth);
 		float VitalPercentage = PlayerCurrentHealth / PlayerMaximumHealth;
-		float SliderColorGreen = 1.0f * VitalPercentage;
+		float SliderColorGreen;
 		float SliderColorRed;
 		if(PlayerCurrentHealth < PlayerMaximumHealth / 2)
 		{
-			SliderColorRed = 1.5f - 1.0f * VitalPercentage;
+			SliderColorGreen = VitalPercentage - 0.3f;
+			SliderColorRed = 1.2f - VitalPercentage;
 		}
 		else
 		{
-			SliderColorRed = 1.0f - 1.0f * VitalPercentage;
+			SliderColorGreen = VitalPercentage;
+			SliderColorRed = 1.0f - VitalPercentage;
 		}
 		FLinearColor SliderColor = FVector3f(SliderColorRed, SliderColorGreen, 0.0f);
 		VitalRadialSlider->SetSliderProgressColor(SliderColor);

@@ -74,7 +74,6 @@ void APPCharacterPlayer::ClearAllTimerOnLevelChange()
 
 float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	// TODO: ECharacterState 걷어내기
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Health -= DamageAmount;
 	UE_LOG(LogTemp, Log, TEXT("%f만큼의 피해를 입음"), DamageAmount);
@@ -91,30 +90,20 @@ float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& Dam
 		Health = 0;
 		SetActorEnableCollision(false);
 		RestartLevelSequence();
-		CurrentState = ECharacterState::Dead;
 		return DamageAmount;
 	}
-
-	if (CurrentState == ECharacterState::Idle)
+	
+	if(GetWorldTimerManager().IsTimerActive(HitCheckTimer))
 	{
-		GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
-		CurrentState = ECharacterState::Hit;
-
-		GetWorldTimerManager().SetTimer(HitCheckTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			//SetCharacterState(ECharacterState::Idle);
-			GetWorldTimerManager().ClearTimer(HitCheckTimer);
-			EnableRecoveryHealthTimer();
-		}), ReturnToIdleStateTime, false);
+		GetWorldTimerManager().ClearTimer(HitCheckTimer);
+		EnableHitCheckTimer();
 	}
 	else
 	{
-		if (GetWorldTimerManager().IsTimerActive(HitCheckTimer))
-		{
-			GetWorldTimerManager().ClearTimer(HitCheckTimer);
-		}
+		GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
+		EnableHitCheckTimer();
 	}
-
+	
 	ShowDamageFX();
 
 	return DamageAmount;
@@ -126,10 +115,8 @@ void APPCharacterPlayer::SetupCharacterStatusData(UDataAsset* CharacterStatusDat
 	UPPPlayerStatusData* PlayerData = Cast<UPPPlayerStatusData>(CharacterStatusData);
 	Health = PlayerData->MaximumHealth;
 	LowHealthWarningValue = PlayerData->WarningHealth;
-	RecoveryHealthAmountOnIdle = PlayerData->RecoveryHealthValueOnIdle;
-	RecoveryHealthTick = PlayerData->RecoveryHealthTick;
+	RecoveryHealthAmountPerSecond = PlayerData->RecoveryHealthAmountPerSecond;
 	ReturnToIdleStateTime = PlayerData->ReturnToIdleStateTime;
-	CurrentState = ECharacterState::Idle;
 }
 
 void APPCharacterPlayer::IncreaseHealth(const float Value)
@@ -174,20 +161,28 @@ void APPCharacterPlayer::EnableLowHealthWarning()
 		}), 0.5f, true);
 }
 
+void APPCharacterPlayer::EnableHitCheckTimer()
+{
+	GetWorldTimerManager().SetTimer(HitCheckTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			EnableRecoveryHealthTimer();
+			GetWorldTimerManager().ClearTimer(HitCheckTimer);
+		}), ReturnToIdleStateTime, false);
+}
+
 void APPCharacterPlayer::EnableRecoveryHealthTimer()
 {
-	// Idle 상태 자연 회복 관련
 	if (Health < PlayerStatusData->MaximumHealth)
 	{
 		GetWorldTimerManager().SetTimer(RecoveryTickTimer, FTimerDelegate::CreateLambda([&]()
 		{
-			Health += RecoveryHealthAmountOnIdle;
+			Health += RecoveryHealthAmountPerSecond * 0.01f;
 			if (Health >= PlayerStatusData->MaximumHealth)
 			{
 				Health = PlayerStatusData->MaximumHealth;
 				GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
 			}
-		}), RecoveryHealthTick, true);
+		}), 0.01f, true);
 	}
 }
 

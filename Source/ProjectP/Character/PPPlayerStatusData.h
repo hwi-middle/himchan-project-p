@@ -17,19 +17,13 @@ public:
 	UPPPlayerStatusData();
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 MaximumHealth;
+	float MaximumHealth;
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 WarningHealth;
+	float WarningHealth;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 MaximumInfectionGauge;
-	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 RecoveryHealthValueOnIdle;
-
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	float RecoveryHealthTick;
+	float RecoveryHealthAmountPerSecond;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	float ReturnToIdleStateTime;
