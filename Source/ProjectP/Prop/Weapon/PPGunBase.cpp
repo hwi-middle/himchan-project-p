@@ -17,6 +17,7 @@
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Object/PPDestructible.h"
 #include "ProjectP/Util/PPDrawLineHelper.h"
+#include "ProjectP/Util/PPTimerHelper.h"
 
 // Sets default values
 APPGunBase::APPGunBase()
@@ -268,7 +269,6 @@ void APPGunBase::OnFire()
 			GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
 
 			CurrentOverheat = FMath::Lerp(MaxOverheat, 0.f, ElapsedUnavailableTime / UnavailableTime);
-			UE_LOG(LogTemp, Log, TEXT("Overheat: %f"), CurrentOverheat);
 
 			if (ElapsedUnavailableTime >= UnavailableTime)
 			{
@@ -277,8 +277,10 @@ void APPGunBase::OnFire()
 				CurrentOverheat = 0.f;
 				CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 				GetWorldTimerManager().ClearTimer(BlockShootTimerHandle);
+				FPPTimerHelper::InvalidateTimerHandle(BlockShootTimerHandle);
+				return;
 			}
-			ElapsedUnavailableTime += 0.01f;
+			ElapsedUnavailableTime += FPPTimerHelper::GetActualDeltaTime(BlockShootTimerHandle);
 		}), 0.01f, true);
 	}
 }
@@ -292,12 +294,19 @@ void APPGunBase::StopFire()
 	// 정지 후 CooldownDelay 만큼의 시간이 흐르면 Cooldown 시작
 	GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
+		if (!FPPTimerHelper::IsDelayElapsed(OverheatCoolDownTimerHandle, CooldownDelay))
+		{
+			return;
+		}
+
 		if (!bIsCooldownStart)
 		{
 			bIsCooldownStart = true;
 			UGameplayStatics::PlaySound2D(this, CoolDownSoundCue);
 		}
-		CurrentOverheat -= OverheatCoolDownPerSecond * 0.01f;
+
+		const float DeltaTime = FPPTimerHelper::GetActualDeltaTime(OverheatCoolDownTimerHandle);
+		CurrentOverheat -= OverheatCoolDownPerSecond * DeltaTime;
 		UE_LOG(LogTemp, Log, TEXT("Cooldowned: %f"), CurrentOverheat);
 		if (CurrentOverheat < KINDA_SMALL_NUMBER)
 		{
@@ -305,8 +314,9 @@ void APPGunBase::StopFire()
 			bIsCooldownStart = false;
 			CurrentOverheat = 0.f;
 			GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
+			FPPTimerHelper::InvalidateTimerHandle(BlockShootTimerHandle);
 		}
-	}), 0.01f, true, CooldownDelay);
+	}), 0.01f, true);
 
 }
 
