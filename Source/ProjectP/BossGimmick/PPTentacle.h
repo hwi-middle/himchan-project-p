@@ -29,6 +29,9 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<class UPPBossGimmickData> BossGimmickData;
+
+	UPROPERTY()
+	TObjectPtr<class UPPTentacleAnimInstance> AnimInstance;
 	
 	UPROPERTY()
 	TObjectPtr<class APPWarningZoneCylinder> WarningZone;
@@ -62,4 +65,5 @@ public:
 
 private:
 	void HideWarningSignAndAttack();
+	void HideTentacle();
 };
