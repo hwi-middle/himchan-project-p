@@ -14,6 +14,12 @@ class PROJECTP_API UPPBossGimmickData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 public:
+	// 일반
+	UPROPERTY(EditDefaultsOnly, Category = General)
+	float AttackDelayMin;
+
+	UPROPERTY(EditDefaultsOnly, Category = General)
+	float AttackDelayMax;
 
 	// 덩굴 정원
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData, DisplayName="Damage")
