@@ -58,7 +58,7 @@ APPVRHand::APPVRHand()
 	bIsMainHand = false;
 	// Test Only
 	DebugWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugWidget"));
-	DebugWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPDebugWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/30-Level-Design/TestOnlyBlueprint/DebugViewWidget.DebugViewWidget_C'"), EAssertionLevel::Check));
+	DebugWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPDebugWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Project-P/UI/Blueprints/DebugViewWidget.DebugViewWidget_C'"), EAssertionLevel::Check));
 	DebugWidgetComponent->SetMaterial(0, FPPConstructorHelper::FindAndGetObject<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Engine/EngineMaterials/Widget3DPassThrough_Translucent.Widget3DPassThrough_Translucent'"), EAssertionLevel::Check));
 	DebugWidgetComponent->SetupAttachment(MotionController);
 	//

@@ -38,7 +38,7 @@ public:
 	const virtual float GetCurrentHealth() override { return Health; }
 	FORCEINLINE void SetBoss(class APPCharacterBoss* InBoss) { Boss = InBoss; }
 	FORCEINLINE static void ResetLeafCount() { GlobalLeafNum = 0; }
-
+	FORCEINLINE void SetExplodeIgnore() { bIsIgnored = true; }
 private:
 	void BlinkAndExplode();
 	bool CheckPlayerWithSphere(float InRadius, FHitResult& Result);
@@ -107,6 +107,8 @@ private:
 	UPROPERTY()
 	uint32 bIsActivated : 1;
 
+	UPROPERTY()
+	uint32 bIsIgnored : 1;
 	UPROPERTY()
 	FTimerHandle DelayTracingTimerHandle;
 

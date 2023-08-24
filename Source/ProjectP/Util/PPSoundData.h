@@ -75,13 +75,13 @@ public:
 	TObjectPtr<USoundCue> CommanderHealthWaringSoundCue;
 
 	UPROPERTY(EditAnywhere, Category = "Commander", DisplayName = "커맨더 덩굴정원 경고음")
-	TObjectPtr<USoundCue> CommanderVGWaringSoundCue;
+	TArray<USoundCue*> CommanderVGWaringSoundCueArray;
 	
 	UPROPERTY(EditAnywhere, Category = "Commander", DisplayName = "커맨더 리프템페스트 경고음")
-	TObjectPtr<USoundCue> CommanderLFWaringSoundCue;
+	TArray<USoundCue*> CommanderLTWaringSoundCueArray;
 
 	UPROPERTY(EditAnywhere, Category = "Commander", DisplayName = "커맨더 녹빛안개 경고음")
-	TObjectPtr<USoundCue> CommanderGFWaringSoundCue;
+	TArray<USoundCue*> CommanderGFWaringSoundCueArray;
 	
 	// Boss
 public:

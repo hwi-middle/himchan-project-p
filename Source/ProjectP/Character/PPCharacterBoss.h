@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectP/BossGimmick/Leaf.h"
 #include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Enumeration/PPBossPattern.h"
 #include "ProjectP/Interface/CharacterStatusInterface.h"
@@ -85,7 +86,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	float VG_MaxDistance;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	TObjectPtr<USoundCue> VG_OmenSound;
 
@@ -96,6 +97,15 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
 	TObjectPtr<USoundCue> LT_OmenSound;
 
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	float LT_TraceDuration;
+	
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	TArray<ALeaf*> LT_OnStage;
+
+	UPROPERTY()
+	FTimerHandle LT_OnStageSilentTimer;
+	
 	// 기믹 - 녹빛 안개
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UNiagaraComponent> GF_FX;
@@ -123,4 +133,24 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
 	uint32 bHasGFSpawned : 1;
+
+	// 커맨더 사운드
+private:
+	UPROPERTY(EditDefaultsOnly, Category = Commander)
+	TArray<USoundCue*> VG_CommanderSoundCueArray;
+	
+	UPROPERTY(EditDefaultsOnly, Category = Commander)
+	TArray<USoundCue*> LT_CommanderSoundCueArray;
+	
+	UPROPERTY(EditDefaultsOnly, Category = Commander)
+	TArray<USoundCue*> GF_CommanderSoundCueArray;
+	
+	UPROPERTY()
+	uint32 bIs_VG_FirstUsed : 1;
+	
+	UPROPERTY()
+	uint32 bIs_LT_FirstUsed : 1;
+
+	UPROPERTY()
+	uint32 bIs_GF_FirstUsed : 1;
 };

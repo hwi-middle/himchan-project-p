@@ -94,11 +94,30 @@ void APPCharacterBoss::BeginPlay()
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPCharacterBoss::ClearAllTimerOnLevelChange);
 
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
+	USoundCue* TempSoundCue;
 	VG_OmenSound = SoundData->BossVGOmenSoundCue;
 	LT_OmenSound = SoundData->BossLTOmenSoundCue;
 	GF_OmenSound = SoundData->BossGFOmenSoundCue;
 	GF_SpawnSound = SoundData->BossGFSpawnSoundCue;
-
+	
+	VG_CommanderSoundCueArray = SoundData->CommanderVGWaringSoundCueArray;
+	if(VG_CommanderSoundCueArray.IsEmpty())
+	{
+		VG_CommanderSoundCueArray.Emplace(TempSoundCue);
+	}
+	LT_CommanderSoundCueArray = SoundData->CommanderLTWaringSoundCueArray;
+	if(LT_CommanderSoundCueArray.IsEmpty())
+	{
+		LT_CommanderSoundCueArray.Emplace(TempSoundCue);
+	}
+	GF_CommanderSoundCueArray = SoundData->CommanderGFWaringSoundCueArray;
+	if(GF_CommanderSoundCueArray.IsEmpty())
+	{
+		GF_CommanderSoundCueArray.Emplace(TempSoundCue);
+	}
+	bIs_VG_FirstUsed = true;
+	bIs_LT_FirstUsed = true;
+	bIs_GF_FirstUsed = true;
 	AnimInstance = Cast<UPPBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetCloseAlpha(0.f);
 }
@@ -153,7 +172,9 @@ EBossPattern APPCharacterBoss::GetRandomPattern() const
 void APPCharacterBoss::ClearAllTimerOnLevelChange()
 {
 	GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
+	GetWorldTimerManager().ClearTimer(LT_OnStageSilentTimer);
 	GreenFogTimerHandle.Invalidate();
+	LT_OnStageSilentTimer.Invalidate();
 }
 
 void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
@@ -161,6 +182,16 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 	bIsAttacking = true;
 	uint32 GeneratedNum = 0;
 	UGameplayStatics::PlaySound2D(this, VG_OmenSound);
+	if(bIs_VG_FirstUsed)
+	{
+		bIs_VG_FirstUsed = false;
+		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), VG_CommanderSoundCueArray[0]);
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), VG_CommanderSoundCueArray[1]);
+	}
+	
 	while (GeneratedNum < InNum)
 	{
 		FVector2d RandomPont = FMath::RandPointInCircle(VG_MaxDistance);
@@ -208,6 +239,15 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 	ALeaf::ResetLeafCount();
 	uint32 GeneratedNum = 0;
 	UGameplayStatics::PlaySound2D(this, LT_OmenSound);
+	if(bIs_LT_FirstUsed)
+	{
+		bIs_LT_FirstUsed = false;
+		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), LT_CommanderSoundCueArray[0]);
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), LT_CommanderSoundCueArray[1]);
+	}
 	while (GeneratedNum < InNum)
 	{
 		FVector2d RandomPont = FMath::RandPointInCircle(VG_MaxDistance);
@@ -241,11 +281,20 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 
 		// 액터 스폰
 		ALeaf* SpawnedActor = GetWorld()->SpawnActor<ALeaf>(SpawnLocation, FRotator::ZeroRotator);
+		LT_OnStage.Emplace(SpawnedActor);
 		SpawnedActor->SetBoss(this);
 		SpawnedActor->StartTracing();
 
 		++GeneratedNum;
 	}
+	GetWorldTimerManager().SetTimer(LT_OnStageSilentTimer, FTimerDelegate::CreateLambda([&]()
+	{
+		for(int LeafNum = 0; LeafNum <= LT_OnStage.Num() / 2; LeafNum++)
+		{
+			LT_OnStage[LeafNum]->SetExplodeIgnore();
+		}
+		GetWorldTimerManager().ClearTimer(LT_OnStageSilentTimer);
+	}), 0.1f, false, LT_TraceDuration);
 }
 
 void APPCharacterBoss::GenerateToxicFog()
@@ -253,6 +302,15 @@ void APPCharacterBoss::GenerateToxicFog()
 	bIsAttacking = true;
 	GF_ElapsedTime = 0.f;
 	UGameplayStatics::PlaySound2D(this, GF_OmenSound);
+	if(bIs_GF_FirstUsed)
+	{
+		bIs_GF_FirstUsed = false;
+		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), GF_CommanderSoundCueArray[0]);
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), GF_CommanderSoundCueArray[1]);
+	}
 	GetWorldTimerManager().SetTimer(GreenFogTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
 		if (!bHasGFSpawned)
