@@ -81,7 +81,7 @@ void UPPVRGrabComponent::TryRelease()
 	{
 		return;
 	}
-	
+
 	OnRelease.Broadcast(GrabbingHand);
 
 	if (GrabType == EVRGrabType::HandToObj)

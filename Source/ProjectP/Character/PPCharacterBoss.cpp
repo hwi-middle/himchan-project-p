@@ -20,6 +20,7 @@
 #include "ProjectP/Character/PPCharacterBoss.h"
 
 #include "NiagaraComponent.h"
+#include "PPBossCore.h"
 #include "PPCharacterPlayer.h"
 #include "PPVRBossData.h"
 #include "Engine/DamageEvents.h"
@@ -33,12 +34,14 @@
 #include "ProjectP/Constant/PPLevelName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
+#include "ProjectP/Animation/PPBossAnimInstance.h"
+#include "ProjectP/Util/PPTimerHelper.h"
 
 APPCharacterBoss::APPCharacterBoss()
 {
 	// AIControllerClass = APPBossAIController::StaticClass();
 
-	USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/Boss/boss_01.boss_01_Object515'"), EAssertionLevel::Check);
+	USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss/boss_idle_animation.boss_idle_animation'"), EAssertionLevel::Check);
 	GetMesh()->SetSkeletalMesh(MeshObj);
 
 	BossData = FPPConstructorHelper::FindAndGetObject<UPPVRBossData>(TEXT("/Script/ProjectP.PPVRBossData'/Game/DataAssets/Boss/BossData.BossData'"), EAssertionLevel::Check);
@@ -52,11 +55,18 @@ APPCharacterBoss::APPCharacterBoss()
 	GF_FX->SetFloatParameter(TEXT("Sparks_Sprites_Amount"), 0.f);
 	GF_FX->SetFloatParameter(TEXT("Smoke_Sprites_Amount"), 60.f);
 	GF_FX->SetFloatParameter(TEXT("Sphere_radius"), BossGimmickData->GF_Radius);
+
+	const TSubclassOf<UPPBossAnimInstance> BossAnimInstanceClass = FPPConstructorHelper::FindAndGetClass<UPPBossAnimInstance>(
+		TEXT("/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss/Misc/ABP_Boss.ABP_Boss_C"), EAssertionLevel::Check);
+	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
 }
 
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
+	APPBossCore* Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f,14.f), FRotator::ZeroRotator);
+	Core->SetBoss(this);
+	bIsAttacking = false;
 	GF_FX->SetActive(false);
 	Health = BossData->MaxHP;
 
@@ -70,6 +80,12 @@ void APPCharacterBoss::BeginPlay()
 	GF_Duration = BossGimmickData->GF_Duration;
 	GF_Radius = BossGimmickData->GF_Radius;
 
+	AttackDelayMin = BossGimmickData->AttackDelayMin;
+	AttackDelayMax = BossGimmickData->AttackDelayMax;
+	AttackDelay = FMath::RandRange(AttackDelayMin, AttackDelayMax);
+	ElapsedAttackDelay = 0;
+	PreviousPattern = GetRandomPattern();
+	
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPCharacterBoss::ClearAllTimerOnLevelChange);
 
@@ -78,12 +94,54 @@ void APPCharacterBoss::BeginPlay()
 	LT_OmenSound = SoundData->BossLTOmenSoundCue;
 	GF_OmenSound = SoundData->BossGFOmenSoundCue;
 	GF_SpawnSound = SoundData->BossGFSpawnSoundCue;
+
+	AnimInstance = Cast<UPPBossAnimInstance>(GetMesh()->GetAnimInstance());
+	AnimInstance->SetCloseAlpha(0.f);
 }
 
 void APPCharacterBoss::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	GF_FX->SetWorldLocation(GetActorLocation());
+
+	if (bIsAttacking)
+	{
+		return;
+	}
+
+	ElapsedAttackDelay += DeltaSeconds;
+	if (ElapsedAttackDelay < AttackDelay)
+	{
+		return;
+	}
+
+	EBossPattern RandPattern = GetRandomPattern();
+	while(RandPattern == PreviousPattern)
+	{
+		RandPattern = GetRandomPattern();
+	}
+
+	switch (RandPattern)
+	{
+	case EBossPattern::VineGarden:
+		GenerateTentaclesOnRandomLocation(VG_TentacleNum);
+		break;
+	case EBossPattern::LeafTempest:
+		GenerateLeafTempestOnRandomLocation(LT_LeafNum);
+		break;
+	case EBossPattern::GreenFog:
+		GenerateToxicFog();
+		break;
+	default:
+		checkNoEntry();
+	}
+
+	PreviousPattern = RandPattern;
+}
+
+EBossPattern APPCharacterBoss::GetRandomPattern() const
+{
+	return static_cast<EBossPattern>(FMath::RandRange(0, 2));
 }
 
 void APPCharacterBoss::ClearAllTimerOnLevelChange()
@@ -94,6 +152,7 @@ void APPCharacterBoss::ClearAllTimerOnLevelChange()
 
 void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 {
+	bIsAttacking = true;
 	uint32 GeneratedNum = 0;
 	UGameplayStatics::PlaySound2D(this, VG_OmenSound);
 	while (GeneratedNum < InNum)
@@ -130,6 +189,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 
 		// 액터 스폰
 		APPTentacle* SpawnedActor = GetWorld()->SpawnActor<APPTentacle>(SpawnLocation, FRotator::ZeroRotator);
+		SpawnedActor->SetBoss(this);
 		SpawnedActor->ShowWarningSign();
 
 		++GeneratedNum;
@@ -138,6 +198,8 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 
 void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 {
+	bIsAttacking = true;
+	ALeaf::ResetLeafCount();
 	uint32 GeneratedNum = 0;
 	UGameplayStatics::PlaySound2D(this, LT_OmenSound);
 	while (GeneratedNum < InNum)
@@ -173,6 +235,7 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 
 		// 액터 스폰
 		ALeaf* SpawnedActor = GetWorld()->SpawnActor<ALeaf>(SpawnLocation, FRotator::ZeroRotator);
+		SpawnedActor->SetBoss(this);
 		SpawnedActor->StartTracing();
 
 		++GeneratedNum;
@@ -181,6 +244,7 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 
 void APPCharacterBoss::GenerateToxicFog()
 {
+	bIsAttacking = true;
 	GF_ElapsedTime = 0.f;
 	UGameplayStatics::PlaySound2D(this, GF_OmenSound);
 	GetWorldTimerManager().SetTimer(GreenFogTimerHandle, FTimerDelegate::CreateLambda([&]()
@@ -198,6 +262,8 @@ void APPCharacterBoss::GenerateToxicFog()
 			bHasGFSpawned = false;
 			GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
 			GF_FX->SetActive(false);
+			SetIsAttacking(false);
+			FPPTimerHelper::InvalidateTimerHandle(GreenFogTimerHandle);
 			return;
 		}
 
@@ -215,11 +281,10 @@ void APPCharacterBoss::GenerateToxicFog()
 			FCollisionShape::MakeSphere(GF_Radius),
 			CollisionParams
 		);
-		// TestOnly
-		// FlushPersistentDebugLines(GetWorld());
+
 		DrawDebugSphere(GetWorld(), GetActorLocation(), GF_Radius, 64, FColor::Green, false, 1.f);
-		//
-		GF_ElapsedTime += 1.f;
+
+		GF_ElapsedTime += FPPTimerHelper::GetActualDeltaTime(GreenFogTimerHandle);
 		if (!bHit)
 		{
 			return;
@@ -265,6 +330,13 @@ void APPCharacterBoss::DecreaseHealth(const float Value)
 			UGameplayStatics::OpenLevel(this, ENDING_LEVEL);
 		}
 	}
+}
+
+void APPCharacterBoss::SetIsAttacking(const bool Value)
+{
+	bIsAttacking = Value;
+	ElapsedAttackDelay = 0.f;
+	AttackDelay = FMath::RandRange(AttackDelayMin, AttackDelayMax);
 }
 
 void APPCharacterBoss::TestPattern(EBossPattern Pattern)

@@ -59,11 +59,16 @@ private:
 
 	UPROPERTY()
 	float DamageRadius;
-
+	
+	UPROPERTY()
+	TObjectPtr<class APPCharacterBoss> Boss;
+	
 public:
 	void ShowWarningSign();
+	FORCEINLINE void SetBoss(class APPCharacterBoss* InBoss) { Boss = InBoss; }
 
 private:
 	void HideWarningSignAndAttack();
 	void HideTentacle();
+	void DestroyTentacle();
 };

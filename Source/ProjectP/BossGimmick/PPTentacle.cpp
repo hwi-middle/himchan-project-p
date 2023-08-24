@@ -7,6 +7,7 @@
 #include "PPWarningZoneCylinder.h"
 #include "Engine/DamageEvents.h"
 #include "ProjectP/Animation/PPTentacleAnimInstance.h"
+#include "ProjectP/Character/PPCharacterBoss.h"
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
@@ -29,7 +30,7 @@ APPTentacle::APPTentacle()
 	const TSubclassOf<UPPTentacleAnimInstance> HandAnimInstanceClass = FPPConstructorHelper::FindAndGetClass<UPPTentacleAnimInstance>(
 		TEXT("/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss_Tentacle/TentacleAnimInstance.TentacleAnimInstance_C"), EAssertionLevel::Check);
 	TentacleMesh->SetAnimInstanceClass(HandAnimInstanceClass);
-	TentacleMesh->SetRelativeScale3D(FVector(0.5f,0.5f,0.5f));
+	TentacleMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
 	RootComponent = TentacleMesh;
 }
 
@@ -93,7 +94,7 @@ void APPTentacle::HideWarningSignAndAttack()
 		FHitResult HitResult;
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(this);
-		
+
 		bool bHit = GetWorld()->SweepSingleByChannel(
 			HitResult,
 			GetActorLocation(),
@@ -136,5 +137,21 @@ void APPTentacle::HideTentacle()
 		AnimInstance->Hide();
 		GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
 		FPPTimerHelper::InvalidateTimerHandle(HitPlayerTimerHandle);
+		DestroyTentacle();
+	}), 0.01f, true);
+}
+
+void APPTentacle::DestroyTentacle()
+{
+	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, FTimerDelegate::CreateLambda([&]()
+	{
+		if (!FPPTimerHelper::IsDelayElapsed(HitPlayerTimerHandle, 1.4f))
+		{
+			return;
+		}
+		GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
+		FPPTimerHelper::InvalidateTimerHandle(HitPlayerTimerHandle);
+		Boss->SetIsAttacking(false);
+		Destroy();
 	}), 0.01f, true);
 }

@@ -17,24 +17,29 @@ UCLASS()
 class PROJECTP_API APPCharacterBoss : public APPCharacterEnemy, public ICharacterStatusInterface
 {
 	GENERATED_BODY()
+
 public:
 	APPCharacterBoss();
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
+	void SetIsAttacking(const bool Value);
+
 	// TestOnly
 	void TestPattern(EBossPattern Pattern);
-	
+
 protected:
 	//virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	
+	EBossPattern GetRandomPattern() const;
+
 private:
 	void ClearAllTimerOnLevelChange();
 	void GenerateTentaclesOnRandomLocation(uint32 InNum);
 	void GenerateLeafTempestOnRandomLocation(uint32 InNum);
 	void GenerateToxicFog();
+
 private:
 	// 보스 정보
 	UPROPERTY(EditDefaultsOnly, Category = BossStatus)
@@ -42,14 +47,35 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UPPVRBossData> BossData;
-	
+
+	UPROPERTY()
+	TObjectPtr<class UPPBossAnimInstance> AnimInstance;
+
+	UPROPERTY()
+	uint32 bIsAttacking : 1;
+
+	UPROPERTY()
+	float ElapsedAttackDelay;
+
+	UPROPERTY()
+	float AttackDelay;
+
+	UPROPERTY()
+	float AttackDelayMin;
+
+	UPROPERTY()
+	float AttackDelayMax;
+
+	UPROPERTY()
+	EBossPattern PreviousPattern;
+
 	// 기믹
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	TMap<EBossPattern, uint32> BossPatternDamage;
-	
+
 	UPROPERTY()
 	TObjectPtr<class UPPBossGimmickData> BossGimmickData;
-	
+
 	// 기믹 - 덩굴정원
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	uint32 VG_TentacleNum;
@@ -62,24 +88,24 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = VineGardenData)
 	TObjectPtr<USoundCue> VG_OmenSound;
-	
+
 	// 기믹 - 리프 템페스트
 	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
 	uint32 LT_LeafNum;
 
 	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
 	TObjectPtr<USoundCue> LT_OmenSound;
-	
+
 	// 기믹 - 녹빛 안개
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UNiagaraComponent> GF_FX;
-	
+
 	UPROPERTY()
 	FTimerHandle GreenFogTimerHandle;
 
 	UPROPERTY()
 	float GF_ElapsedTime;
-	
+
 	UPROPERTY(EditDefaultsOnly, Category = GreenFog)
 	float GF_Damage;
 

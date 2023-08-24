@@ -8,6 +8,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "ProjectP/Animation/PPVRHandAnimInstance.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/UI/PPVitalWidget.h"
 #include "ProjectP/UI/TestOnly/PPDebugWidget.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
