@@ -87,14 +87,13 @@ void APPTentacle::HideWarningSignAndAttack()
 		WarningZone->HideAndDestroy(WarningFadeOutDuration);
 	}
 
-	// TODO: 촉수 나오는 애니메이션 재생
 	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
 
 		FHitResult HitResult;
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(this);
-
+		
 		bool bHit = GetWorld()->SweepSingleByChannel(
 			HitResult,
 			GetActorLocation(),
@@ -118,7 +117,6 @@ void APPTentacle::HideWarningSignAndAttack()
 			GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
 			return;
 		}
-		UE_LOG(LogTemp, Log, TEXT("show"));
 		AnimInstance->Show();
 		GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
 		HideTentacle();
@@ -135,7 +133,6 @@ void APPTentacle::HideTentacle()
 		{
 			return;
 		}
-		UE_LOG(LogTemp, Log, TEXT("hide"));
 		AnimInstance->Hide();
 		GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
 		FPPTimerHelper::InvalidateTimerHandle(HitPlayerTimerHandle);
