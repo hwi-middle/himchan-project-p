@@ -34,6 +34,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 피격음")
 	TObjectPtr<USoundCue> PlayerHitSoundCue;
 
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어가 일정 체력 이하일 때 효과음")
+	TObjectPtr<USoundCue> PlayerLowHealthSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어가 사망할 때 효과음")
+	TObjectPtr<USoundCue> PlayerDeadSoundCue;
+	
 	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 발소리 리스트")
 	TArray<USoundCue*> PlayerWalkTypeASoundCueArray;
 
@@ -60,7 +66,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Gun", DisplayName = "총기 최대과열 효과음")
 	TObjectPtr<USoundCue> GunOverheatGaugeMaxSoundCue;
 	
-	UPROPERTY(EditAnywhere, Category = "Gun", DisplayName = "총기 ")
+	UPROPERTY(EditAnywhere, Category = "Gun", DisplayName = "총기 플래시 라이트 토글 효과음")
 	TObjectPtr<USoundCue> GunToggleFlashSoundCue;
 
 	// Commander
@@ -89,7 +95,7 @@ public:
 	TObjectPtr<USoundCue> BossLTExplodeSoundCue;
 
 	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 리프템페스트 파괴음")
-	TObjectPtr<USoundCue> BossLTDestroySoundCue;
+	TArray<USoundCue*> BossLTDestroySoundCueArray;
 
 	UPROPERTY(EditAnywhere, Category = "Boss", DisplayName = "보스 녹빛안개 경고음")
 	TObjectPtr<USoundCue> BossGFOmenSoundCue;

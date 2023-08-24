@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PPDestructible.h"
 #include "Components/SceneComponent.h"
 #include "PPDestructTrigger.generated.h"
 
@@ -20,13 +19,13 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FDestructTriggerDelegate DestructTriggerDelegate;
+
+	UFUNCTION(BlueprintCallable)
+	void AddTriggerStack();
 	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AddTriggerStack();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DestructTrigger")

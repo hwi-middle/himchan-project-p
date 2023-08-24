@@ -52,8 +52,6 @@ APPCharacterBoss::APPCharacterBoss()
 	GF_FX->SetFloatParameter(TEXT("Sparks_Sprites_Amount"), 0.f);
 	GF_FX->SetFloatParameter(TEXT("Smoke_Sprites_Amount"), 60.f);
 	GF_FX->SetFloatParameter(TEXT("Sphere_radius"), BossGimmickData->GF_Radius);
-
-	
 }
 
 void APPCharacterBoss::BeginPlay()
@@ -80,8 +78,6 @@ void APPCharacterBoss::BeginPlay()
 	LT_OmenSound = SoundData->BossLTOmenSoundCue;
 	GF_OmenSound = SoundData->BossGFOmenSoundCue;
 	GF_SpawnSound = SoundData->BossGFSpawnSoundCue;
-
-	GenerateToxicFog();
 }
 
 void APPCharacterBoss::Tick(float DeltaSeconds)

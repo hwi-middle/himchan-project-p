@@ -2,9 +2,28 @@
 
 
 #include "ProjectP/UI/Setting/PPSettingBaseActor.h"
-
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Game/PPGameInstance.h"
+
+/*
+*
+───────────────────────────────────────
+───▐▀▄───────▄▀▌───▄▄▄▄▄▄▄─────────────
+───▌▒▒▀▄▄▄▄▄▀▒▒▐▄▀▀▒██▒██▒▀▀▄──────────
+──▐▒▒▒▒▀▒▀▒▀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▀▄────────
+──▌▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▄▒▒▒▒▒▒▒▒▒▒▒▒▀▄──────
+▀█▒▒▒█▌▒▒█▒▒▐█▒▒▒▀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▌─────
+▀▌▒▒▒▒▒▒▀▒▀▒▒▒▒▒▒▀▀▒▒▒▒▒▒▒▒▒▒▒▒▒▒▐───▄▄
+▐▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▌▄█▒█
+▐▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█▒█▀─
+▐▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒█▀───
+▐▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▌────
+─▌▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▐─────
+─▐▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▌─────
+──▌▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▐──────
+──▐▄▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▄▌──────
+────▀▄▄▀▀▀▀▀▄▄▀▀▀▀▀▀▀▄▄▀▀▀▀▀▄▄▀────────
+ */
 
 // Sets default values
 APPSettingBaseActor::APPSettingBaseActor()
@@ -39,6 +58,7 @@ void APPSettingBaseActor::BeginPlay()
 
 void APPSettingBaseActor::ClearAllTimerOnLevelChange()
 {
+	SettingWidget->SaveSettingData();
 	GetWorldTimerManager().ClearTimer(SubWidgetOpenTimer);
 	GetWorldTimerManager().ClearTimer(SubWidgetCloseTimer);
 	SubWidgetOpenTimer.Invalidate();
@@ -51,6 +71,7 @@ void APPSettingBaseActor::ExitButtonBroadcast()
 	bIsFirstClick = true;
 	if(bSubWidgetOpened)
 	{
+		SettingWidget->SaveSettingData();
 		CloseSubWidgetPanel();
 	}
 	MainWidgetDelegate.Broadcast();
@@ -83,7 +104,6 @@ void APPSettingBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 
 void APPSettingBaseActor::CloseSubWidgetPanel()
 {
-	UGameplayStatics::PlaySound2D(this, WidgetCloseSoundCue);
 
 	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
@@ -97,6 +117,8 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 		}
 		return;
 	}
+
+	UGameplayStatics::PlaySound2D(this, WidgetCloseSoundCue);
 	
 	SettingWidget->SetSubWidgetContentVisible(false);
 	SettingWidget->SetSubWidgetAnimationWorking(true);

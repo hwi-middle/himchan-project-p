@@ -81,4 +81,11 @@ protected:
 
 	UPROPERTY()
 	FTimerHandle EntryMainLevelAnimationTimer;
+
+	UPROPERTY()
+	FTimerHandle ExitGameFadeOutTimer;
+	
+private:
+	UPROPERTY()
+	TObjectPtr<APostProcessVolume> PostProcessVolume;
 };

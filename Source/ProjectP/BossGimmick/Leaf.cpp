@@ -52,8 +52,13 @@ void ALeaf::BeginPlay()
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &ALeaf::ClearAllTimerOnLevelChange);
 	
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
+	DestroySoundCueArray = SoundData->BossLTDestroySoundCueArray;
+	if(DestroySoundCueArray.IsEmpty())
+	{
+		USoundCue* TempSoundCue = nullptr;
+		DestroySoundCueArray.Emplace(TempSoundCue);
+	}
 	ExplodeSoundCue = SoundData->BossLTExplodeSoundCue;
-	DestroySoundCue = SoundData->BossLTDestroySoundCue;
 
 	Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 }
@@ -178,6 +183,7 @@ void ALeaf::DecreaseHealth(const float Value)
 			GetWorldTimerManager().ClearTimer(BlinkTimerHandle);
 		}
 		Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		DestroySoundCue = DestroySoundCueArray[FMath::RandRange(0, DestroySoundCueArray.Num() - 1)];
 		UGameplayStatics::PlaySound2D(this, DestroySoundCue);
 		bIsActivated = false;
 
