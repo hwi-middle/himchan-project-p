@@ -10,7 +10,7 @@ APPWarningZoneCylinder::APPWarningZoneCylinder()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WarningCylinderMesh"));
 	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/BossPatternTest/WarningCylinder.WarningCylinder'"), EAssertionLevel::Check);
 	Mesh->SetStaticMesh(MeshObj);
-	Mesh->SetRelativeScale3D(FVector(1.f,1.f,4.f));
+	Mesh->SetRelativeScale3D(FVector(1.f,1.f,5.56f));
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
