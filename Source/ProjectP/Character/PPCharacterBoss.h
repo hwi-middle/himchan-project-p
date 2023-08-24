@@ -28,6 +28,7 @@ public:
 protected:
 	//virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	
 private:
 	void ClearAllTimerOnLevelChange();
@@ -70,6 +71,9 @@ private:
 	TObjectPtr<USoundCue> LT_OmenSound;
 	
 	// 기믹 - 녹빛 안개
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<class UNiagaraComponent> GF_FX;
+	
 	UPROPERTY()
 	FTimerHandle GreenFogTimerHandle;
 
