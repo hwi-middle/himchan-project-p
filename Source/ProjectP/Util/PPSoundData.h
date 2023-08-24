@@ -34,6 +34,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 피격음")
 	TObjectPtr<USoundCue> PlayerHitSoundCue;
 
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어가 일정 체력 이하일 때 효과음")
+	TObjectPtr<USoundCue> PlayerLowHealthSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어가 사망할 때 효과음")
+	TObjectPtr<USoundCue> PlayerDeadSoundCue;
+	
 	UPROPERTY(EditAnywhere, Category = "Player", DisplayName = "플레이어 발소리 리스트")
 	TArray<USoundCue*> PlayerWalkTypeASoundCueArray;
 
