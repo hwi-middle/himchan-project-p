@@ -20,6 +20,7 @@
 #include "ProjectP/Character/PPCharacterBoss.h"
 
 #include "NiagaraComponent.h"
+#include "PPBossCore.h"
 #include "PPCharacterPlayer.h"
 #include "PPVRBossData.h"
 #include "Engine/DamageEvents.h"
@@ -63,7 +64,8 @@ APPCharacterBoss::APPCharacterBoss()
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
-
+	APPBossCore* Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f,14.f), FRotator::ZeroRotator);
+	Core->SetBoss(this);
 	bIsAttacking = false;
 	GF_FX->SetActive(false);
 	Health = BossData->MaxHP;
