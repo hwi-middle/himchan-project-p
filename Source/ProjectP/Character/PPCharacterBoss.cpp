@@ -59,6 +59,10 @@ APPCharacterBoss::APPCharacterBoss()
 	const TSubclassOf<UPPBossAnimInstance> BossAnimInstanceClass = FPPConstructorHelper::FindAndGetClass<UPPBossAnimInstance>(
 		TEXT("/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss/Misc/ABP_Boss.ABP_Boss_C"), EAssertionLevel::Check);
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
+
+	Tags.Add(TEXT("DestructibleObject"));
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetMesh()->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 }
 
 void APPCharacterBoss::BeginPlay()
