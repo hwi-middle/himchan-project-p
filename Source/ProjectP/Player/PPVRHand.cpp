@@ -8,6 +8,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "ProjectP/Animation/PPVRHandAnimInstance.h"
+#include "ProjectP/UI/PPVitalWidget.h"
 #include "ProjectP/UI/TestOnly/PPDebugWidget.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPDrawLineHelper.h"
@@ -31,12 +32,16 @@ APPVRHand::APPVRHand()
 	HandWidgetInteraction->SetupAttachment(MotionController);
 	HandWidgetInteraction->TraceChannel = ECC_Visibility;
 	HandWidgetInteraction->InteractionDistance = 0.0f;
+
+	VitalWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("VitalWidget"));
+	VitalWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPVitalWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Project-P/UI/Blueprints/VitalWidget.VitalWidget_C'"), EAssertionLevel::Check));
+	VitalWidgetComponent->SetMaterial(0, FPPConstructorHelper::FindAndGetObject<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Engine/EngineMaterials/Widget3DPassThrough_Translucent.Widget3DPassThrough_Translucent'"), EAssertionLevel::Check));
+	VitalWidgetComponent->SetupAttachment(MotionController);
 	
 	// Test Only
 	DebugWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugWidget"));
 	DebugWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPDebugWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/30-Level-Design/TestOnlyBlueprint/DebugViewWidget.DebugViewWidget_C'"), EAssertionLevel::Check));
-	DebugWidgetComponent->SetMaterial(
-		0, FPPConstructorHelper::FindAndGetObject<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Engine/EngineMaterials/Widget3DPassThrough_Translucent.Widget3DPassThrough_Translucent'"), EAssertionLevel::Check));
+	DebugWidgetComponent->SetMaterial(0, FPPConstructorHelper::FindAndGetObject<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Engine/EngineMaterials/Widget3DPassThrough_Translucent.Widget3DPassThrough_Translucent'"), EAssertionLevel::Check));
 	DebugWidgetComponent->SetupAttachment(MotionController);
 	//
 }
@@ -154,14 +159,13 @@ void APPVRHand::WidgetInteractionToggle(const float Value)
 void APPVRHand::InitHand()
 {
 	MotionController->SetTrackingSource(HandType);
-
+	SetupVitalWidget();
 	FString Path;
 	switch (HandType)
 	{
 	case EControllerHand::Left:
 		HandMesh->SetRelativeRotation(FRotator(0.f, 180.f, 90.f));
 		Path = TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_left.SKM_MannyXR_left'");
-		
 		SetupDebugWidget();
 		break;
 	case EControllerHand::Right:
@@ -195,6 +199,22 @@ void APPVRHand::SetupWidgetComponent(const float Value)
 {
 	HandWidgetInteraction->InteractionDistance = Value;
 	HandWidgetInteraction->SetActive(true);
+}
+
+void APPVRHand::SetupVitalWidget()
+{
+	VitalWidgetComponent->SetWorldScale3D(FVector(1.0f, 0.01f, 0.01f));
+	VitalWidgetComponent->SetDrawSize(FVector2d(900.0f, 1080.0f));
+	if(HandType == EControllerHand::Left)
+	{
+		VitalWidgetComponent->SetRelativeLocation(FVector(0.0f, -4.0f, 0.0f));
+		VitalWidgetComponent->SetRelativeRotation(FRotator(180.0f, 90.0f, 90.0f));
+	}
+	else
+	{
+		VitalWidgetComponent->SetRelativeLocation(FVector(0.0f, 4.0f, -4.0f));
+		VitalWidgetComponent->SetRelativeRotation(FRotator(180.0f, -90.0f, 90.0f));
+	}
 }
 
 void APPVRHand::SetupDebugWidget()

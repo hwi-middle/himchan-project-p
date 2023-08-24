@@ -551,11 +551,15 @@ void APPVRPawn::SwapWidgetInteraction() const
 	if(bIsRightHandMainly)
 	{
 		LeftHand->SetupWidgetComponent(WidgetInteractionDistance);
+		LeftHand->SetVitalWidgetVisible(true);
+		RightHand->SetVitalWidgetVisible(false);
 		RightHand->DisableWidgetComponent();
 	}
 	else
 	{
 		LeftHand->DisableWidgetComponent();
+		LeftHand->SetVitalWidgetVisible(false);
 		RightHand->SetupWidgetComponent(WidgetInteractionDistance);
+		RightHand->SetVitalWidgetVisible(true);
 	}
 }

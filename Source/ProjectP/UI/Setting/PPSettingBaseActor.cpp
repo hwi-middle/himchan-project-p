@@ -39,6 +39,7 @@ void APPSettingBaseActor::BeginPlay()
 
 void APPSettingBaseActor::ClearAllTimerOnLevelChange()
 {
+	SettingWidget->SaveSettingData();
 	GetWorldTimerManager().ClearTimer(SubWidgetOpenTimer);
 	GetWorldTimerManager().ClearTimer(SubWidgetCloseTimer);
 	SubWidgetOpenTimer.Invalidate();
@@ -51,6 +52,7 @@ void APPSettingBaseActor::ExitButtonBroadcast()
 	bIsFirstClick = true;
 	if(bSubWidgetOpened)
 	{
+		SettingWidget->SaveSettingData();
 		CloseSubWidgetPanel();
 	}
 	MainWidgetDelegate.Broadcast();
