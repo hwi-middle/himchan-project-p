@@ -130,9 +130,9 @@ void APPLobbyUIBaseActor::EntryMainLevelSequence()
 		if(LobbyWidget->GetSubWidgetHeight() >= LobbyWidgetMaximumHeight)
 		{
 			LobbyWidget->SetWidgetHeightOffset(LobbyWidgetMaximumHeight);
+			// Level Blueprint Delegate
 			EntryMainLevelDelegate.Broadcast();
 			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-			// Level Blueprint Delegate
 		}
 	}), 0.01f, true);
 }

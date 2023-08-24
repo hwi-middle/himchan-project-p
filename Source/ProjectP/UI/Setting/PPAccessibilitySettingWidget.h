@@ -7,8 +7,11 @@
 #include "Components/Slider.h"
 #include "Components/CheckBox.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "ProjectP/Interface/SettingSubWidgetInterface.h"
 #include "PPAccessibilitySettingWidget.generated.h"
+
+
 
 UENUM()
 enum class ECameraTurnValue : uint8
@@ -69,12 +72,6 @@ public:
 	
 	// Accessibility Option Widget Section
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
-	TObjectPtr<USlider> PauseInterfaceDistanceSlider;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
-	TObjectPtr<USlider> PauseInterfaceHeightSlider;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> LeftHandedSettingButton;
 
@@ -93,12 +90,21 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> CameraTurnValueHighButton;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
-	TObjectPtr<USlider> PauseWidgetDistanceSlider;
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UTextBlock> CTVLowText;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI"/*, meta = (BindWidget)*/)
-	TObjectPtr<USlider> PauseWidgetHeightSlider;
-	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UTextBlock> CTVMiddleText;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UTextBlock> CTVHighText;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UTextBlock> LeftHandText;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
+	TObjectPtr<UTextBlock> RightHandText;
 protected:
 	UPROPERTY()
 	float NewCameraTurnValue;
