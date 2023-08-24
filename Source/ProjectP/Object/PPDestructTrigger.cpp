@@ -15,13 +15,13 @@ UPPDestructTrigger::UPPDestructTrigger()
 void UPPDestructTrigger::BeginPlay()
 {
 	Super::BeginPlay();
-
+	CurrentTriggerStack = 0;
 }
 
 void UPPDestructTrigger::AddTriggerStack()
 {
 	CurrentTriggerStack++;
-	if(CurrentTriggerStack == MaximumTriggerStack)
+	if(CurrentTriggerStack >= MaximumTriggerStack)
 	{
 		// Blueprint Event;
 		DestructTriggerDelegate.Broadcast();

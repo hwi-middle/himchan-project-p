@@ -6,19 +6,31 @@
 #include "PPBossGimmickData.h"
 #include "PPWarningZoneCylinder.h"
 #include "Engine/DamageEvents.h"
+#include "ProjectP/Animation/PPTentacleAnimInstance.h"
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
+#include "ProjectP/Util/PPTimerHelper.h"
 
 // Sets default values
 APPTentacle::APPTentacle()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	// RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
+
+	TentacleMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
+	USkeletalMesh* Mesh = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss_Tentacle/tentacle_start.tentacle_start'"), EAssertionLevel::Check);
+	TentacleMesh->SetSkeletalMesh(Mesh);
+
+	const TSubclassOf<UPPTentacleAnimInstance> HandAnimInstanceClass = FPPConstructorHelper::FindAndGetClass<UPPTentacleAnimInstance>(
+		TEXT("/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss_Tentacle/TentacleAnimInstance.TentacleAnimInstance_C"), EAssertionLevel::Check);
+	TentacleMesh->SetAnimInstanceClass(HandAnimInstanceClass);
+	TentacleMesh->SetRelativeScale3D(FVector(0.5f,0.5f,0.5f));
+	RootComponent = TentacleMesh;
 }
 
 // Called when the game starts or when spawned
@@ -26,15 +38,17 @@ void APPTentacle::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AnimInstance = Cast<UPPTentacleAnimInstance>(TentacleMesh->GetAnimInstance());
+
 	Damage = BossGimmickData->VG_Damage;
 	WarningFadeInDuration = BossGimmickData->VG_WarningFadeInDuration;
 	WarningFadeOutDuration = BossGimmickData->VG_WarningFadeOutDuration;
 	WarningDuration = BossGimmickData->VG_WarningDuration;
 	DamageRadius = BossGimmickData->VG_DamageRadius;
-	
+
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPTentacle::ClearAllTimerOnLevelChange);
-	
+
 	float TempAnimationDuration = 0.5f; // 임시 값
 	float DebugSphereLifeTime = WarningDuration + WarningFadeInDuration + WarningFadeOutDuration + TempAnimationDuration;
 	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 16, FColor::Red, false, DebugSphereLifeTime);
@@ -76,6 +90,7 @@ void APPTentacle::HideWarningSignAndAttack()
 	// TODO: 촉수 나오는 애니메이션 재생
 	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
+
 		FHitResult HitResult;
 		FCollisionQueryParams CollisionParams;
 		CollisionParams.AddIgnoredActor(this);
@@ -98,8 +113,31 @@ void APPTentacle::HideWarningSignAndAttack()
 				FDamageEvent DamageEvent;
 				Player->TakeDamage(Damage, DamageEvent, nullptr, this);
 			}
-		}
 
+			UE_LOG(LogTemp, Log, TEXT("hit abort"));
+			GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
+			return;
+		}
+		UE_LOG(LogTemp, Log, TEXT("show"));
+		AnimInstance->Show();
 		GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
+		HideTentacle();
 	}), WarningFadeOutDuration, false);
+
+
+}
+
+void APPTentacle::HideTentacle()
+{
+	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, FTimerDelegate::CreateLambda([&]()
+	{
+		if (!FPPTimerHelper::IsDelayElapsed(HitPlayerTimerHandle, 1.4f))
+		{
+			return;
+		}
+		UE_LOG(LogTemp, Log, TEXT("hide"));
+		AnimInstance->Hide();
+		GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
+		FPPTimerHelper::InvalidateTimerHandle(HitPlayerTimerHandle);
+	}), 0.01f, true);
 }

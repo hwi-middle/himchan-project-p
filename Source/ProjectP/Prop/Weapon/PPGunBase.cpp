@@ -17,6 +17,7 @@
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Object/PPDestructible.h"
 #include "ProjectP/Util/PPDrawLineHelper.h"
+#include "ProjectP/Util/PPTimerHelper.h"
 
 // Sets default values
 APPGunBase::APPGunBase()
@@ -37,14 +38,15 @@ APPGunBase::APPGunBase()
 	CrossHairPlane->SetupAttachment(WeaponMesh);
 
 	MuzzleNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MuzzleVFX"));
-	UNiagaraSystem* MuzzleNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(TEXT("/Script/Niagara.NiagaraSystem'/Game/Project-P/VFX/GUN_Fire/NS_Flash.NS_Flash'"), EAssertionLevel::Check);
+	UNiagaraSystem* MuzzleNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(TEXT("/Script/Niagara.NiagaraSystem'/Game/VFX_SciFi_Muzzle_And_Impact_Pack_1/VFX/Presets/Muzzle/NE_VFX_Muzzle_Physical_Burst_1.NE_VFX_Muzzle_Physical_Burst_1'"), EAssertionLevel::Check);
 	MuzzleNiagaraEffect->SetAsset(MuzzleNiagaraSystem);
+	MuzzleNiagaraEffect->SetAutoActivate(false);
 	MuzzleNiagaraEffect->SetActive(false);
 
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
 	Flashlight->SetupAttachment(WeaponMesh);
-	Flashlight->SetVisibility(false);
+	// Flashlight->SetVisibility(false);
 
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
@@ -112,12 +114,12 @@ void APPGunBase::Tick(float DeltaTime)
 		return;
 	}
 
-	MuzzleNiagaraEffect->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_MUZZLE));
-	MuzzleNiagaraEffect->SetRelativeRotation(WeaponMesh->GetSocketRotation(GUN_MUZZLE));
+	MuzzleNiagaraEffect->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_MUZZLE_FOR_FX));
+	MuzzleNiagaraEffect->SetRelativeRotation(WeaponMesh->GetSocketRotation(GUN_MUZZLE_FOR_FX));
 
 	float Distance = 1000.f;
-	FVector StartLocation = WeaponMesh->GetSocketLocation(GUN_MUZZLE);
-	FVector ForwardVector = WeaponMesh->GetSocketTransform(GUN_MUZZLE).GetUnitAxis(EAxis::X);
+	FVector StartLocation = WeaponMesh->GetSocketLocation(GUN_MUZZLE_FOR_AIMING);
+	FVector ForwardVector = WeaponMesh->GetSocketTransform(GUN_MUZZLE_FOR_AIMING).GetUnitAxis(EAxis::X);
 	FVector EndLocation = StartLocation + ForwardVector * Distance;
 
 	FHitResult HitResult;
@@ -222,6 +224,9 @@ void APPGunBase::OnFire()
 	bIsOnShooting = true;
 	bIsCooldownStart = false;
 	MuzzleNiagaraEffect->SetActive(true);
+    MuzzleNiagaraEffect->Deactivate();
+    MuzzleNiagaraEffect->Activate();
+    
 	OnFireSoundCue = FireSoundCueArray[FMath::RandRange(0, FireSoundCueArray.Num() - 1)];
 	UGameplayStatics::PlaySound2D(this, OnFireSoundCue);
 	UGameplayStatics::PlaySound2D(this, IncreaseOverheatSoundCue);
@@ -268,7 +273,6 @@ void APPGunBase::OnFire()
 			GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
 
 			CurrentOverheat = FMath::Lerp(MaxOverheat, 0.f, ElapsedUnavailableTime / UnavailableTime);
-			UE_LOG(LogTemp, Log, TEXT("Overheat: %f"), CurrentOverheat);
 
 			if (ElapsedUnavailableTime >= UnavailableTime)
 			{
@@ -277,8 +281,10 @@ void APPGunBase::OnFire()
 				CurrentOverheat = 0.f;
 				CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 				GetWorldTimerManager().ClearTimer(BlockShootTimerHandle);
+				FPPTimerHelper::InvalidateTimerHandle(BlockShootTimerHandle);
+				return;
 			}
-			ElapsedUnavailableTime += 0.01f;
+			ElapsedUnavailableTime += FPPTimerHelper::GetActualDeltaTime(BlockShootTimerHandle);
 		}), 0.01f, true);
 	}
 }
@@ -292,12 +298,19 @@ void APPGunBase::StopFire()
 	// 정지 후 CooldownDelay 만큼의 시간이 흐르면 Cooldown 시작
 	GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
+		if (!FPPTimerHelper::IsDelayElapsed(OverheatCoolDownTimerHandle, CooldownDelay))
+		{
+			return;
+		}
+
 		if (!bIsCooldownStart)
 		{
 			bIsCooldownStart = true;
 			UGameplayStatics::PlaySound2D(this, CoolDownSoundCue);
 		}
-		CurrentOverheat -= OverheatCoolDownPerSecond * 0.01f;
+
+		const float DeltaTime = FPPTimerHelper::GetActualDeltaTime(OverheatCoolDownTimerHandle);
+		CurrentOverheat -= OverheatCoolDownPerSecond * DeltaTime;
 		UE_LOG(LogTemp, Log, TEXT("Cooldowned: %f"), CurrentOverheat);
 		if (CurrentOverheat < KINDA_SMALL_NUMBER)
 		{
@@ -305,8 +318,9 @@ void APPGunBase::StopFire()
 			bIsCooldownStart = false;
 			CurrentOverheat = 0.f;
 			GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
+			FPPTimerHelper::InvalidateTimerHandle(BlockShootTimerHandle);
 		}
-	}), 0.01f, true, CooldownDelay);
+	}), 0.01f, true);
 
 }
 

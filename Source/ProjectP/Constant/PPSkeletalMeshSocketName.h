@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 
-#define GUN_MUZZLE "Muzzle"
+#define GUN_MUZZLE_FOR_AIMING "MuzzleAiming"
+#define GUN_MUZZLE_FOR_FX "MuzzleFX"
 #define GUN_FLASH "Flash"
 #define GUN_LASER "Laser"
 #define GUN_GRIP "Grip"

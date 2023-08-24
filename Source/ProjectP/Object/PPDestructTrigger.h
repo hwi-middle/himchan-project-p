@@ -28,10 +28,10 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "DestructTrigger")
-	uint32 MaximumTriggerStack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DestructTrigger")
+	int32 MaximumTriggerStack;
 
-	UPROPERTY(VisibleAnywhere)
-	uint32 CurrentTriggerStack;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	int32 CurrentTriggerStack;
 	
 };
