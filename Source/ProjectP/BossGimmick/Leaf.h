@@ -23,7 +23,7 @@ protected:
 
 private:
 	void ClearAllTimerOnLevelChange();
-	
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -36,14 +36,20 @@ public:
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
 	const virtual float GetCurrentHealth() override { return Health; }
+	FORCEINLINE void SetBoss(class APPCharacterBoss* InBoss) { Boss = InBoss; }
+	FORCEINLINE static void ResetLeafCount() { GlobalLeafNum = 0; }
 
 private:
 	void BlinkAndExplode();
 	bool CheckPlayerWithSphere(float InRadius, FHitResult& Result);
 	void FadeOutAndDestroy();
-	FVector GetActorLocationWithOffset() const;
 
 private:
+	static uint32 GlobalLeafNum;
+
+	UPROPERTY()
+	TObjectPtr<class APPCharacterBoss> Boss;
+
 	UPROPERTY()
 	float Health;
 
@@ -97,7 +103,7 @@ private:
 
 	UPROPERTY()
 	float ExplodeRangeRadius;
-	
+
 	UPROPERTY()
 	uint32 bIsActivated : 1;
 
@@ -118,7 +124,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<USoundCue> DestroySoundCue;
-	
+
 	UPROPERTY()
 	TObjectPtr<USoundCue> ExplodeSoundCue;
 };
