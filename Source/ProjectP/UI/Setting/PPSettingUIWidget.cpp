@@ -112,7 +112,7 @@ void UPPSettingUIWidget::SetSubWidgetContent(ESubWidgetType SubWidget)
 
 void UPPSettingUIWidget::SetSubWidgetContentVisible(const bool IsActivate)
 {
-	if(IsActivate)
+	if(IsActivate && EnabledSubWidget)
 	{
 		EnabledSubWidget->SetIsEnabled(true);
 		EnabledSubWidget->SetVisibility(ESlateVisibility::Visible);

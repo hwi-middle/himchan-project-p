@@ -45,6 +45,8 @@ APPGunBase::APPGunBase()
 
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
+	Flashlight->SetIntensity(150.0f);
+	Flashlight->SetAttenuationRadius(1500.0f);
 	Flashlight->SetupAttachment(WeaponMesh);
 	// Flashlight->SetVisibility(false);
 
@@ -73,7 +75,7 @@ void APPGunBase::BeginPlay()
 	UPPVRGrabComponent* GrabComponentCasted = Cast<UPPVRGrabComponent>(GrabComponent);
 	GrabComponentCasted->OnGrab.AddUObject(this, &APPGunBase::GrabOnHand);
 	GrabComponentCasted->OnRelease.AddUObject(this, &APPGunBase::ReleaseOnHand);
-	// GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketTransform(GUN_GRIP, ERelativeTransformSpace::RTS_Actor).GetLocation());
+	GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketTransform(GUN_GRIP, ERelativeTransformSpace::RTS_Actor).GetLocation());
 	MuzzleNiagaraEffect->SetActive(false);
 
 	Flashlight->SetWorldLocation(WeaponMesh->GetSocketLocation(GUN_FLASH));
@@ -330,6 +332,7 @@ void APPGunBase::GrabOnHand(APPVRHand* InHand)
 {
 	UGameplayStatics::PlaySound2D(this, GrabOnHandSoundCue);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	bHeld = true;
 
 	//UE_LOG(LogTemp, Log, TEXT("OnGrab"));
