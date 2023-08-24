@@ -38,14 +38,15 @@ APPGunBase::APPGunBase()
 	CrossHairPlane->SetupAttachment(WeaponMesh);
 
 	MuzzleNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MuzzleVFX"));
-	UNiagaraSystem* MuzzleNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(TEXT("/Script/Niagara.NiagaraSystem'/Game/Project-P/VFX/GUN_Fire/NS_Flash.NS_Flash'"), EAssertionLevel::Check);
+	UNiagaraSystem* MuzzleNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(TEXT("/Script/Niagara.NiagaraSystem'/Game/VFX_SciFi_Muzzle_And_Impact_Pack_1/VFX/Presets/Muzzle/NE_VFX_Muzzle_Physical_Burst_1.NE_VFX_Muzzle_Physical_Burst_1'"), EAssertionLevel::Check);
 	MuzzleNiagaraEffect->SetAsset(MuzzleNiagaraSystem);
+	MuzzleNiagaraEffect->SetAutoActivate(false);
 	MuzzleNiagaraEffect->SetActive(false);
 
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
 	Flashlight->SetupAttachment(WeaponMesh);
-	Flashlight->SetVisibility(false);
+	// Flashlight->SetVisibility(false);
 
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
@@ -113,12 +114,12 @@ void APPGunBase::Tick(float DeltaTime)
 		return;
 	}
 
-	MuzzleNiagaraEffect->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_MUZZLE));
-	MuzzleNiagaraEffect->SetRelativeRotation(WeaponMesh->GetSocketRotation(GUN_MUZZLE));
+	MuzzleNiagaraEffect->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_MUZZLE_FOR_FX));
+	MuzzleNiagaraEffect->SetRelativeRotation(WeaponMesh->GetSocketRotation(GUN_MUZZLE_FOR_FX));
 
 	float Distance = 1000.f;
-	FVector StartLocation = WeaponMesh->GetSocketLocation(GUN_MUZZLE);
-	FVector ForwardVector = WeaponMesh->GetSocketTransform(GUN_MUZZLE).GetUnitAxis(EAxis::X);
+	FVector StartLocation = WeaponMesh->GetSocketLocation(GUN_MUZZLE_FOR_AIMING);
+	FVector ForwardVector = WeaponMesh->GetSocketTransform(GUN_MUZZLE_FOR_AIMING).GetUnitAxis(EAxis::X);
 	FVector EndLocation = StartLocation + ForwardVector * Distance;
 
 	FHitResult HitResult;
@@ -223,6 +224,9 @@ void APPGunBase::OnFire()
 	bIsOnShooting = true;
 	bIsCooldownStart = false;
 	MuzzleNiagaraEffect->SetActive(true);
+    MuzzleNiagaraEffect->Deactivate();
+    MuzzleNiagaraEffect->Activate();
+    
 	OnFireSoundCue = FireSoundCueArray[FMath::RandRange(0, FireSoundCueArray.Num() - 1)];
 	UGameplayStatics::PlaySound2D(this, OnFireSoundCue);
 	UGameplayStatics::PlaySound2D(this, IncreaseOverheatSoundCue);
