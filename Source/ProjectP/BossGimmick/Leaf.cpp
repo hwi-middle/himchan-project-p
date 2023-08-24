@@ -6,11 +6,15 @@
 #include "PPBossGimmickData.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectP/Character/PPCharacterBoss.h"
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "ProjectP/Util/PPSoundData.h"
+#include "ProjectP/Util/PPTimerHelper.h"
+
+uint32 ALeaf::GlobalLeafNum = 0;
 
 // Sets default values
 ALeaf::ALeaf()
@@ -19,7 +23,7 @@ ALeaf::ALeaf()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeafMesh"));
-	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Material/BossGimmick/Leaf/cube.cube'"));
+	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/Environment/Boss/SM_Leaf.SM_Leaf'"));
 	Mesh->SetStaticMesh(MeshObj);
 
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
@@ -47,13 +51,13 @@ ALeaf::ALeaf()
 void ALeaf::BeginPlay()
 {
 	Super::BeginPlay();
-
+	GlobalLeafNum++;
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &ALeaf::ClearAllTimerOnLevelChange);
-	
+
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
 	DestroySoundCueArray = SoundData->BossLTDestroySoundCueArray;
-	if(DestroySoundCueArray.IsEmpty())
+	if (DestroySoundCueArray.IsEmpty())
 	{
 		USoundCue* TempSoundCue = nullptr;
 		DestroySoundCueArray.Emplace(TempSoundCue);
@@ -80,9 +84,9 @@ void ALeaf::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	DrawDebugSphere(GetWorld(), GetActorLocationWithOffset(), DetectRangeRadius, 16, FColor::Green, false, -1.f);
-	DrawDebugSphere(GetWorld(), GetActorLocationWithOffset(), ExplodeRangeRadius, 16, FColor::Red, false, -1.f);
-	
+	DrawDebugSphere(GetWorld(), GetActorLocation(), DetectRangeRadius, 16, FColor::Green, false, -1.f);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplodeRangeRadius, 16, FColor::Red, false, -1.f);
+
 	if (!bIsActivated || !Target)
 	{
 		return;
@@ -133,6 +137,7 @@ void ALeaf::BlinkAndExplode()
 			}
 			UGameplayStatics::PlaySound2D(this, ExplodeSoundCue);
 			GetWorldTimerManager().ClearTimer(BlinkTimerHandle);
+			FPPTimerHelper::InvalidateTimerHandle(BlinkTimerHandle);
 			FadeOutAndDestroy();
 			return;
 		}
@@ -140,7 +145,7 @@ void ALeaf::BlinkAndExplode()
 		CurrentBlinkSpeed = FMath::Lerp(0.f, MaxBlinkSpeed, Alpha);
 		Mesh->SetScalarParameterValueOnMaterials(TEXT("BlinkSpeed"), CurrentBlinkSpeed);
 
-		ElapsedBlinkTime += 0.01f;
+		ElapsedBlinkTime += FPPTimerHelper::GetActualDeltaTime(BlinkTimerHandle);
 	}), 0.01f, true);
 }
 
@@ -151,8 +156,8 @@ bool ALeaf::CheckPlayerWithSphere(const float InRadius, FHitResult& Result)
 
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		Result,
-		GetActorLocationWithOffset(),
-		GetActorLocationWithOffset(),
+		GetActorLocation(),
+		GetActorLocation(),
 		FQuat::Identity,
 		ECC_CHECK_PAWN,
 		FCollisionShape::MakeSphere(InRadius),
@@ -195,7 +200,7 @@ void ALeaf::FadeOutAndDestroy()
 {
 	ElapsedFadeOutTime = 0.f;
 	Mesh->SetScalarParameterValueOnMaterials(TEXT("BlinkSpeed"), 0.f);
-	
+
 	GetWorldTimerManager().SetTimer(DestroyEffectTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
 		float CurrentOpacity = 0.0f;
@@ -203,16 +208,15 @@ void ALeaf::FadeOutAndDestroy()
 		if (CurrentOpacity <= 0.0f)
 		{
 			GetWorldTimerManager().ClearTimer(DestroyEffectTimerHandle);
+			GlobalLeafNum--;
+			if (GlobalLeafNum == 0)
+			{
+				Boss->SetIsAttacking(false);
+			}
+			FPPTimerHelper::InvalidateTimerHandle(DestroyEffectTimerHandle);
 			Destroy();
 		}
 		Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), FMath::Lerp(1.f, 0.f, ElapsedFadeOutTime / FadeOutDuration));
-		ElapsedFadeOutTime += 0.01f;
+		ElapsedFadeOutTime += FPPTimerHelper::GetActualDeltaTime(DestroyEffectTimerHandle);
 	}), 0.01f, true);
-}
-
-FVector ALeaf::GetActorLocationWithOffset() const
-{
-	FVector Result = GetActorLocation();
-	Result.Z += 50.f; // 테스트용 Cube 모델링의 Pivot이 바닥에 있어서 1m의 절반인 50cm만큼 위로 올려서 Trace등을 수행 
-	return Result;
 }
