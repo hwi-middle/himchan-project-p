@@ -2,6 +2,8 @@
 
 
 #include "ProjectP/UI/Setting/PPAccessibilitySettingWidget.h"
+
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Player/PPVRPawn.h"
 void UPPAccessibilitySettingWidget::NativeConstruct()
 {

@@ -27,8 +27,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	FORCEINLINE void SetIsWeapon(const bool Value) { bIsWeapon = Value; }
+	FORCEINLINE APPVRHand* GetGrabbingHand() const { return GrabbingHand; }
+	FORCEINLINE bool GetIsWeapon() const { return bIsWeapon; }
 	FORCEINLINE void SetGrabType(const EVRGrabType Value) { GrabType = Value; }
-	
+	FORCEINLINE void SetMainHandType(const EControllerHand Value) { MainHandType = Value; }
 private:
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
 	uint32 bShouldSimulateOnDrop : 1;
@@ -44,6 +46,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class APPVRHand> GrabbingHand;
+
+	UPROPERTY()
+	EControllerHand MainHandType;
 	
 public:
 	bool TryGrab(class APPVRHand* InHand);

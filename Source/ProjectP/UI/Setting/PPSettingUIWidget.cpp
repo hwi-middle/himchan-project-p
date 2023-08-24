@@ -67,7 +67,7 @@ void UPPSettingUIWidget::SaveSettingData()
 
 void UPPSettingUIWidget::LoadSettingData()
 {
-	const TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	const TObjectPtr<UPPGameInstance> CurrentGI = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	TObjectPtr<UPPSaveSettingOption> SaveSettingOption = CurrentGI->GetSaveSettingOption();
 	if(SaveSettingOption)
 	{

@@ -14,7 +14,7 @@ UPPVRGrabComponent::UPPVRGrabComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
+	bIsWeapon = false;
 	// ...
 }
 
@@ -81,21 +81,7 @@ void UPPVRGrabComponent::TryRelease()
 	{
 		return;
 	}
-
-	TObjectPtr<UPPGameInstance> CurrentGI = CastChecked<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	TObjectPtr<UPPSaveSettingOption> SaveSettingOption = CurrentGI->GetSaveSettingOption();
 	
-	bool bIsGrabbingWithMainHand = SaveSettingOption->bIsRightHandMainly;
-	if(GrabbingHand->GetHandType() == EControllerHand::Left)
-	{
-		bIsGrabbingWithMainHand = !bIsGrabbingWithMainHand;
-	}
-
-	if (bIsWeapon && bIsGrabbingWithMainHand)
-	{
-		return;
-	}
-
 	OnRelease.Broadcast(GrabbingHand);
 
 	if (GrabType == EVRGrabType::HandToObj)

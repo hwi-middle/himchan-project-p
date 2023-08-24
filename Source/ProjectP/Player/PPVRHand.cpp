@@ -13,6 +13,22 @@
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPDrawLineHelper.h"
 
+/*
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄░░░░░░░░░
+░░░░░░░░▄▀░░░░░░░░░░░░▄░░░░░░░▀▄░░░░░░░
+░░░░░░░░█░░▄░░░░▄░░░░░░░░░░░░░░█░░░░░░░
+░░░░░░░░█░░░░░░░░░░░░▄█▄▄░░▄░░░█░▄▄▄░░░
+░▄▄▄▄▄░░█░░░░░░▀░░░░▀█░░▀▄░░░░░█▀▀░██░░
+░██▄▀██▄█░░░▄░░░░░░░██░░░░▀▀▀▀▀░░░░██░░
+░░▀██▄▀██░░░░░░░░▀░██▀░░░░░░░░░░░░░▀██░
+░░░░▀████░▀░░░░▄░░░██░░░▄█░░░░▄░▄█░░██░
+░░░░░░░▀█░░░░▄░░░░░██░░░░▄░░░▄░░▄░░░██░
+░░░░░░░▄█▄░░░░░░░░░░░▀▄░░▀▀▀▀▀▀▀▀░░▄▀░░
+░░░░░░█▀▀█████████▀▀▀▀████████████▀░░░░
+░░░░░░████▀░░███▀░░░░░░▀███░░▀██▀░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+ */
 // Sets default values
 APPVRHand::APPVRHand()
 {
@@ -37,7 +53,8 @@ APPVRHand::APPVRHand()
 	VitalWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPVitalWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Project-P/UI/Blueprints/VitalWidget.VitalWidget_C'"), EAssertionLevel::Check));
 	VitalWidgetComponent->SetMaterial(0, FPPConstructorHelper::FindAndGetObject<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Engine/EngineMaterials/Widget3DPassThrough_Translucent.Widget3DPassThrough_Translucent'"), EAssertionLevel::Check));
 	VitalWidgetComponent->SetupAttachment(MotionController);
-	
+
+	bIsMainHand = false;
 	// Test Only
 	DebugWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugWidget"));
 	DebugWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPDebugWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/30-Level-Design/TestOnlyBlueprint/DebugViewWidget.DebugViewWidget_C'"), EAssertionLevel::Check));
@@ -59,6 +76,20 @@ void APPVRHand::BeginPlay()
 void APPVRHand::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if(HeldComponent)
+	{
+		if(HeldComponent->GetIsWeapon())
+		{
+			OnGrabWeaponIndexCurlMinimumValue = 0.6f;
+			AnimInstance->SetPoseAlphaGrasp(OnGrabWeaponIndexCurlMinimumValue);
+			AnimInstance->SetPoseAlphaIndexCurl(0.2f);
+		}
+	}
+	else
+	{
+		OnGrabWeaponIndexCurlMinimumValue = 0.0f;
+	}
 	
 	if (!HandWidgetInteraction->IsActive() || HandWidgetInteraction->InteractionDistance <= 0.0f)
 	{
@@ -119,19 +150,59 @@ void APPVRHand::HandleRelease()
 {
 	if (HeldComponent)
 	{
-		HeldComponent->TryRelease();
-		HeldComponent = nullptr;
+		if(!HeldComponent->GetIsWeapon() || !bIsMainHand)
+		{
+			AnimInstance->SetPoseAlphaIndexCurl(0.0f);
+			AnimInstance->SetPoseAlphaGrasp(0.0f);
+			TObjectPtr<UPPGameInstance> CurrentGI = CastChecked<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+			TObjectPtr<UPPSaveSettingOption> SaveSettingOption = CurrentGI->GetSaveSettingOption();
+    
+			bool bIsGrabbingWithMainHand = SaveSettingOption->bIsRightHandMainly;
+			if(HeldComponent->GetGrabbingHand()->GetHandType() == EControllerHand::Left)
+			{
+				bIsGrabbingWithMainHand = !bIsGrabbingWithMainHand;
+			}
+
+			if (HeldComponent->GetIsWeapon() && bIsGrabbingWithMainHand)
+			{
+				return;
+			}
+        
+			HeldComponent->TryRelease();
+			HeldComponent = nullptr;
+		}
 	}
 }
 
 void APPVRHand::SetPoseAlphaGrasp(const float Value)
 {
-	AnimInstance->SetPoseAlphaGrasp(Value);
+	if(HeldComponent)
+	{
+		if(HeldComponent->GetIsWeapon())
+		{
+			AnimInstance->SetPoseAlphaGrasp(0.6f);
+		}
+	}
+	else
+	{
+		AnimInstance->SetPoseAlphaGrasp(Value);
+	}
 }
 
 void APPVRHand::SetPoseAlphaIndexCurl(const float Value)
 {
-	AnimInstance->SetPoseAlphaIndexCurl(Value);
+	if(HeldComponent)
+	{
+		if(HeldComponent->GetIsWeapon())
+		{
+			AnimInstance->SetPoseAlphaIndexCurl(0.3f + Value);
+		}
+	}
+	else
+	{
+		AnimInstance->SetPoseAlphaIndexCurl(Value);
+	}
+	
 	if (HandWidgetInteraction->InteractionDistance > 0.0f)
 	{
 		static constexpr float WidgetInteractionThreshold = 0.1f;

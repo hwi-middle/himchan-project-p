@@ -219,7 +219,7 @@ void APPVRPawn::GrabLeft(const FInputActionValue& Value)
 	const float Alpha = Value.Get<float>();
 	LeftHand->SetPoseAlphaGrasp(Alpha);
 
-	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
 		return;
 	}
@@ -241,7 +241,7 @@ void APPVRPawn::GrabRight(const FInputActionValue& Value)
 	const float Alpha = Value.Get<float>();
 	RightHand->SetPoseAlphaGrasp(Alpha);
 
-	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
 		return;
 	}
@@ -262,17 +262,18 @@ void APPVRPawn::IndexCurlLeft(const FInputActionValue& Value)
 {
 	const float Alpha = Value.Get<float>();
 	LeftHand->SetPoseAlphaIndexCurl(Alpha);
-	
-	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
+
+	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
 		return;
 	}
 	
-	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
+	static constexpr float ShootThreshold = 0.2f;
 	if (HeldComponent)
 	{
 		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
-		if (Weapon)
+		if (Weapon && Alpha > ShootThreshold)
 		{
 			Weapon->OnFire();
 		}
@@ -285,7 +286,7 @@ void APPVRPawn::IndexCurlRight(const FInputActionValue& Value)
 	RightHand->SetPoseAlphaIndexCurl(Alpha);
 	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
 
-	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
 		return;
 	}
@@ -552,14 +553,20 @@ void APPVRPawn::SwapWidgetInteraction() const
 	{
 		LeftHand->SetupWidgetComponent(WidgetInteractionDistance);
 		LeftHand->SetVitalWidgetVisible(true);
+		LeftHand->SetMainHand(false);
+		
 		RightHand->SetVitalWidgetVisible(false);
 		RightHand->DisableWidgetComponent();
+		RightHand->SetMainHand(true);
 	}
 	else
 	{
 		LeftHand->DisableWidgetComponent();
 		LeftHand->SetVitalWidgetVisible(false);
+		LeftHand->SetMainHand(true);
+		
 		RightHand->SetupWidgetComponent(WidgetInteractionDistance);
 		RightHand->SetVitalWidgetVisible(true);
+		RightHand->SetMainHand(false);
 	}
 }
