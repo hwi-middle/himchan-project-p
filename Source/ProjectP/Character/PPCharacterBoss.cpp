@@ -41,7 +41,7 @@ APPCharacterBoss::APPCharacterBoss()
 {
 	// AIControllerClass = APPBossAIController::StaticClass();
 
-	USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss/boss_idle_animation.boss_idle_animation'"), EAssertionLevel::Check);
+	USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss/boss_idle_animation_2.boss_idle_animation_2'"), EAssertionLevel::Check);
 	GetMesh()->SetSkeletalMesh(MeshObj);
 
 	BossData = FPPConstructorHelper::FindAndGetObject<UPPVRBossData>(TEXT("/Script/ProjectP.PPVRBossData'/Game/DataAssets/Boss/BossData.BossData'"), EAssertionLevel::Check);
@@ -110,15 +110,17 @@ void APPCharacterBoss::Tick(float DeltaSeconds)
 
 	if (bIsAttacking)
 	{
+		AnimInstance->SetIsIdle(false);
 		return;
 	}
 
+	AnimInstance->SetIsIdle(true);
 	ElapsedAttackDelay += DeltaSeconds;
 	if (ElapsedAttackDelay < AttackDelay)
 	{
 		return;
 	}
-
+	
 	EBossPattern RandPattern = GetRandomPattern();
 	while(RandPattern == PreviousPattern)
 	{
