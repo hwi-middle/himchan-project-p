@@ -27,6 +27,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	FORCEINLINE void SetIsWeapon(const bool Value) { bIsWeapon = Value; }
+	FORCEINLINE APPVRHand* GetGrabbingHand() const { return GrabbingHand; }
+	FORCEINLINE bool GetIsWeapon() const { return bIsWeapon; }
 	FORCEINLINE void SetGrabType(const EVRGrabType Value) { GrabType = Value; }
 	
 private:

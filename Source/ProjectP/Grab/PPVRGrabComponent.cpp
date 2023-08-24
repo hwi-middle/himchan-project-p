@@ -82,20 +82,6 @@ void UPPVRGrabComponent::TryRelease()
 		return;
 	}
 
-	TObjectPtr<UPPGameInstance> CurrentGI = CastChecked<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	TObjectPtr<UPPSaveSettingOption> SaveSettingOption = CurrentGI->GetSaveSettingOption();
-	
-	bool bIsGrabbingWithMainHand = SaveSettingOption->bIsRightHandMainly;
-	if(GrabbingHand->GetHandType() == EControllerHand::Left)
-	{
-		bIsGrabbingWithMainHand = !bIsGrabbingWithMainHand;
-	}
-
-	if (bIsWeapon && bIsGrabbingWithMainHand)
-	{
-		return;
-	}
-
 	OnRelease.Broadcast(GrabbingHand);
 
 	if (GrabType == EVRGrabType::HandToObj)
