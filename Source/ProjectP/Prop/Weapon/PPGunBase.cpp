@@ -46,10 +46,10 @@ APPGunBase::APPGunBase()
 
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
-	Flashlight->SetIntensity(150.0f);
+	Flashlight->SetIntensity(100.0f);
 	Flashlight->SetAttenuationRadius(1500.0f);
 	Flashlight->SetupAttachment(WeaponMesh);
-	// Flashlight->SetVisibility(false);
+	Flashlight->SetVisibility(false);
 
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
@@ -61,7 +61,6 @@ APPGunBase::APPGunBase()
 	RightHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Right.IMC_Weapon_Right'"), EAssertionLevel::Check);
 
 	bIsOnShooting = false;
-	bIsFlashlightEnable = false;
 	bIsCooldownStart = false;
 	bIsUnavailable = false;
 	bHeld = false;
@@ -221,6 +220,8 @@ void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
 	ShootDelayPerShoot = 1.0f / ShootPerSecond;
 	OverheatCoolDownPerSecond = WeaponData->OverheatCoolDownPerSecond;
 	CooldownDelay = WeaponData->CooldownDelay;
+	Flashlight->SetIntensity(WeaponData->FlashIntensity);
+	Flashlight->SetAttenuationRadius(WeaponData->FlashRadius);
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot; // 첫 발사 시에는 바로 발사부터 되도록
 }
 
@@ -415,15 +416,5 @@ void APPGunBase::SetupInputMappingContextByHandType(const EControllerHand InHand
 void APPGunBase::ToggleFlash()
 {
 	UGameplayStatics::PlaySound2D(this, ToggleFlashSoundCue);
-	if (!bIsFlashlightEnable)
-	{
-		Flashlight->SetVisibility(true);
-		bIsFlashlightEnable = true;
-	}
-	else
-	{
-
-		Flashlight->SetVisibility(false);
-		bIsFlashlightEnable = false;
-	}
+	Flashlight->SetVisibility(!Flashlight->IsVisible());
 }

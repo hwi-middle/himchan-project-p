@@ -53,12 +53,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
 	float CooldownDelay;
 
-	// UPROPERTY(EditDefaultsOnly, Category = Sound)
-	// TObjectPtr<class USoundBase> ReloadSound;
-	//
-	// UPROPERTY(EditDefaultsOnly, Category = Sound)
-	// TObjectPtr<class USoundBase> FireSound;
-	//
-	// UPROPERTY(EditDefaultsOnly, Category = Animation)
-	// TObjectPtr<class UAnimMontage> FireAnimation;
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	float FlashIntensity;
+
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	float FlashRadius;
 };

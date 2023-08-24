@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectP/BossGimmick/Leaf.h"
 #include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Enumeration/PPBossPattern.h"
 #include "ProjectP/Interface/CharacterStatusInterface.h"
@@ -96,6 +97,15 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
 	TObjectPtr<USoundCue> LT_OmenSound;
 
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	float LT_TraceDuration;
+	
+	UPROPERTY(EditDefaultsOnly, Category = LeafTempest)
+	TArray<ALeaf*> LT_OnStage;
+
+	UPROPERTY()
+	FTimerHandle LT_OnStageSilentTimer;
+	
 	// 기믹 - 녹빛 안개
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UNiagaraComponent> GF_FX;

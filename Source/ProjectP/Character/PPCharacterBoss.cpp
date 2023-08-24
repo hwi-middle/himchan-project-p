@@ -166,7 +166,9 @@ EBossPattern APPCharacterBoss::GetRandomPattern() const
 void APPCharacterBoss::ClearAllTimerOnLevelChange()
 {
 	GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
+	GetWorldTimerManager().ClearTimer(LT_OnStageSilentTimer);
 	GreenFogTimerHandle.Invalidate();
+	LT_OnStageSilentTimer.Invalidate();
 }
 
 void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
@@ -273,11 +275,20 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 
 		// 액터 스폰
 		ALeaf* SpawnedActor = GetWorld()->SpawnActor<ALeaf>(SpawnLocation, FRotator::ZeroRotator);
+		LT_OnStage.Emplace(SpawnedActor);
 		SpawnedActor->SetBoss(this);
 		SpawnedActor->StartTracing();
 
 		++GeneratedNum;
 	}
+	GetWorldTimerManager().SetTimer(LT_OnStageSilentTimer, FTimerDelegate::CreateLambda([&]()
+	{
+		for(int LeafNum = 0; LeafNum <= LT_OnStage.Num() / 2; LeafNum++)
+		{
+			LT_OnStage[LeafNum]->SetExplodeIgnore();
+		}
+		GetWorldTimerManager().ClearTimer(LT_OnStageSilentTimer);
+	}), 0.1f, false, LT_TraceDuration);
 }
 
 void APPCharacterBoss::GenerateToxicFog()

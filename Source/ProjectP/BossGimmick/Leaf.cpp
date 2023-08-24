@@ -45,6 +45,7 @@ ALeaf::ALeaf()
 	Mesh->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 	Health = 0.1f;
 	bIsActivated = false;
+	bIsIgnored = false;
 }
 
 // Called when the game starts or when spawned
@@ -135,7 +136,10 @@ void ALeaf::BlinkAndExplode()
 				FDamageEvent DamageEvent;
 				HitResult.GetActor()->TakeDamage(Damage, DamageEvent, nullptr, this);
 			}
-			UGameplayStatics::PlaySound2D(this, ExplodeSoundCue);
+			if(!bIsIgnored)
+			{
+				UGameplayStatics::PlaySound2D(this, ExplodeSoundCue);
+			}
 			GetWorldTimerManager().ClearTimer(BlinkTimerHandle);
 			FPPTimerHelper::InvalidateTimerHandle(BlinkTimerHandle);
 			FadeOutAndDestroy();

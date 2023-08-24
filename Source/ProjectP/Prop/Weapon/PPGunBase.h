@@ -181,8 +181,6 @@ private:
 
 	UPROPERTY()
 	FColor LineColor;
-	
-	uint32 bIsFlashlightEnable : 1;
 
 	UPROPERTY()
 	FTimerHandle BlockShootTimerHandle;
