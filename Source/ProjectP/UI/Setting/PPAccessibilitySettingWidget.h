@@ -47,12 +47,6 @@ public:
 	// Accessibility Option Function Section
 public:
 	UFUNCTION(BlueprintCallable)
-	void ApplyPauseInterfaceDistanceSliderValue(float Value);
-	
-	UFUNCTION(BlueprintCallable)
-	void ApplyPauseInterfaceHeightSliderValue(float Value);
-
-	UFUNCTION(BlueprintCallable)
 	void ApplyLeftHandedSetting();
 
 	UFUNCTION(BlueprintCallable)

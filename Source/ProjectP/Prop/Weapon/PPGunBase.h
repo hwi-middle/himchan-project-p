@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Enumeration/PPGunState.h"
 #include "ProjectP/Prop/Weapon/PPWeaponData.h"
 #include "Sound/SoundCue.h"
@@ -65,6 +66,9 @@ private:
 	TObjectPtr<class UPPVRGrabComponent> GrabComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
+	float ShootDistance;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	float NormalShotDamageMin;
 
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
@@ -118,6 +122,12 @@ private:
 	UPROPERTY()
 	uint32 bHeld : 1;
 
+	UPROPERTY()
+	uint32 bIsRightMainHand : 1;
+
+	UPROPERTY()
+	EControllerHand MainHandType;
+	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "CrossHair")
 	TObjectPtr<class UStaticMesh> DefaultCrossHair;
@@ -126,6 +136,9 @@ private:
 	TObjectPtr<class UStaticMesh> OverheatedCrossHair;
 
 private:
+	UPROPERTY()
+	TObjectPtr<UPPGameInstance> GameInstance;
+	
 	UPROPERTY()
 	TObjectPtr<USoundCue> GrabOnHandSoundCue;
 	

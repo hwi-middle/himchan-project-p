@@ -67,7 +67,7 @@ void UPPSettingUIWidget::SaveSettingData()
 
 void UPPSettingUIWidget::LoadSettingData()
 {
-	const TObjectPtr<UPPGameInstance> CurrentGI = Cast<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	const TObjectPtr<UPPGameInstance> CurrentGI = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	TObjectPtr<UPPSaveSettingOption> SaveSettingOption = CurrentGI->GetSaveSettingOption();
 	if(SaveSettingOption)
 	{
@@ -112,7 +112,7 @@ void UPPSettingUIWidget::SetSubWidgetContent(ESubWidgetType SubWidget)
 
 void UPPSettingUIWidget::SetSubWidgetContentVisible(const bool IsActivate)
 {
-	if(IsActivate)
+	if(IsActivate && EnabledSubWidget)
 	{
 		EnabledSubWidget->SetIsEnabled(true);
 		EnabledSubWidget->SetVisibility(ESlateVisibility::Visible);

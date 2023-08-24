@@ -43,7 +43,6 @@ void APPSettingBaseActor::BeginPlay()
 	SettingWidget = CastChecked<UPPSettingUIWidget>(SettingWidgetComponent->GetUserWidgetObject());
 	SettingWidget->PassSubWidgetTypeDelegate.AddUObject(this, &APPSettingBaseActor::OpenSubWidget);
 	SettingWidget->LoadMainWidgetDelegate.AddUObject(this, &APPSettingBaseActor::ExitButtonBroadcast);
-	SettingWidget->SetSubWidgetPanelVisible(false);
 
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPSettingBaseActor::ClearAllTimerOnLevelChange);
@@ -81,8 +80,8 @@ void APPSettingBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 {
 	if(bIsFirstClick)
 	{
-		SettingWidget->SetSubWidgetPanelVisible(true);
 		SettingWidget->SetSubWidgetContent(SubWidget);
+		SettingWidget->SetSubWidgetPanelVisible(true);
 		SettingWidget->SetSubWidgetHeightOffset(SubWidgetHalfHeightValue);
 		OpenSubWidgetPanel();
 		bIsFirstClick = false;
@@ -107,8 +106,8 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 
 	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
-		SettingWidget->SetSubWidgetContentVisible(false);
 		SettingWidget->SetSubWidgetAnimationWorking(false);
+		SettingWidget->SetSubWidgetContentVisible(false);
 		SettingWidget->SetSubWidgetHeightOffset(SubWidgetHalfHeightValue);
 		bSubWidgetOpened = false;
 		if(SwapSubWidget != ESubWidgetType::None)
@@ -120,7 +119,6 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 
 	UGameplayStatics::PlaySound2D(this, WidgetCloseSoundCue);
 	
-	SettingWidget->SetSubWidgetContentVisible(false);
 	SettingWidget->SetSubWidgetAnimationWorking(true);
 
 	// 서브위젯 닫기 애니메이션.
@@ -132,6 +130,7 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 			SettingWidget->SetSubWidgetHeightOffset(SubWidgetHalfHeightValue);
 			bSubWidgetOpened = false;
 			SettingWidget->SetSubWidgetAnimationWorking(false);
+			SettingWidget->SetSubWidgetContentVisible(false);
 			// 전환하는 서브위젯이 있다면 다시 서브위젯 패널 열기.
 			// 왜 이런 고생을 하느냐면 멋지니까?
 			if(SwapSubWidget != ESubWidgetType::None)
@@ -145,12 +144,12 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 
 void APPSettingBaseActor::OpenSubWidgetPanel()
 {
+	SettingWidget->SetSubWidgetContentVisible(true);
 	UGameplayStatics::PlaySound2D(this, WidgetOpenSoundCue);
 
 	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
 		SettingWidget->SetSubWidgetHeightOffset(0.0f);
-		SettingWidget->SetSubWidgetContentVisible(true);
 		SettingWidget->SetSubWidgetAnimationWorking(false);
 		bSubWidgetOpened = true;
 		return;
@@ -164,7 +163,6 @@ void APPSettingBaseActor::OpenSubWidgetPanel()
 		if(SettingWidget->GetSubWidgetHeight() <= 0.0f)
 		{
 			SettingWidget->SetSubWidgetHeightOffset(0.0f);
-			SettingWidget->SetSubWidgetContentVisible(true);
 			bSubWidgetOpened = true;
 			SettingWidget->SetSubWidgetAnimationWorking(false);
 			GetWorldTimerManager().ClearTimer(SubWidgetOpenTimer);

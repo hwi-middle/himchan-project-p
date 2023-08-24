@@ -10,6 +10,9 @@
 #include "Components/WidgetComponent.h"
 #include "PPVRHand.generated.h"
 
+/*
+응애
+ */
 UCLASS()
 class PROJECTP_API APPVRHand : public AActor
 {
@@ -26,9 +29,6 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-public:
-	FORCEINLINE void SetHandType(const EControllerHand InHandType) { HandType = InHandType; }
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -64,6 +64,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	FTransform InitHandMeshRelativeTransform;
 
+	UPROPERTY()
+	float OnGrabWeaponIndexCurlMinimumValue;
+
+	UPROPERTY()
+	uint32 bIsMainHand : 1;
+	
 public:
 	UPPVRGrabComponent* FindGrabComponentNearby();
 	void HandleGrab();
@@ -79,8 +85,10 @@ public:
 public:
 	FORCEINLINE class UMotionControllerComponent* GetMotionController() const { return MotionController; }
 	FORCEINLINE class USkeletalMeshComponent* GetHandMesh() const { return HandMesh; }
+	FORCEINLINE void SetHandType(const EControllerHand InHandType) { HandType = InHandType; }
 	FORCEINLINE EControllerHand GetHandType() const { return HandType; }
 	FORCEINLINE class UPPVRGrabComponent* GetHeldComponent() const { return HeldComponent; }
+	FORCEINLINE void SetMainHand(const bool Value) { bIsMainHand = Value; }
 	void DisableWidgetComponent() const;
 	void SetupWidgetComponent(const float Value);
 	void SetupVitalWidget();
