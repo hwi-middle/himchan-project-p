@@ -7,6 +7,7 @@
 #include "ProjectP/Enumeration/PPCharacterState.h"
 #include "ProjectP/Character/PPPlayerStatusData.h"
 #include "Components/CapsuleComponent.h"
+#include "Engine/PostProcessVolume.h"
 #include "ProjectP/Player/PPVRPawn.h"
 #include "PPCharacterPlayer.generated.h"
 
@@ -49,19 +50,16 @@ private:
 	TObjectPtr<UPPPlayerStatusData> PlayerStatusData;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 Health;
+	float Health;
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	uint32 RecoveryHealthAmountOnIdle;
-
+	uint32 LowHealthWarningValue;
+	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	float RecoveryHealthTick;
+	uint32 RecoveryHealthAmountPerSecond;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	FTimerHandle RecoveryTickTimer;
-	
-	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
-	ECharacterState CurrentState;
 	
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	float ReturnToIdleStateTime;
@@ -71,10 +69,31 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	FTimerHandle DamageFXFadeTimer;
+
+	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
+	FTimerHandle LowHealthWarningTimer;
+
+	UPROPERTY(EditDefaultsOnly)
+	FTimerHandle LevelRestartTimer;
+
+	UPROPERTY()
+	TObjectPtr<APostProcessVolume> PostProcessVolume;
 	
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> DynamicMaterialInstance;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USoundCue> HitSoundCue;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USoundCue> CommanderHealthWaringSoundCue;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USoundCue> LowHealthSoundCue;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USoundCue> DeadSoundCue;
+	
 	UPROPERTY()
 	float DamageFXIntensity;
 	
@@ -88,6 +107,9 @@ private:
 	float DamageFXFadeOutDuration;
 
 private:
+	void RestartLevelSequence();
+	void EnableLowHealthWarning();
+	void EnableHitCheckTimer();
 	void EnableRecoveryHealthTimer();
 	void ShowDamageFX();
 };

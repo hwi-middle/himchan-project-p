@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "ProjectP/Grab/PPVRGrabComponent.h"
 #include "MotionControllerComponent.h"
+#include "Components/WidgetComponent.h"
 #include "PPVRHand.generated.h"
 
 UCLASS()
@@ -56,6 +57,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<class UWidgetComponent> DebugWidgetComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<class UWidgetComponent> VitalWidgetComponent;
 	
 	UPROPERTY(VisibleAnywhere)
 	FTransform InitHandMeshRelativeTransform;
@@ -79,5 +83,7 @@ public:
 	FORCEINLINE class UPPVRGrabComponent* GetHeldComponent() const { return HeldComponent; }
 	void DisableWidgetComponent() const;
 	void SetupWidgetComponent(const float Value);
+	void SetupVitalWidget();
+	FORCEINLINE void SetVitalWidgetVisible(const bool Value) const { VitalWidgetComponent->SetVisibility(Value); }
 	void SetupDebugWidget();
 };

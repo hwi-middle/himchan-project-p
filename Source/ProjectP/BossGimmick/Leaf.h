@@ -112,10 +112,13 @@ private:
 
 	UPROPERTY()
 	FTimerHandle DestroyEffectTimerHandle;
-	
+
 	UPROPERTY()
-	TObjectPtr<USoundCue> ExplodeSoundCue;
+	TArray<USoundCue*> DestroySoundCueArray;
 
 	UPROPERTY()
 	TObjectPtr<USoundCue> DestroySoundCue;
+	
+	UPROPERTY()
+	TObjectPtr<USoundCue> ExplodeSoundCue;
 };

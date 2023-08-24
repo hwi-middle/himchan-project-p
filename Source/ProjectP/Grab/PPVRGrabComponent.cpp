@@ -2,7 +2,10 @@
 
 
 #include "PPVRGrabComponent.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "ProjectP/Enumeration/PPVRGrabType.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Player/PPVRHand.h"
 
 // Sets default values for this component's properties
@@ -48,7 +51,7 @@ bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 			GetAttachParent()->SetRelativeRotation(GetRelativeRotation().GetInverse(), false, nullptr, ETeleportType::TeleportPhysics);
 			const FRotator CurrentRotation = GetAttachParent()->GetRelativeRotation();
 			GetAttachParent()->SetRelativeRotation(FRotator(CurrentRotation.Pitch - 90.f, CurrentRotation.Yaw, CurrentRotation.Roll), false, nullptr, ETeleportType::TeleportPhysics);
-			
+
 			// 위치 보정
 			const FVector ComponentToParentDir = GetAttachParent()->GetComponentLocation() - GetComponentLocation();
 			const FVector NewLocation = InHand->GetMotionController()->GetComponentLocation() + ComponentToParentDir;
@@ -62,11 +65,11 @@ bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 		checkNoEntry();
 	}
 
-	if(bHeld)
+	if (bHeld)
 	{
 		OnGrab.Broadcast(GrabbingHand);
 	}
-	
+
 	// 물체를 잡는 동안은 물리 적용 해제
 	SetPrimitiveCompPhysics(false);
 	return bHeld;
@@ -75,6 +78,20 @@ bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 void UPPVRGrabComponent::TryRelease()
 {
 	if (!GrabbingHand)
+	{
+		return;
+	}
+
+	TObjectPtr<UPPGameInstance> CurrentGI = CastChecked<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	TObjectPtr<UPPSaveSettingOption> SaveSettingOption = CurrentGI->GetSaveSettingOption();
+	
+	bool bIsGrabbingWithMainHand = SaveSettingOption->bIsRightHandMainly;
+	if(GrabbingHand->GetHandType() == EControllerHand::Left)
+	{
+		bIsGrabbingWithMainHand = !bIsGrabbingWithMainHand;
+	}
+
+	if (bIsWeapon && bIsGrabbingWithMainHand)
 	{
 		return;
 	}

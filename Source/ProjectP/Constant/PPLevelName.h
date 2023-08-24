@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 // 레벨 이름 저장용
-#define LOBBY_LEVEL "Project-P_Lobby_Test"
-#define MAIN_LEVEL "Project-P_Main_Test"
-#define ENDING_LEVEL "Project-P_Ending_Test"
+#define LOBBY_LEVEL "Project-P_LobbyMap"
+#define PROLOGUE_LEVEL "Project-P_PrologueMap"
+#define MAIN_LEVEL "Project-P_MainMap"
+#define ENDING_LEVEL "Project-P_EndingMap"

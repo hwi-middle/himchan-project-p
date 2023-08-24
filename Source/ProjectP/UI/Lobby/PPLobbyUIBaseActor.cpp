@@ -47,14 +47,18 @@ void APPLobbyUIBaseActor::BeginPlay()
 
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
 	WidgetMoveSoundCue = SoundData->WidgetMoveSoundCue;
+
+	PostProcessVolume = Cast<APostProcessVolume>(GetWorld()->PostProcessVolumes[0]);
 }
 
 void APPLobbyUIBaseActor::ClearAllTimerOnLevelChange()
 {
 	GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
 	GetWorldTimerManager().ClearTimer(EntryMainLevelAnimationTimer);
+	GetWorldTimerManager().ClearTimer(ExitGameFadeOutTimer);
 	WidgetAnimationTimer.Invalidate();
 	EntryMainLevelAnimationTimer.Invalidate();
+	ExitGameFadeOutTimer.Invalidate();
 }
 
 void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
@@ -84,7 +88,18 @@ void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 	{
 		// 시간 되면 위젯 추가로 만들고 일단은 패스
 		// ExitWidgetComponent->SetVisibility(true);
-		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
+		DisableInput(GetWorld()->GetFirstPlayerController());
+		GetWorldTimerManager().SetTimer(ExitGameFadeOutTimer, FTimerDelegate::CreateLambda([&]()
+			{
+				if(PostProcessVolume->Settings.AutoExposureBias <= -5.0f && PostProcessVolume->Settings.VignetteIntensity >= 2.5f)
+				{
+					GetWorldTimerManager().ClearTimer(ExitGameFadeOutTimer);
+					UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
+					return;
+				}
+				PostProcessVolume->Settings.AutoExposureBias -= 0.02f;
+				PostProcessVolume->Settings.VignetteIntensity += 0.01f;
+			}), 0.01f, true);
 	}
 }
 
@@ -115,9 +130,9 @@ void APPLobbyUIBaseActor::EntryMainLevelSequence()
 		if(LobbyWidget->GetSubWidgetHeight() >= LobbyWidgetMaximumHeight)
 		{
 			LobbyWidget->SetWidgetHeightOffset(LobbyWidgetMaximumHeight);
+			// Level Blueprint Delegate
 			EntryMainLevelDelegate.Broadcast();
 			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-			// Level Blueprint Delegate
 		}
 	}), 0.01f, true);
 }

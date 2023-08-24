@@ -81,7 +81,7 @@ void UPPAccessibilitySettingWidget::ApplyLeftHandedSetting()
 {
 	LeftHandedSettingButton->SetIsEnabled(false);
 	RightHandedSettingButton->SetIsEnabled(true);
-	
+	IsRightHandMainly = false;
 	RightHandMainlyDelegate.Broadcast(false);
 }
 
@@ -89,7 +89,7 @@ void UPPAccessibilitySettingWidget::ApplyRightHandedSetting()
 {
 	LeftHandedSettingButton->SetIsEnabled(true);
 	RightHandedSettingButton->SetIsEnabled(false);
-	
+	IsRightHandMainly = true;
 	RightHandMainlyDelegate.Broadcast(true);
 }
 

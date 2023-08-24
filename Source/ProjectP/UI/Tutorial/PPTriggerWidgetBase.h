@@ -59,6 +59,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Commander", DisplayName = "CommanderSound")
 	TObjectPtr<USoundCue> CommanderSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Commander", DisplayName = "CommanderSFXSound")
+	TObjectPtr<USoundCue> CommanderSFXSoundCue;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
 	float WidgetHalfWidthValue;
