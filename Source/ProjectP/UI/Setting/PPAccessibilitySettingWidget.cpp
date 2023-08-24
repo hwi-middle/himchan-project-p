@@ -8,16 +8,17 @@ void UPPAccessibilitySettingWidget::NativeConstruct()
 	Super::NativeConstruct();
 	LeftHandedSettingButton->OnClicked.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyLeftHandedSetting);
 	RightHandedSettingButton->OnClicked.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyRightHandedSetting);
-	//ControllerVibrationToggle->OnCheckStateChanged.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyControllerVibrationToggle);
-	// VRPawn 관련 작업 끝난 뒤 적용 예정
 	CameraTurnValueLowButton->OnClicked.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyCameraTurnValueLow);
 	CameraTurnValueMiddleButton->OnClicked.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyCameraTurnValueMiddle);
 	CameraTurnValueHighButton->OnClicked.AddDynamic(this, &UPPAccessibilitySettingWidget::ApplyCameraTurnValueHigh);
 
+	CTVLowText->SetIsEnabled(false);
+	CTVMiddleText->SetIsEnabled(false);
+	CTVHighText->SetIsEnabled(false);
+	LeftHandText->SetIsEnabled(false);
+	RightHandText->SetIsEnabled(false);
 	IsRightHandMainly = false;
-	/*
-	 * Delegate에 VRPawn 함수 바인딩
-	 */
+
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if(PlayerController)
 	{
@@ -31,24 +32,12 @@ void UPPAccessibilitySettingWidget::NativeConstruct()
 void UPPAccessibilitySettingWidget::SaveSettingData(UPPSaveSettingOption* SettingOption)
 {
 	SettingOption->bIsRightHandMainly = IsRightHandMainly;
-	//SettingOption->bUseControllerVibration = ControllerVibrationToggle->IsChecked();
 	SettingOption->CameraTurnValue = NewCameraTurnValue;
 }
 
 void UPPAccessibilitySettingWidget::LoadSettingData(UPPSaveSettingOption* SettingOption)
 {
 	SettingOption->bIsRightHandMainly == true ? ApplyRightHandedSetting() : ApplyLeftHandedSetting();
-	
-	if(SettingOption->bUseControllerVibration)
-	{
-		//ControllerVibrationToggle->SetIsChecked(true);
-		//ApplyControllerVibrationToggle(true);
-	}
-	else
-	{
-		//ControllerVibrationToggle->SetIsChecked(false);
-		//ApplyControllerVibrationToggle(false);
-	}
 	
 	NewCameraTurnValue = SettingOption->CameraTurnValue;
 	switch (static_cast<uint32>(NewCameraTurnValue))
@@ -81,7 +70,8 @@ void UPPAccessibilitySettingWidget::ApplyLeftHandedSetting()
 {
 	LeftHandedSettingButton->SetIsEnabled(false);
 	RightHandedSettingButton->SetIsEnabled(true);
-	
+	LeftHandText->SetIsEnabled(true);
+	RightHandText->SetIsEnabled(false);
 	RightHandMainlyDelegate.Broadcast(false);
 }
 
@@ -89,7 +79,8 @@ void UPPAccessibilitySettingWidget::ApplyRightHandedSetting()
 {
 	LeftHandedSettingButton->SetIsEnabled(true);
 	RightHandedSettingButton->SetIsEnabled(false);
-	
+	LeftHandText->SetIsEnabled(false);
+	RightHandText->SetIsEnabled(true);
 	RightHandMainlyDelegate.Broadcast(true);
 }
 
@@ -98,6 +89,9 @@ void UPPAccessibilitySettingWidget::ApplyCameraTurnValueLow()
 	CameraTurnValueLowButton->SetIsEnabled(false);
 	CameraTurnValueMiddleButton->SetIsEnabled(true);
 	CameraTurnValueHighButton->SetIsEnabled(true);
+	CTVLowText->SetIsEnabled(true);
+	CTVMiddleText->SetIsEnabled(false);
+	CTVHighText->SetIsEnabled(false);
 	NewCameraTurnValue = static_cast<float>(ECameraTurnValue::Low);
 	
 	CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::Low));
@@ -108,6 +102,9 @@ void UPPAccessibilitySettingWidget::ApplyCameraTurnValueMiddle()
 	CameraTurnValueLowButton->SetIsEnabled(true);
 	CameraTurnValueMiddleButton->SetIsEnabled(false);
 	CameraTurnValueHighButton->SetIsEnabled(true);
+	CTVLowText->SetIsEnabled(false);
+	CTVMiddleText->SetIsEnabled(true);
+	CTVHighText->SetIsEnabled(false);
 	NewCameraTurnValue = static_cast<float>(ECameraTurnValue::Middle);
 	
 	CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::Middle));
@@ -118,6 +115,9 @@ void UPPAccessibilitySettingWidget::ApplyCameraTurnValueHigh()
 	CameraTurnValueLowButton->SetIsEnabled(true);
 	CameraTurnValueMiddleButton->SetIsEnabled(true);
 	CameraTurnValueHighButton->SetIsEnabled(false);
+	CTVLowText->SetIsEnabled(false);
+	CTVMiddleText->SetIsEnabled(false);
+	CTVHighText->SetIsEnabled(true);
 	NewCameraTurnValue = static_cast<float>(ECameraTurnValue::High);
 	
 	CameraTurnValueSettingDelegate.Broadcast(static_cast<float>(ECameraTurnValue::High));

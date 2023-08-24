@@ -21,6 +21,18 @@ void UPPGraphicSettingWidget::NativeConstruct()
 	AAQualityLowButton->OnClicked.AddDynamic(this, &UPPGraphicSettingWidget::ApplyAAQualityLow);
 	AAQualityMiddleButton->OnClicked.AddDynamic(this, &UPPGraphicSettingWidget::ApplyAAQualityMiddle);
 	AAQualityHighButton->OnClicked.AddDynamic(this, &UPPGraphicSettingWidget::ApplyAAQualityHigh);
+
+	TQLowText->SetIsEnabled(false);
+	TQMiddleText->SetIsEnabled(false);
+	TQHighText->SetIsEnabled(false);
+	SQLowText->SetIsEnabled(false);
+	SQMiddleText->SetIsEnabled(false);
+	SQHighText->SetIsEnabled(false);
+	FXAAText->SetIsEnabled(false);
+	TAAText->SetIsEnabled(false);
+	AALowText->SetIsEnabled(false);
+	AAMiddleText->SetIsEnabled(false);
+	AAHighText->SetIsEnabled(false);
 }
 
 void UPPGraphicSettingWidget::SaveSettingData(UPPSaveSettingOption* SettingOption)
@@ -108,6 +120,9 @@ void UPPGraphicSettingWidget::ApplyTextureQualityLow()
 	TextureQualityLowButton->SetIsEnabled(false);
 	TextureQualityMiddleButton->SetIsEnabled(true);
 	TextureQualityHighButton->SetIsEnabled(true);
+	TQLowText->SetIsEnabled(true);
+	TQMiddleText->SetIsEnabled(false);
+	TQHighText->SetIsEnabled(false);
 	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
 	QualityLevels.TextureQuality = static_cast<int32>(EGraphicQuality::Low);
 	SetQualityLevels(QualityLevels);
@@ -118,6 +133,9 @@ void UPPGraphicSettingWidget::ApplyTextureQualityMiddle()
 	TextureQualityLowButton->SetIsEnabled(true);
 	TextureQualityMiddleButton->SetIsEnabled(false);
 	TextureQualityHighButton->SetIsEnabled(true);
+	TQLowText->SetIsEnabled(false);
+	TQMiddleText->SetIsEnabled(true);
+	TQHighText->SetIsEnabled(false);
 	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
 	QualityLevels.TextureQuality = static_cast<int32>(EGraphicQuality::Middle);
 	SetQualityLevels(QualityLevels);
@@ -128,6 +146,9 @@ void UPPGraphicSettingWidget::ApplyTextureQualityHigh()
 	TextureQualityLowButton->SetIsEnabled(true);
 	TextureQualityMiddleButton->SetIsEnabled(true);
 	TextureQualityHighButton->SetIsEnabled(false);
+	TQLowText->SetIsEnabled(false);
+	TQMiddleText->SetIsEnabled(false);
+	TQHighText->SetIsEnabled(true);
 	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
 	QualityLevels.TextureQuality = static_cast<int32>(EGraphicQuality::High);
 	SetQualityLevels(QualityLevels);
@@ -138,6 +159,9 @@ void UPPGraphicSettingWidget::ApplyShadowQualityLow()
 	ShadowQualityLowButton->SetIsEnabled(false);
 	ShadowQualityMiddleButton->SetIsEnabled(true);
 	ShadowQualityHighButton->SetIsEnabled(true);
+	SQLowText->SetIsEnabled(true);
+	SQMiddleText->SetIsEnabled(false);
+	SQHighText->SetIsEnabled(false);
 	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
 	QualityLevels.ShadowQuality = static_cast<int32>(EGraphicQuality::Low);
 	SetQualityLevels(QualityLevels);
@@ -148,6 +172,9 @@ void UPPGraphicSettingWidget::ApplyShadowQualityMiddle()
 	ShadowQualityLowButton->SetIsEnabled(true);
 	ShadowQualityMiddleButton->SetIsEnabled(false);
 	ShadowQualityHighButton->SetIsEnabled(true);
+	SQLowText->SetIsEnabled(false);
+	SQMiddleText->SetIsEnabled(true);
+	SQHighText->SetIsEnabled(false);
 	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
 	QualityLevels.ShadowQuality = static_cast<int32>(EGraphicQuality::Middle);
 	SetQualityLevels(QualityLevels);
@@ -158,6 +185,9 @@ void UPPGraphicSettingWidget::ApplyShadowQualityHigh()
 	ShadowQualityLowButton->SetIsEnabled(true);
 	ShadowQualityMiddleButton->SetIsEnabled(true);
 	ShadowQualityHighButton->SetIsEnabled(false);
+	SQLowText->SetIsEnabled(false);
+	SQMiddleText->SetIsEnabled(false);
+	SQHighText->SetIsEnabled(true);
 	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
 	QualityLevels.ShadowQuality = static_cast<int32>(EGraphicQuality::High);
 	SetQualityLevels(QualityLevels);
@@ -165,6 +195,8 @@ void UPPGraphicSettingWidget::ApplyShadowQualityHigh()
 
 void UPPGraphicSettingWidget::SetCurrenAAToFXAA()
 {
+	FXAAText->SetIsEnabled(true);
+	TAAText->SetIsEnabled(false);
 	GEngine->Exec(GetWorld(), TEXT("r.DefaultFeature.AntiAliasing 1"));
 	EnableFXAAButton->SetIsEnabled(false);
 	EnableTAAButton->SetIsEnabled(true);
@@ -172,6 +204,8 @@ void UPPGraphicSettingWidget::SetCurrenAAToFXAA()
 
 void UPPGraphicSettingWidget::SetCurrenAAToTAA()
 {
+	FXAAText->SetIsEnabled(false);
+	TAAText->SetIsEnabled(true);
 	GEngine->Exec(GetWorld(), TEXT("r.DefaultFeature.AntiAliasing 2"));
 	EnableFXAAButton->SetIsEnabled(true);
 	EnableTAAButton->SetIsEnabled(false);
@@ -182,6 +216,9 @@ void UPPGraphicSettingWidget::ApplyAAQualityLow()
 	AAQualityLowButton->SetIsEnabled(false);
 	AAQualityMiddleButton->SetIsEnabled(true);
 	AAQualityHighButton->SetIsEnabled(true);
+	AALowText->SetIsEnabled(true);
+	AAMiddleText->SetIsEnabled(false);
+	AAHighText->SetIsEnabled(false);
 	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
 	QualityLevels.AntiAliasingQuality = static_cast<int32>(EGraphicQuality::Low);
 	SetQualityLevels(QualityLevels);
@@ -192,6 +229,9 @@ void UPPGraphicSettingWidget::ApplyAAQualityMiddle()
 	AAQualityLowButton->SetIsEnabled(true);
 	AAQualityMiddleButton->SetIsEnabled(false);
 	AAQualityHighButton->SetIsEnabled(true);
+	AALowText->SetIsEnabled(false);
+	AAMiddleText->SetIsEnabled(true);
+	AAHighText->SetIsEnabled(false);
 	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
 	QualityLevels.AntiAliasingQuality = static_cast<int32>(EGraphicQuality::Middle);
 	SetQualityLevels(QualityLevels);
@@ -202,6 +242,9 @@ void UPPGraphicSettingWidget::ApplyAAQualityHigh()
 	AAQualityLowButton->SetIsEnabled(true);
 	AAQualityMiddleButton->SetIsEnabled(true);
 	AAQualityHighButton->SetIsEnabled(false);
+	AALowText->SetIsEnabled(false);
+	AAMiddleText->SetIsEnabled(false);
+	AAHighText->SetIsEnabled(true);
 	Scalability::FQualityLevels QualityLevels = Scalability::GetQualityLevels();
 	QualityLevels.AntiAliasingQuality = static_cast<int32>(EGraphicQuality::High);
 	SetQualityLevels(QualityLevels);
