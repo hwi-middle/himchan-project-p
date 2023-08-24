@@ -25,7 +25,8 @@ APPGunBase::APPGunBase()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	WeaponMesh->SetCollisionObjectType(ECC_GIMMICK);
-
+	WeaponMesh->SetWorldScale3D(FVector(1.1f, 1.1f, 1.1f));
+	
 	CrossHairPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrossHairPlane"));
 	DefaultCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair.SM_CrossHair'"), EAssertionLevel::Check);
 	OverheatedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair_Detect.SM_CrossHair_Detect'"), EAssertionLevel::Check);
@@ -45,12 +46,13 @@ APPGunBase::APPGunBase()
 
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
+	Flashlight->SetIntensity(150.0f);
+	Flashlight->SetAttenuationRadius(1500.0f);
 	Flashlight->SetupAttachment(WeaponMesh);
 	// Flashlight->SetVisibility(false);
 
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
-	GrabComponent->SetIsWeapon(true);
 	GrabComponent->SetGrabType(EVRGrabType::ObjToHand);
 
 	LeftShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootLeft.IA_VRShootLeft'"), EAssertionLevel::Check);
@@ -73,13 +75,12 @@ void APPGunBase::BeginPlay()
 	UPPVRGrabComponent* GrabComponentCasted = Cast<UPPVRGrabComponent>(GrabComponent);
 	GrabComponentCasted->OnGrab.AddUObject(this, &APPGunBase::GrabOnHand);
 	GrabComponentCasted->OnRelease.AddUObject(this, &APPGunBase::ReleaseOnHand);
-	// GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketTransform(GUN_GRIP, ERelativeTransformSpace::RTS_Actor).GetLocation());
 	MuzzleNiagaraEffect->SetActive(false);
 
 	Flashlight->SetWorldLocation(WeaponMesh->GetSocketLocation(GUN_FLASH));
 	Flashlight->SetWorldRotation(WeaponMesh->GetSocketRotation(GUN_FLASH));
 
-	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPGunBase::ClearAllTimerOnLevelChange);
 
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
@@ -95,6 +96,22 @@ void APPGunBase::BeginPlay()
 	IncreaseOverheatSoundCue = SoundData->IncreaseGunOverheatGaugeSoundCue;
 	OverheatGaugeMaxSoundCue = SoundData->GunOverheatGaugeMaxSoundCue;
 	ToggleFlashSoundCue = SoundData->GunToggleFlashSoundCue;
+
+	GrabComponent->SetIsWeapon(true);
+	if(GameInstance->GetSaveSettingOption()->bIsRightHandMainly)
+	{
+		bIsRightMainHand = true;
+		GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketTransform(GUN_RIGHT_GRIP, ERelativeTransformSpace::RTS_Actor).GetLocation());
+		MainHandType = EControllerHand::Right;
+		
+	}
+	else
+	{
+		bIsRightMainHand = false;
+		GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketTransform(GUN_LEFT_GRIP, ERelativeTransformSpace::RTS_Actor).GetLocation());
+		MainHandType = EControllerHand::Left;
+	}
+	GrabComponent->SetMainHandType(MainHandType);
 }
 
 void APPGunBase::ClearAllTimerOnLevelChange()
@@ -111,6 +128,21 @@ void APPGunBase::Tick(float DeltaTime)
 
 	WeaponMesh->SetScalarParameterValueOnMaterials(TEXT("Alpha"), CurrentOverheat / MaxOverheat);
 
+	if(GameInstance->GetSaveSettingOption()->bIsRightHandMainly != bIsRightMainHand)
+	{
+		if(GameInstance->GetSaveSettingOption()->bIsRightHandMainly)
+		{
+			bIsRightMainHand = true;
+			GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketTransform(GUN_RIGHT_GRIP, ERelativeTransformSpace::RTS_Actor).GetLocation());
+		}
+		else
+		{
+			bIsRightMainHand = false;
+			GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketTransform(GUN_LEFT_GRIP, ERelativeTransformSpace::RTS_Actor).GetLocation());
+		}
+		GrabComponent->SetMainHandType(MainHandType);
+	}
+	
 	if (!bHeld)
 	{
 		return;
@@ -118,11 +150,10 @@ void APPGunBase::Tick(float DeltaTime)
 
 	MuzzleNiagaraEffect->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_MUZZLE_FOR_FX));
 	MuzzleNiagaraEffect->SetRelativeRotation(WeaponMesh->GetSocketRotation(GUN_MUZZLE_FOR_FX));
-
-	float Distance = 1000.f;
+	
 	FVector StartLocation = WeaponMesh->GetSocketLocation(GUN_MUZZLE_FOR_AIMING);
 	FVector ForwardVector = WeaponMesh->GetSocketTransform(GUN_MUZZLE_FOR_AIMING).GetUnitAxis(EAxis::X);
-	FVector EndLocation = StartLocation + ForwardVector * Distance;
+	FVector EndLocation = StartLocation + ForwardVector * ShootDistance;
 
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
@@ -174,6 +205,11 @@ void APPGunBase::Tick(float DeltaTime)
 void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
 {
 	WeaponMesh->SetSkeletalMesh(WeaponData->WeaponMesh);
+	ShootDistance = WeaponData-> ShootDistance;
+	if(ShootDistance < 1500.0f)
+	{
+		ShootDistance = 1500.0f;
+	}
 	NormalShotDamageMin = WeaponData->NormalShotDamageMin;
 	NormalShotDamageMax = WeaponData->NormalShotDamageMax;
 	HeadShotDamageMin = WeaponData->HeadShotDamageMin;

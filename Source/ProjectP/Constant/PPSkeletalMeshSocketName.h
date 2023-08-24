@@ -8,4 +8,5 @@
 #define GUN_MUZZLE_FOR_FX "MuzzleFX"
 #define GUN_FLASH "Flash"
 #define GUN_LASER "Laser"
-#define GUN_GRIP "Grip"
+#define GUN_LEFT_GRIP "LeftGrip"
+#define GUN_RIGHT_GRIP "RightGrip"

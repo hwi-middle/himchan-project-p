@@ -21,6 +21,9 @@ public:
 	TObjectPtr<class USkeletalMesh> WeaponMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
+	float ShootDistance;
+	
+	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
 	float NormalShotDamageMin;
 
 	UPROPERTY(EditDefaultsOnly, Category = WeaponData)
