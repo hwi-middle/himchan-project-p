@@ -185,6 +185,9 @@ private:
 	UPROPERTY()
 	FTimerHandle OverheatCoolDownTimerHandle;
 
+	UPROPERTY()
+	float Intensity;
+	
 private:
 	void SetupInputMappingContextByHandType(const EControllerHand InHandType);
 
