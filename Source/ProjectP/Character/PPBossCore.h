@@ -27,6 +27,9 @@ public:
 
 private:
 	UPROPERTY()
+	TObjectPtr<class UPPWeaponData> PrimaryWeaponData;
+	
+	UPROPERTY()
 	float Health;
 
 	UPROPERTY(EditDefaultsOnly)

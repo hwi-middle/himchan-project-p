@@ -4,6 +4,7 @@
 #include "PPBossCore.h"
 
 #include "PPCharacterBoss.h"
+#include "ProjectP/Prop/Weapon/PPWeaponData.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
@@ -13,7 +14,8 @@ APPBossCore::APPBossCore()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	Tags.Add(TEXT("DestructibleObject"));
-	
+	PrimaryWeaponData = FPPConstructorHelper::FindAndGetObject<UPPWeaponData>(TEXT("/Script/ProjectP.PPWeaponData'/Game/DataAssets/Weapon/PrimaryWeaponData.PrimaryWeaponData'"), EAssertionLevel::Check);
+
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CoreMesh"));
 	USkeletalMesh* MeshRef = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/Boss/BossCore/heart_animation_2__1_.heart_animation_2__1_'"));
 	Mesh->SetSkeletalMesh(MeshRef);
@@ -57,7 +59,7 @@ void APPBossCore::IncreaseHealth(const float Value)
 
 void APPBossCore::DecreaseHealth(const float Value)
 {
-	Boss->DecreaseHealth(Value);
+	Boss->DecreaseHealth(Value * PrimaryWeaponData->HeadShotDamageScaleFactor);
 }
 
 void APPBossCore::SetAdditionalCollisionEnable(const bool Value)

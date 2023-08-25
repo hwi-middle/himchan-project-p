@@ -75,10 +75,7 @@ private:
 	float NormalShotDamageMax;
 
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
-	float HeadShotDamageMin;
-
-	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
-	float HeadShotDamageMax;
+	float HeadShotDamageScaleFactor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	float CurrentOverheat;

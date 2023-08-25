@@ -188,7 +188,7 @@ void APPGunBase::Tick(float DeltaTime)
 	{
 		return;
 	}
-
+	
 	// 테스트용 태그. 나중에 태그 모음집 헤더파일 만들어서 관리하기?
 	if (AimingActor->Tags.Contains("DestructibleObject"))
 	{
@@ -218,8 +218,7 @@ void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
 	}
 	NormalShotDamageMin = WeaponData->NormalShotDamageMin;
 	NormalShotDamageMax = WeaponData->NormalShotDamageMax;
-	HeadShotDamageMin = WeaponData->HeadShotDamageMin;
-	HeadShotDamageMax = WeaponData->HeadShotDamageMax;
+	HeadShotDamageScaleFactor = WeaponData->HeadShotDamageScaleFactor;
 	MaxOverheat = WeaponData->MaxOverheat;
 	UnavailableTime = WeaponData->UnavailableTime;
 	OverheatAmountPerSingleShoot = WeaponData->OverheatAmountPerSingleShoot;
