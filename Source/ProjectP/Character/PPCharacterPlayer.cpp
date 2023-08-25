@@ -43,7 +43,8 @@ void APPCharacterPlayer::BeginPlay()
 	PostProcessVolume = Cast<APostProcessVolume>(GetWorld()->PostProcessVolumes[0]);
 	FPostProcessSettings Settings = PostProcessVolume->Settings;
 
-	UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/Project-P/Material/PostProcess/PPTest.PPTest'"));
+	UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/Project-P/Material/PostProcess/PPHit.PPHit'"));
+	check(CustomPostProcessMaterial);
 	UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
 
 	Settings.WeightedBlendables.Array.Empty();
