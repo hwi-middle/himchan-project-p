@@ -30,5 +30,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere)
+	FTimerHandle LevelChangeHandle;
+	
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<UBoxComponent> TriggerBox;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<ULevel> NextLevel;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	uint32 bIsLevelChanger : 1;
 };
