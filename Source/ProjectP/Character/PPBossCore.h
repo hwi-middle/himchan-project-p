@@ -27,6 +27,9 @@ public:
 
 private:
 	UPROPERTY()
+	TObjectPtr<class UPPWeaponData> PrimaryWeaponData;
+	
+	UPROPERTY()
 	float Health;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -34,7 +37,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UStaticMeshComponent> AdditionalCollision;
-	
+
 	UPROPERTY()
 	TObjectPtr<class UAnimSequence> Anim;
 

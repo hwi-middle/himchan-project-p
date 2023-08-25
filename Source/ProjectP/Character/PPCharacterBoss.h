@@ -74,6 +74,9 @@ private:
 	UPROPERTY()
 	EBossPattern PreviousPattern;
 
+	UPROPERTY()
+	TObjectPtr<class APPBossCore> Core;
+
 	// 기믹
 	UPROPERTY(EditDefaultsOnly, Category = CharacterStatus)
 	TMap<EBossPattern, uint32> BossPatternDamage;
