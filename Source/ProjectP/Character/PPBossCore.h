@@ -34,7 +34,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UStaticMeshComponent> AdditionalCollision;
-	
+
 	UPROPERTY()
 	TObjectPtr<class UAnimSequence> Anim;
 

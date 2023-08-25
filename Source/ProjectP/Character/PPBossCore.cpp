@@ -30,7 +30,7 @@ APPBossCore::APPBossCore()
 	AdditionalCollision->SetVisibility(false);
 	AdditionalCollision->SetupAttachment(Mesh);
 	AdditionalCollision->SetRelativeLocation(FVector(0.0f, 40.0f, 170.0f));
-	AdditionalCollision->SetRelativeScale3D(FVector(0.65f,0.8f,0.6f));
+	AdditionalCollision->SetRelativeScale3D(FVector(0.65f,0.8f * 3,0.6f));
 	
 	UAnimSequence* AnimRef = FPPConstructorHelper::FindAndGetObject<UAnimSequence>(TEXT("/Script/Engine.AnimSequence'/Game/Project-P/Meshes/SkeletalMesh/Boss/BossCore/heart_animation_2__1__Anim.heart_animation_2__1__Anim'"));
 	Anim = AnimRef;
