@@ -145,7 +145,7 @@ void APPCharacterBoss::Tick(float DeltaSeconds)
 	{
 		RandPattern = GetRandomPattern();
 	}
-	RandPattern = EBossPattern::LeafTempest;
+
 	switch (RandPattern)
 	{
 	case EBossPattern::VineGarden:
