@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/CapsuleComponent.h"
 #include "ProjectP/Interface/CharacterStatusInterface.h"
 #include "PPBossCore.generated.h"
 
@@ -32,6 +33,9 @@ private:
 	TObjectPtr<class USkeletalMeshComponent> Mesh;
 
 	UPROPERTY()
+	TObjectPtr<class UCapsuleComponent> AdditionalCollision;
+	
+	UPROPERTY()
 	TObjectPtr<class UAnimSequence> Anim;
 
 	UPROPERTY()
@@ -41,5 +45,6 @@ public:
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
 	const virtual float GetCurrentHealth() override { return Health; }
+	void SetAdditionalCollisionEnable(const bool Value);
 	FORCEINLINE void SetBoss(APPCharacterBoss* InBoss) { Boss = InBoss; }
 };
