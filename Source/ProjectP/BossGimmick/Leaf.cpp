@@ -85,8 +85,8 @@ void ALeaf::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), DetectRangeRadius, 16, FColor::Green, false, -1.f);
-	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplodeRangeRadius, 16, FColor::Red, false, -1.f);
+	// DrawDebugSphere(GetWorld(), GetActorLocation(), DetectRangeRadius, 16, FColor::Green, false, -1.f);
+	// DrawDebugSphere(GetWorld(), GetActorLocation(), ExplodeRangeRadius, 16, FColor::Red, false, -1.f);
 
 	if (!bIsActivated || !Target)
 	{

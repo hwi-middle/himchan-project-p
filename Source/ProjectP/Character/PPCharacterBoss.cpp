@@ -333,7 +333,7 @@ void APPCharacterBoss::GenerateToxicFog()
 
 		if (GF_ElapsedTime >= GF_Duration)
 		{
-			FlushPersistentDebugLines(GetWorld());
+			// FlushPersistentDebugLines(GetWorld());
 			bHasGFSpawned = false;
 			GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
 			GF_FX->SetActive(false);
@@ -357,7 +357,7 @@ void APPCharacterBoss::GenerateToxicFog()
 			CollisionParams
 		);
 
-		DrawDebugSphere(GetWorld(), GetActorLocation(), GF_Radius, 64, FColor::Green, false, 1.f);
+		// DrawDebugSphere(GetWorld(), GetActorLocation(), GF_Radius, 64, FColor::Green, false, 1.f);
 
 		GF_ElapsedTime += FPPTimerHelper::GetActualDeltaTime(GreenFogTimerHandle);
 		if (!bHit)
