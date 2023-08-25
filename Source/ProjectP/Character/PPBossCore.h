@@ -29,11 +29,11 @@ private:
 	UPROPERTY()
 	float Health;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class USkeletalMeshComponent> Mesh;
 
-	UPROPERTY()
-	TObjectPtr<class UCapsuleComponent> AdditionalCollision;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UStaticMeshComponent> AdditionalCollision;
 	
 	UPROPERTY()
 	TObjectPtr<class UAnimSequence> Anim;
