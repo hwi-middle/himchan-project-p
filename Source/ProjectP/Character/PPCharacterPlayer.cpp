@@ -52,25 +52,37 @@ void APPCharacterPlayer::BeginPlay()
 	DynamicMaterialInstance = MaterialInstanceDynamic;
 
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPCharacterPlayer::ClearAllTimerOnLevelChanged);
 	UPPSoundData* SoundData = GameInstance->GetSoundData();
+	UPPSaveSettingOption* SettingOption = GameInstance->GetSaveSettingOption();
+	SavedExposureValue = SettingOption->DisplayBrightnessValue;
+	SavedVignetteValue = SettingOption->DisplayVignettingValue;
 	CommanderHealthWaringSoundCue = SoundData->CommanderHealthWaringSoundCue;
 	LowHealthSoundCue = SoundData->PlayerLowHealthSoundCue;
 	HitSoundCue = SoundData->PlayerHitSoundCue;
 	DeadSoundCue = SoundData->PlayerDeadSoundCue;
+	
+	GetWorldTimerManager().SetTimer(LevelRestartTimer, FTimerDelegate::CreateLambda([&]()
+	{
+		StartLevelSequence();
+		GetWorldTimerManager().ClearTimer(LevelRestartTimer);
+	}), 0.01f, false, 0.2f);
 }
 
-void APPCharacterPlayer::ClearAllTimerOnLevelChange()
+void APPCharacterPlayer::ClearAllTimerOnLevelChanged()
 {
 	GetWorldTimerManager().ClearTimer(HitCheckTimer);
 	GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
 	GetWorldTimerManager().ClearTimer(DamageFXFadeTimer);
 	GetWorldTimerManager().ClearTimer(LevelRestartTimer);
 	GetWorldTimerManager().ClearTimer(LowHealthWarningTimer);
+	GetWorldTimerManager().ClearTimer(LevelStartTimer);
 	HitCheckTimer.Invalidate();
 	RecoveryTickTimer.Invalidate();
 	DamageFXFadeTimer.Invalidate();
 	LevelRestartTimer.Invalidate();
 	LowHealthWarningTimer.Invalidate();
+	LevelStartTimer.Invalidate();
 }
 
 float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -129,6 +141,36 @@ void APPCharacterPlayer::IncreaseHealth(const float Value)
 void APPCharacterPlayer::DecreaseHealth(const float Value)
 {
 	Health -= Value;
+}
+
+void APPCharacterPlayer::StartLevelSequence()
+{
+	PostProcessVolume->Settings.AutoExposureBias = -2.0f;
+	PostProcessVolume->Settings.VignetteIntensity = 2.5f;
+	GetWorldTimerManager().SetTimer(LevelStartTimer, FTimerDelegate::CreateLambda([&]()
+	{
+		if(PostProcessVolume->Settings.AutoExposureBias == SavedExposureValue && PostProcessVolume->Settings.VignetteIntensity == SavedVignetteValue)
+		{
+			GetWorldTimerManager().ClearTimer(LevelStartTimer);
+		}
+		if(PostProcessVolume->Settings.AutoExposureBias >= SavedExposureValue)
+		{
+			PostProcessVolume->Settings.AutoExposureBias = SavedExposureValue;
+		}
+		else
+		{
+			PostProcessVolume->Settings.AutoExposureBias += 0.02f;
+		}
+
+		if(PostProcessVolume->Settings.VignetteIntensity <= SavedVignetteValue)
+		{
+			PostProcessVolume->Settings.VignetteIntensity -= SavedVignetteValue;
+		}
+		else
+		{
+			PostProcessVolume->Settings.VignetteIntensity -= 0.01f;
+		}
+	}), 0.01f, true);
 }
 
 void APPCharacterPlayer::RestartLevelSequence()
