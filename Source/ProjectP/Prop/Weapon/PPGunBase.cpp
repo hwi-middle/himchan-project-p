@@ -47,8 +47,10 @@ APPGunBase::APPGunBase()
 
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
-	Flashlight->SetIntensity(100.0f);
+	Flashlight->SetIntensity(50.0f);
 	Flashlight->SetAttenuationRadius(1500.0f);
+	Flashlight->SetOuterConeAngle(30.0f);
+	Flashlight->SetInnerConeAngle(25.0f);
 	Flashlight->SetupAttachment(WeaponMesh);
 	Flashlight->SetVisibility(false);
 
