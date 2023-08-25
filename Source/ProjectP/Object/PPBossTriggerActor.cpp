@@ -13,6 +13,7 @@ APPBossTriggerActor::APPBossTriggerActor()
 	PrimaryActorTick.bCanEverTick = true;
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BOX"));
 	TriggerBox->SetBoxExtent(FVector(50,50,50));
+	bIsLevelChanger = false;
 }
 
 // Called when the game starts or when spawned
