@@ -301,7 +301,10 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 	{
 		for (int LeafNum = 0; LeafNum <= LT_OnStage.Num() / 2; LeafNum++)
 		{
-			LT_OnStage[LeafNum]->SetExplodeIgnore();
+			if(LT_OnStage[LeafNum])
+			{
+				LT_OnStage[LeafNum]->SetExplodeIgnore();
+			}
 		}
 		GetWorldTimerManager().ClearTimer(LT_OnStageSilentTimer);
 	}), 0.1f, false, LT_TraceDuration);
