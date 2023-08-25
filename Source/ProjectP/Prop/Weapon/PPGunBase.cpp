@@ -229,7 +229,7 @@ void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
 	OverheatCoolDownPerSecond = WeaponData->OverheatCoolDownPerSecond;
 	CooldownDelay = WeaponData->CooldownDelay;
 	Intensity = WeaponData->FlashIntensity;
-	Flashlight->SetIntensity(WeaponData->FlashIntensity);
+	Flashlight->SetIntensity(0.0f);
 	Flashlight->SetAttenuationRadius(WeaponData->FlashRadius);
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot; // 첫 발사 시에는 바로 발사부터 되도록
 }
