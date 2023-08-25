@@ -41,6 +41,10 @@ private:
 	void GenerateLeafTempestOnRandomLocation(uint32 InNum);
 	void GenerateToxicFog();
 
+	
+	void OpenAndCloseNuclearByRandomDelay();
+	void OpenAndCloseNuclearContinuously();
+
 private:
 	// 보스 정보
 	UPROPERTY(EditDefaultsOnly, Category = BossStatus)

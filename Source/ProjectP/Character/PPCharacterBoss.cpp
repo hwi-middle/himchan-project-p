@@ -68,7 +68,7 @@ APPCharacterBoss::APPCharacterBoss()
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
-	APPBossCore* Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f,14.f), FRotator::ZeroRotator);
+	APPBossCore* Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f, 14.f), FRotator::ZeroRotator);
 	Core->SetBoss(this);
 	bIsAttacking = false;
 	GF_FX->SetActive(false);
@@ -89,7 +89,7 @@ void APPCharacterBoss::BeginPlay()
 	AttackDelay = FMath::RandRange(AttackDelayMin, AttackDelayMax);
 	ElapsedAttackDelay = 0;
 	PreviousPattern = GetRandomPattern();
-	
+
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPCharacterBoss::ClearAllTimerOnLevelChange);
 
@@ -99,19 +99,19 @@ void APPCharacterBoss::BeginPlay()
 	LT_OmenSound = SoundData->BossLTOmenSoundCue;
 	GF_OmenSound = SoundData->BossGFOmenSoundCue;
 	GF_SpawnSound = SoundData->BossGFSpawnSoundCue;
-	
+
 	VG_CommanderSoundCueArray = SoundData->CommanderVGWaringSoundCueArray;
-	if(VG_CommanderSoundCueArray.IsEmpty())
+	if (VG_CommanderSoundCueArray.IsEmpty())
 	{
 		VG_CommanderSoundCueArray.Emplace(TempSoundCue);
 	}
 	LT_CommanderSoundCueArray = SoundData->CommanderLTWaringSoundCueArray;
-	if(LT_CommanderSoundCueArray.IsEmpty())
+	if (LT_CommanderSoundCueArray.IsEmpty())
 	{
 		LT_CommanderSoundCueArray.Emplace(TempSoundCue);
 	}
 	GF_CommanderSoundCueArray = SoundData->CommanderGFWaringSoundCueArray;
-	if(GF_CommanderSoundCueArray.IsEmpty())
+	if (GF_CommanderSoundCueArray.IsEmpty())
 	{
 		GF_CommanderSoundCueArray.Emplace(TempSoundCue);
 	}
@@ -127,41 +127,51 @@ void APPCharacterBoss::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	GF_FX->SetWorldLocation(GetActorLocation());
 
-	if (bIsAttacking)
+	if (!bIsAttacking)
+	{
+		AnimInstance->SetIsIdle(true);
+		ElapsedAttackDelay += DeltaSeconds;
+		if (ElapsedAttackDelay >= AttackDelay)
+		{
+			EBossPattern RandPattern = GetRandomPattern();
+			while (RandPattern == PreviousPattern)
+			{
+				RandPattern = GetRandomPattern();
+			}
+
+			switch (RandPattern)
+			{
+			case EBossPattern::VineGarden:
+				GenerateTentaclesOnRandomLocation(VG_TentacleNum);
+				break;
+			case EBossPattern::LeafTempest:
+				GenerateLeafTempestOnRandomLocation(LT_LeafNum);
+				break;
+			case EBossPattern::GreenFog:
+				GenerateToxicFog();
+				break;
+			default:
+				checkNoEntry();
+			}
+
+			PreviousPattern = RandPattern;
+		}
+	}
+	else
 	{
 		AnimInstance->SetIsIdle(false);
-		return;
-	}
-
-	AnimInstance->SetIsIdle(true);
-	ElapsedAttackDelay += DeltaSeconds;
-	if (ElapsedAttackDelay < AttackDelay)
-	{
-		return;
 	}
 	
-	EBossPattern RandPattern = GetRandomPattern();
-	while(RandPattern == PreviousPattern)
+	if (Health < BossData->MaxHP * 0.3f)
 	{
-		RandPattern = GetRandomPattern();
+		AnimInstance->SetIsIdle(false);
+		OpenAndCloseNuclearContinuously();
 	}
-
-	switch (RandPattern)
+	else if (Health < BossData->MaxHP * 0.5f)
 	{
-	case EBossPattern::VineGarden:
-		GenerateTentaclesOnRandomLocation(VG_TentacleNum);
-		break;
-	case EBossPattern::LeafTempest:
-		GenerateLeafTempestOnRandomLocation(LT_LeafNum);
-		break;
-	case EBossPattern::GreenFog:
-		GenerateToxicFog();
-		break;
-	default:
-		checkNoEntry();
+		AnimInstance->SetIsIdle(false);
+		OpenAndCloseNuclearByRandomDelay();
 	}
-
-	PreviousPattern = RandPattern;
 }
 
 EBossPattern APPCharacterBoss::GetRandomPattern() const
@@ -182,7 +192,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 	bIsAttacking = true;
 	uint32 GeneratedNum = 0;
 	UGameplayStatics::PlaySound2D(this, VG_OmenSound);
-	if(bIs_VG_FirstUsed)
+	if (bIs_VG_FirstUsed)
 	{
 		bIs_VG_FirstUsed = false;
 		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), VG_CommanderSoundCueArray[0]);
@@ -191,7 +201,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 	{
 		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), VG_CommanderSoundCueArray[1]);
 	}
-	
+
 	while (GeneratedNum < InNum)
 	{
 		FVector2d RandomPont = FMath::RandPointInCircle(VG_MaxDistance);
@@ -239,7 +249,7 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 	ALeaf::ResetLeafCount();
 	uint32 GeneratedNum = 0;
 	UGameplayStatics::PlaySound2D(this, LT_OmenSound);
-	if(bIs_LT_FirstUsed)
+	if (bIs_LT_FirstUsed)
 	{
 		bIs_LT_FirstUsed = false;
 		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), LT_CommanderSoundCueArray[0]);
@@ -289,7 +299,7 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 	}
 	GetWorldTimerManager().SetTimer(LT_OnStageSilentTimer, FTimerDelegate::CreateLambda([&]()
 	{
-		for(int LeafNum = 0; LeafNum <= LT_OnStage.Num() / 2; LeafNum++)
+		for (int LeafNum = 0; LeafNum <= LT_OnStage.Num() / 2; LeafNum++)
 		{
 			LT_OnStage[LeafNum]->SetExplodeIgnore();
 		}
@@ -302,7 +312,7 @@ void APPCharacterBoss::GenerateToxicFog()
 	bIsAttacking = true;
 	GF_ElapsedTime = 0.f;
 	UGameplayStatics::PlaySound2D(this, GF_OmenSound);
-	if(bIs_GF_FirstUsed)
+	if (bIs_GF_FirstUsed)
 	{
 		bIs_GF_FirstUsed = false;
 		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), GF_CommanderSoundCueArray[0]);
@@ -363,6 +373,37 @@ void APPCharacterBoss::GenerateToxicFog()
 		FDamageEvent DamageEvent;
 		Player->TakeDamage(GF_Damage, DamageEvent, nullptr, this);
 	}), 1.f, true, 0.f);
+}
+
+void APPCharacterBoss::OpenAndCloseNuclearByRandomDelay()
+{
+	static float ElapsedTime = 0;
+	static float RequiredDelay = FMath::RandRange(2.0f, 5.0f);
+
+	ElapsedTime += GetWorld()->GetDeltaSeconds();
+	if (ElapsedTime < RequiredDelay)
+	{
+		return;
+	}
+	constexpr float Pi = 3.141592;
+	const float ElapsedTimeAfterDelay = ElapsedTime - RequiredDelay;
+	const float Alpha = FMath::Sin(ElapsedTimeAfterDelay - Pi / 2) * 0.5f + 0.5f;
+	AnimInstance->SetCloseAlpha(Alpha);
+
+	if (ElapsedTimeAfterDelay >= 2 * Pi)
+	{
+		AnimInstance->SetCloseAlpha(0.f);
+		ElapsedTime = 0.f;
+		RequiredDelay = FMath::RandRange(2.0f, 5.0f);
+	}
+}
+
+void APPCharacterBoss::OpenAndCloseNuclearContinuously()
+{
+	static float ElapsedTime = 0;
+	ElapsedTime += GetWorld()->GetDeltaSeconds();
+	const float Alpha = FMath::Sin(ElapsedTime) * 0.5f + 0.5f;
+	AnimInstance->SetCloseAlpha(Alpha);
 }
 
 void APPCharacterBoss::IncreaseHealth(const float Value)
