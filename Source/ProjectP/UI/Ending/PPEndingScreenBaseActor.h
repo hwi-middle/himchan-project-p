@@ -6,6 +6,7 @@
 #include "Components/SpotLightComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
+#include "Engine/DataTable.h"
 #include "ProjectP/UI/Ending/PPEndingUIWidget.h"
 #include "PPEndingScreenBaseActor.generated.h"
 
@@ -49,6 +50,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WidgetCompoent")
 	TObjectPtr<USpotLightComponent> ScreenLight;
+
+	UPROPERTY(EditAnywhere, Category = "PrologueWidget", DisplayName = "StringData")
+	TArray<FDataTableRowHandle> PrologueStringDataHandle;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ending Options")
 	float AutoFadeTime;
@@ -74,6 +78,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ending Options")
 	float TimerTick;
 
+	UPROPERTY(VisibleAnywhere)
+	float NextArrayNum;
+	
 	// 동시에 돌아가는 타이머가 없다시피 해서 묶어버릴까 고민중
 	UPROPERTY(VisibleDefaultsOnly)
 	FTimerHandle FadeSequenceTimer;

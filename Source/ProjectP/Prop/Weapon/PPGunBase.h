@@ -75,10 +75,7 @@ private:
 	float NormalShotDamageMax;
 
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
-	float HeadShotDamageMin;
-
-	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
-	float HeadShotDamageMax;
+	float HeadShotDamageScaleFactor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	float CurrentOverheat;
@@ -190,5 +187,8 @@ private:
 
 private:
 	void SetupInputMappingContextByHandType(const EControllerHand InHandType);
-	
+
+private:
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess=true))
+	TArray<AActor*> IgnoreActors;
 };

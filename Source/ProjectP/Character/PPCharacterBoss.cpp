@@ -68,7 +68,7 @@ APPCharacterBoss::APPCharacterBoss()
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
-	APPBossCore* Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f, 14.f), FRotator::ZeroRotator);
+	Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f, 14.f), FRotator::ZeroRotator);
 	Core->SetBoss(this);
 	bIsAttacking = false;
 	GF_FX->SetActive(false);
@@ -129,6 +129,7 @@ void APPCharacterBoss::Tick(float DeltaSeconds)
 
 	if (!bIsAttacking)
 	{
+		Core->SetAdditionalCollisionEnable(true);
 		AnimInstance->SetIsIdle(true);
 		ElapsedAttackDelay += DeltaSeconds;
 		if (ElapsedAttackDelay >= AttackDelay)
@@ -159,9 +160,10 @@ void APPCharacterBoss::Tick(float DeltaSeconds)
 	}
 	else
 	{
+		Core->SetAdditionalCollisionEnable(true);
 		AnimInstance->SetIsIdle(false);
 	}
-	
+
 	if (Health < BossData->MaxHP * 0.3f)
 	{
 		AnimInstance->SetIsIdle(false);
@@ -301,7 +303,7 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 	{
 		for (int LeafNum = 0; LeafNum <= LT_OnStage.Num() / 2; LeafNum++)
 		{
-			if(LT_OnStage[LeafNum])
+			if (LT_OnStage[LeafNum])
 			{
 				LT_OnStage[LeafNum]->SetExplodeIgnore();
 			}
@@ -392,6 +394,7 @@ void APPCharacterBoss::OpenAndCloseNuclearByRandomDelay()
 	const float ElapsedTimeAfterDelay = ElapsedTime - RequiredDelay;
 	const float Alpha = FMath::Sin(ElapsedTimeAfterDelay - Pi / 2) * 0.5f + 0.5f;
 	AnimInstance->SetCloseAlpha(Alpha);
+	Core->SetAdditionalCollisionEnable(Alpha < 0.5f);
 
 	if (ElapsedTimeAfterDelay >= 2 * Pi)
 	{
@@ -407,6 +410,7 @@ void APPCharacterBoss::OpenAndCloseNuclearContinuously()
 	ElapsedTime += GetWorld()->GetDeltaSeconds();
 	const float Alpha = FMath::Sin(ElapsedTime) * 0.5f + 0.5f;
 	AnimInstance->SetCloseAlpha(Alpha);
+	Core->SetAdditionalCollisionEnable(Alpha < 0.5f);
 }
 
 void APPCharacterBoss::IncreaseHealth(const float Value)
