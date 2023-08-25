@@ -43,7 +43,8 @@ void APPCharacterPlayer::BeginPlay()
 	PostProcessVolume = Cast<APostProcessVolume>(GetWorld()->PostProcessVolumes[0]);
 	FPostProcessSettings Settings = PostProcessVolume->Settings;
 
-	UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/Project-P/Material/PostProcess/PPTest.PPTest'"));
+	UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/Project-P/Material/PostProcess/PPHit.PPHit'"));
+	check(CustomPostProcessMaterial);
 	UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
 
 	Settings.WeightedBlendables.Array.Empty();
@@ -171,6 +172,23 @@ void APPCharacterPlayer::StartLevelSequence()
 			PostProcessVolume->Settings.VignetteIntensity -= 0.01f;
 		}
 	}), 0.01f, true);
+}
+
+void APPCharacterPlayer::LoadLevelSequence()
+{
+	DisableInput(GetWorld()->GetFirstPlayerController());
+	GetWorldTimerManager().SetTimer(LevelRestartTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			if(PostProcessVolume->Settings.AutoExposureBias <= -5.0f && PostProcessVolume->Settings.VignetteIntensity >= 2.5f)
+			{
+				GetWorldTimerManager().ClearTimer(LevelRestartTimer);
+				GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+				LoadAnotherLevelDelegate.Broadcast();
+				return;
+			}
+			PostProcessVolume->Settings.AutoExposureBias -= 0.02f;
+			PostProcessVolume->Settings.VignetteIntensity += 0.01f;
+		}), 0.01f, true);
 }
 
 void APPCharacterPlayer::RestartLevelSequence()
