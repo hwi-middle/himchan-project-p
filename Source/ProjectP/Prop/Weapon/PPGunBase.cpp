@@ -205,9 +205,10 @@ void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
 {
 	WeaponMesh->SetSkeletalMesh(WeaponData->WeaponMesh);
 	ShootDistance = WeaponData-> ShootDistance;
-	if(ShootDistance < 1500.0f)
+	if(ShootDistance < 500.0f)
 	{
-		ShootDistance = 1500.0f;
+		// 하한치
+		ShootDistance = 500.0f;
 	}
 	NormalShotDamageMin = WeaponData->NormalShotDamageMin;
 	NormalShotDamageMax = WeaponData->NormalShotDamageMax;
@@ -416,5 +417,12 @@ void APPGunBase::SetupInputMappingContextByHandType(const EControllerHand InHand
 void APPGunBase::ToggleFlash()
 {
 	UGameplayStatics::PlaySound2D(this, ToggleFlashSoundCue);
-	Flashlight->SetVisibility(!Flashlight->IsVisible());
+	if(Flashlight->IsVisible())
+	{
+		Flashlight->SetVisibility(false);
+	}
+	else
+	{
+		Flashlight->SetVisibility(true);
+	}
 }
