@@ -50,9 +50,9 @@ void APPTentacle::BeginPlay()
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPTentacle::ClearAllTimerOnLevelChange);
 
-	float TempAnimationDuration = 0.5f; // 임시 값
-	float DebugSphereLifeTime = WarningDuration + WarningFadeInDuration + WarningFadeOutDuration + TempAnimationDuration;
-	DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 16, FColor::Red, false, DebugSphereLifeTime);
+	// float TempAnimationDuration = 0.5f; // 임시 값
+	// float DebugSphereLifeTime = WarningDuration + WarningFadeInDuration + WarningFadeOutDuration + TempAnimationDuration;
+	// DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 16, FColor::Red, false, DebugSphereLifeTime);
 }
 
 void APPTentacle::ClearAllTimerOnLevelChange()
@@ -114,7 +114,6 @@ void APPTentacle::HideWarningSignAndAttack()
 				Player->TakeDamage(Damage, DamageEvent, nullptr, this);
 			}
 
-			UE_LOG(LogTemp, Log, TEXT("hit abort"));
 			GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
 			return;
 		}
@@ -145,7 +144,7 @@ void APPTentacle::DestroyTentacle()
 {
 	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
-		if (!FPPTimerHelper::IsDelayElapsed(HitPlayerTimerHandle, 1.4f))
+		if (!FPPTimerHelper::IsDelayElapsed(HitPlayerTimerHandle, 2.0f))
 		{
 			return;
 		}
