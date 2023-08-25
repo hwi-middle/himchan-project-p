@@ -173,6 +173,23 @@ void APPCharacterPlayer::StartLevelSequence()
 	}), 0.01f, true);
 }
 
+void APPCharacterPlayer::LoadLevelSequence()
+{
+	DisableInput(GetWorld()->GetFirstPlayerController());
+	GetWorldTimerManager().SetTimer(LevelRestartTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			if(PostProcessVolume->Settings.AutoExposureBias <= -5.0f && PostProcessVolume->Settings.VignetteIntensity >= 2.5f)
+			{
+				GetWorldTimerManager().ClearTimer(LevelRestartTimer);
+				GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+				LoadAnotherLevelDelegate.Broadcast();
+				return;
+			}
+			PostProcessVolume->Settings.AutoExposureBias -= 0.02f;
+			PostProcessVolume->Settings.VignetteIntensity += 0.01f;
+		}), 0.01f, true);
+}
+
 void APPCharacterPlayer::RestartLevelSequence()
 {
 	UGameplayStatics::PlaySound2D(this, DeadSoundCue);

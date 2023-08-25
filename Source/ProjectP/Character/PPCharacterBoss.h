@@ -10,6 +10,7 @@
 #include "Sound/SoundCue.h"
 #include "PPCharacterBoss.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOpenTriggerDoorDelegate);
 
 /**
  * 
@@ -29,6 +30,9 @@ public:
 	// TestOnly
 	void TestPattern(EBossPattern Pattern);
 
+	UPROPERTY(BlueprintAssignable)
+	FOpenTriggerDoorDelegate OpenTriggerDoorDelegate;
+	
 protected:
 	//virtual void SetupCharacterStatusData(UDataAsset* CharacterStatusData) override;
 	virtual void BeginPlay() override;
@@ -59,6 +63,9 @@ private:
 	UPROPERTY()
 	uint32 bIsAttacking : 1;
 
+	UPROPERTY()
+	uint32 bIsDead : 1;
+	
 	UPROPERTY()
 	float ElapsedAttackDelay;
 
