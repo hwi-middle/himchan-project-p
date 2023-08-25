@@ -120,11 +120,18 @@ void APPCharacterBoss::BeginPlay()
 	bIs_GF_FirstUsed = true;
 	AnimInstance = Cast<UPPBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetCloseAlpha(0.f);
+
+	bIsDead = false;
 }
 
 void APPCharacterBoss::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	if(bIsDead)
+	{
+		return;
+	}
+	
 	GF_FX->SetWorldLocation(GetActorLocation());
 
 	if (!bIsAttacking)
@@ -299,17 +306,6 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 
 		++GeneratedNum;
 	}
-	GetWorldTimerManager().SetTimer(LT_OnStageSilentTimer, FTimerDelegate::CreateLambda([&]()
-	{
-		for (int LeafNum = 0; LeafNum <= LT_OnStage.Num() / 2; LeafNum++)
-		{
-			if (LT_OnStage[LeafNum])
-			{
-				LT_OnStage[LeafNum]->SetExplodeIgnore();
-			}
-		}
-		GetWorldTimerManager().ClearTimer(LT_OnStageSilentTimer);
-	}), 0.1f, false, LT_TraceDuration);
 }
 
 void APPCharacterBoss::GenerateToxicFog()
@@ -427,20 +423,10 @@ void APPCharacterBoss::DecreaseHealth(const float Value)
 	 * Do something
 	 */
 	Health -= Value;
-	if (Health <= 0)
+	if (Health <= 0 && !bIsDead)
 	{
-		// 테스트용 레벨 이동.
-		// 최종 구현에서는 입구 반대편 문을 가리던 덩굴이 사라지는 기믹(기획팀이 그랬음)
-		FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
-		if (LevelName == MAIN_LEVEL)
-		{
-			// 타이머 초기화 도중에 새로운 타이머 생성 방지
-			APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-			PlayerController->SetIgnoreMoveInput(true);
-			PlayerController->SetIgnoreLookInput(true);
-			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-			UGameplayStatics::OpenLevel(this, ENDING_LEVEL);
-		}
+		bIsDead = true;
+		OpenTriggerDoorDelegate.Broadcast();
 	}
 }
 

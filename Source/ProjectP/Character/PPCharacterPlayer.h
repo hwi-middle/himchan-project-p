@@ -11,6 +11,7 @@
 #include "ProjectP/Player/PPVRPawn.h"
 #include "PPCharacterPlayer.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLoadAnotherLevelDelegate);
 
 UCLASS()
 class PROJECTP_API APPCharacterPlayer : public APPVRPawn, public ICharacterStatusInterface
@@ -35,6 +36,12 @@ public:
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	
 	void StartLevelSequence();
+
+	UFUNCTION(BlueprintCallable)
+	void LoadLevelSequence();
+
+	UPROPERTY(BlueprintAssignable)
+	FLoadAnotherLevelDelegate LoadAnotherLevelDelegate;
 	
 	// StatusInterface override
 protected:
