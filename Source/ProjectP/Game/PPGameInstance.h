@@ -35,7 +35,7 @@ public:
 
 	FORCEINLINE TObjectPtr<UPPSoundData> GetSoundData() const { return SoundData; }
 
-	
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void ClearAllTimerHandle() const { ClearTimerHandleDelegate.Broadcast(); }
 	
 private:

@@ -4,6 +4,7 @@
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "Engine/DamageEvents.h"
 #include "Engine/PostProcessVolume.h"
+#include "ProjectP/Constant/PPLevelName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
@@ -20,6 +21,7 @@ APPCharacterPlayer::APPCharacterPlayer()
 	TObjectPtr<USceneComponent> OriginalRootComponent = RootComponent;
 	RootComponent = CollisionCapsule;
 	OriginalRootComponent->SetupAttachment(RootComponent);
+	LoadAnotherLevelDelegate.AddDynamic(this, &APPCharacterPlayer::LoadLevelSequence);
 }
 
 void APPCharacterPlayer::Tick(const float DeltaTime)
@@ -62,12 +64,6 @@ void APPCharacterPlayer::BeginPlay()
 	LowHealthSoundCue = SoundData->PlayerLowHealthSoundCue;
 	HitSoundCue = SoundData->PlayerHitSoundCue;
 	DeadSoundCue = SoundData->PlayerDeadSoundCue;
-	
-	GetWorldTimerManager().SetTimer(LevelRestartTimer, FTimerDelegate::CreateLambda([&]()
-	{
-		StartLevelSequence();
-		GetWorldTimerManager().ClearTimer(LevelRestartTimer);
-	}), 0.01f, false, 0.2f);
 }
 
 void APPCharacterPlayer::ClearAllTimerOnLevelChanged()
@@ -144,36 +140,6 @@ void APPCharacterPlayer::DecreaseHealth(const float Value)
 	Health -= Value;
 }
 
-void APPCharacterPlayer::StartLevelSequence()
-{
-	PostProcessVolume->Settings.AutoExposureBias = -2.0f;
-	PostProcessVolume->Settings.VignetteIntensity = 2.5f;
-	GetWorldTimerManager().SetTimer(LevelStartTimer, FTimerDelegate::CreateLambda([&]()
-	{
-		if(PostProcessVolume->Settings.AutoExposureBias == SavedExposureValue && PostProcessVolume->Settings.VignetteIntensity == SavedVignetteValue)
-		{
-			GetWorldTimerManager().ClearTimer(LevelStartTimer);
-		}
-		if(PostProcessVolume->Settings.AutoExposureBias >= SavedExposureValue)
-		{
-			PostProcessVolume->Settings.AutoExposureBias = SavedExposureValue;
-		}
-		else
-		{
-			PostProcessVolume->Settings.AutoExposureBias += 0.02f;
-		}
-
-		if(PostProcessVolume->Settings.VignetteIntensity <= SavedVignetteValue)
-		{
-			PostProcessVolume->Settings.VignetteIntensity -= SavedVignetteValue;
-		}
-		else
-		{
-			PostProcessVolume->Settings.VignetteIntensity -= 0.01f;
-		}
-	}), 0.01f, true);
-}
-
 void APPCharacterPlayer::LoadLevelSequence()
 {
 	DisableInput(GetWorld()->GetFirstPlayerController());
@@ -183,7 +149,12 @@ void APPCharacterPlayer::LoadLevelSequence()
 			{
 				GetWorldTimerManager().ClearTimer(LevelRestartTimer);
 				GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-				LoadAnotherLevelDelegate.Broadcast();
+				FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
+				UGameplayStatics::OpenLevel(this, ENDING_LEVEL);
+				if(LevelName == MAIN_LEVEL)
+				{
+					UGameplayStatics::OpenLevel(this, ENDING_LEVEL);
+				}
 				return;
 			}
 			PostProcessVolume->Settings.AutoExposureBias -= 0.02f;

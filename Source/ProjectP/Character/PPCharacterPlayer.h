@@ -26,7 +26,6 @@ protected:
 
 private:
 	void ClearAllTimerOnLevelChanged();
-
 	
 public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -35,8 +34,6 @@ public:
 	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	
-	void StartLevelSequence();
-
 	UFUNCTION(BlueprintCallable)
 	void LoadLevelSequence();
 
