@@ -52,7 +52,7 @@ APPGunBase::APPGunBase()
 	Flashlight->SetOuterConeAngle(30.0f);
 	Flashlight->SetInnerConeAngle(25.0f);
 	Flashlight->SetupAttachment(WeaponMesh);
-	Flashlight->SetVisibility(false);
+	Flashlight->SetActive(false);
 
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
@@ -228,6 +228,7 @@ void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
 	ShootDelayPerShoot = 1.0f / ShootPerSecond;
 	OverheatCoolDownPerSecond = WeaponData->OverheatCoolDownPerSecond;
 	CooldownDelay = WeaponData->CooldownDelay;
+	Intensity = WeaponData->FlashIntensity;
 	Flashlight->SetIntensity(WeaponData->FlashIntensity);
 	Flashlight->SetAttenuationRadius(WeaponData->FlashRadius);
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot; // 첫 발사 시에는 바로 발사부터 되도록
@@ -422,12 +423,12 @@ void APPGunBase::SetupInputMappingContextByHandType(const EControllerHand InHand
 void APPGunBase::ToggleFlash()
 {
 	UGameplayStatics::PlaySound2D(this, ToggleFlashSoundCue);
-	if (Flashlight->IsVisible())
+	if(Flashlight->Intensity != Intensity)
 	{
-		Flashlight->SetVisibility(false);
+		Flashlight->SetIntensity(Intensity);
 	}
 	else
 	{
-		Flashlight->SetVisibility(true);
+		Flashlight->SetIntensity(0.0f);
 	}
 }
