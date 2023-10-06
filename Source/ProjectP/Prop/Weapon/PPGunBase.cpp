@@ -28,8 +28,8 @@ APPGunBase::APPGunBase()
 	WeaponMesh->SetWorldScale3D(FVector(1.1f, 1.1f, 1.1f));
 
 	CrossHairPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrossHairPlane"));
-	DefaultCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair.SM_CrossHair'"), EAssertionLevel::Check);
-	OverheatedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair_Detect.SM_CrossHair_Detect'"), EAssertionLevel::Check);
+	DefaultCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/Mesh/SM_CrossHair.SM_CrossHair'"), EAssertionLevel::Check);
+	OverheatedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/Mesh/SM_CrossHair_Detect.SM_CrossHair_Detect'"), EAssertionLevel::Check);
 	CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 	CrossHairPlane->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CrossHairPlane->SetCollisionObjectType(ECC_WorldStatic);
