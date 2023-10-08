@@ -28,8 +28,8 @@ APPGunBase::APPGunBase()
 	WeaponMesh->SetWorldScale3D(FVector(1.1f, 1.1f, 1.1f));
 
 	CrossHairPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrossHairPlane"));
-	DefaultCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair.SM_CrossHair'"), EAssertionLevel::Check);
-	OverheatedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair_Detect.SM_CrossHair_Detect'"), EAssertionLevel::Check);
+	DefaultCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/Mesh/SM_CrossHair.SM_CrossHair'"), EAssertionLevel::Check);
+	OverheatedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/Mesh/SM_CrossHair_Detect.SM_CrossHair_Detect'"), EAssertionLevel::Check);
 	CrossHairPlane->SetStaticMesh(DefaultCrossHair);
 	CrossHairPlane->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CrossHairPlane->SetCollisionObjectType(ECC_WorldStatic);
@@ -52,7 +52,7 @@ APPGunBase::APPGunBase()
 	Flashlight->SetOuterConeAngle(30.0f);
 	Flashlight->SetInnerConeAngle(25.0f);
 	Flashlight->SetupAttachment(WeaponMesh);
-	Flashlight->SetVisibility(false);
+	Flashlight->SetActive(false);
 
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
@@ -228,7 +228,8 @@ void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
 	ShootDelayPerShoot = 1.0f / ShootPerSecond;
 	OverheatCoolDownPerSecond = WeaponData->OverheatCoolDownPerSecond;
 	CooldownDelay = WeaponData->CooldownDelay;
-	Flashlight->SetIntensity(WeaponData->FlashIntensity);
+	Intensity = WeaponData->FlashIntensity;
+	Flashlight->SetIntensity(0.0f);
 	Flashlight->SetAttenuationRadius(WeaponData->FlashRadius);
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot; // 첫 발사 시에는 바로 발사부터 되도록
 }
@@ -422,12 +423,12 @@ void APPGunBase::SetupInputMappingContextByHandType(const EControllerHand InHand
 void APPGunBase::ToggleFlash()
 {
 	UGameplayStatics::PlaySound2D(this, ToggleFlashSoundCue);
-	if (Flashlight->IsVisible())
+	if(Flashlight->Intensity != Intensity)
 	{
-		Flashlight->SetVisibility(false);
+		Flashlight->SetIntensity(Intensity);
 	}
 	else
 	{
-		Flashlight->SetVisibility(true);
+		Flashlight->SetIntensity(0.0f);
 	}
 }

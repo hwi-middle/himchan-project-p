@@ -41,7 +41,7 @@ APPCharacterBoss::APPCharacterBoss()
 {
 	// AIControllerClass = APPBossAIController::StaticClass();
 
-	USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss/boss_idle_animation_2.boss_idle_animation_2'"), EAssertionLevel::Check);
+	USkeletalMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/BossBody/Meshs/SK_Boss_Idle_2.SK_Boss_Idle_2'"), EAssertionLevel::Check);
 	GetMesh()->SetSkeletalMesh(MeshObj);
 
 	BossData = FPPConstructorHelper::FindAndGetObject<UPPVRBossData>(TEXT("/Script/ProjectP.PPVRBossData'/Game/DataAssets/Boss/BossData.BossData'"), EAssertionLevel::Check);
@@ -57,7 +57,7 @@ APPCharacterBoss::APPCharacterBoss()
 	GF_FX->SetFloatParameter(TEXT("Sphere_radius"), BossGimmickData->GF_Radius);
 
 	const TSubclassOf<UPPBossAnimInstance> BossAnimInstanceClass = FPPConstructorHelper::FindAndGetClass<UPPBossAnimInstance>(
-		TEXT("/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss/Misc/ABP_Boss.ABP_Boss_C"), EAssertionLevel::Check);
+		TEXT("/Game/Project-P/Meshes/SkeletalMesh/BossBody/Animation/Misc/ABP_Boss.ABP_Boss_C"), EAssertionLevel::Check);
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
 
 	Tags.Add(TEXT("DestructibleObject"));

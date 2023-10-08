@@ -24,11 +24,11 @@ APPTentacle::APPTentacle()
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
 
 	TentacleMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
-	USkeletalMesh* Mesh = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss_Tentacle/tentacle_start.tentacle_start'"), EAssertionLevel::Check);
+	USkeletalMesh* Mesh = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/BossTentacle/Meshs/SK_Tentacle_Start.SK_Tentacle_Start'"), EAssertionLevel::Check);
 	TentacleMesh->SetSkeletalMesh(Mesh);
 
 	const TSubclassOf<UPPTentacleAnimInstance> HandAnimInstanceClass = FPPConstructorHelper::FindAndGetClass<UPPTentacleAnimInstance>(
-		TEXT("/Game/Project-P/Meshes/SkeletalMesh/Boss/Boss_Tentacle/TentacleAnimInstance.TentacleAnimInstance_C"), EAssertionLevel::Check);
+		TEXT("/Game/Project-P/Meshes/SkeletalMesh/BossTentacle/Animation/Misc/ABP_TentacleAnimInstance.ABP_TentacleAnimInstance_C"), EAssertionLevel::Check);
 	TentacleMesh->SetAnimInstanceClass(HandAnimInstanceClass);
 	TentacleMesh->SetRelativeScale3D(FVector(0.5f, 0.5f, 0.5f));
 	RootComponent = TentacleMesh;
