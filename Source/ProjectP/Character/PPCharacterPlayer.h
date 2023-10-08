@@ -11,6 +11,7 @@
 #include "ProjectP/Player/PPVRPawn.h"
 #include "PPCharacterPlayer.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLoadAnotherLevelDelegate);
 
 UCLASS()
 class PROJECTP_API APPCharacterPlayer : public APPVRPawn, public ICharacterStatusInterface
@@ -24,7 +25,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	void ClearAllTimerOnLevelChange();
+	void ClearAllTimerOnLevelChanged();
 	
 public:
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -32,6 +33,12 @@ public:
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
+	
+	UFUNCTION(BlueprintCallable)
+	void LoadLevelSequence();
+
+	UPROPERTY(BlueprintAssignable)
+	FLoadAnotherLevelDelegate LoadAnotherLevelDelegate;
 	
 	// StatusInterface override
 protected:
@@ -76,6 +83,9 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	FTimerHandle LevelRestartTimer;
 
+	UPROPERTY(EditDefaultsOnly)
+	FTimerHandle LevelStartTimer;
+	
 	UPROPERTY()
 	TObjectPtr<APostProcessVolume> PostProcessVolume;
 	
@@ -106,6 +116,12 @@ private:
 	UPROPERTY()
 	float DamageFXFadeOutDuration;
 
+	UPROPERTY()
+	float SavedExposureValue;
+	
+	UPROPERTY()
+	float SavedVignetteValue;
+	
 private:
 	void RestartLevelSequence();
 	void EnableLowHealthWarning();

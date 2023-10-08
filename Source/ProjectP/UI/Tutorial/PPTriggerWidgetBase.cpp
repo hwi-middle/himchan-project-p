@@ -82,6 +82,7 @@ void APPTriggerWidgetBase::NotifyActorBeginOverlap(AActor* OtherActor)
 	TObjectPtr<ACharacter> TestPlayer = Cast<ACharacter>(OtherActor);
 	if(Player || TestPlayer)
 	{
+		LoadDelegate.Broadcast();
 		OverlapActor = OtherActor;
 		switch (CommanderSoundTriggerType)
 		{

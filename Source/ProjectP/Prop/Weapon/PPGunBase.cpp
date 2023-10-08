@@ -26,7 +26,7 @@ APPGunBase::APPGunBase()
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	WeaponMesh->SetCollisionObjectType(ECC_GIMMICK);
 	WeaponMesh->SetWorldScale3D(FVector(1.1f, 1.1f, 1.1f));
-	
+
 	CrossHairPlane = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CrossHairPlane"));
 	DefaultCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair.SM_CrossHair'"), EAssertionLevel::Check);
 	OverheatedCrossHair = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/CrossHair/SM_CrossHair_Detect.SM_CrossHair_Detect'"), EAssertionLevel::Check);
@@ -39,15 +39,18 @@ APPGunBase::APPGunBase()
 	CrossHairPlane->SetupAttachment(WeaponMesh);
 
 	MuzzleNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("MuzzleVFX"));
-	UNiagaraSystem* MuzzleNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(TEXT("/Script/Niagara.NiagaraSystem'/Game/VFX_SciFi_Muzzle_And_Impact_Pack_1/VFX/Presets/Muzzle/NE_VFX_Muzzle_Physical_Burst_1.NE_VFX_Muzzle_Physical_Burst_1'"), EAssertionLevel::Check);
+	UNiagaraSystem* MuzzleNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(
+		TEXT("/Script/Niagara.NiagaraSystem'/Game/VFX_SciFi_Muzzle_And_Impact_Pack_1/VFX/Presets/Muzzle/NE_VFX_Muzzle_Physical_Burst_1.NE_VFX_Muzzle_Physical_Burst_1'"), EAssertionLevel::Check);
 	MuzzleNiagaraEffect->SetAsset(MuzzleNiagaraSystem);
 	MuzzleNiagaraEffect->SetAutoActivate(false);
 	MuzzleNiagaraEffect->SetActive(false);
 
 	Flashlight = CreateDefaultSubobject<USpotLightComponent>(TEXT("Flashlight"));
 	Flashlight->SetIntensityUnits(ELightUnits::Candelas);
-	Flashlight->SetIntensity(100.0f);
+	Flashlight->SetIntensity(50.0f);
 	Flashlight->SetAttenuationRadius(1500.0f);
+	Flashlight->SetOuterConeAngle(30.0f);
+	Flashlight->SetInnerConeAngle(25.0f);
 	Flashlight->SetupAttachment(WeaponMesh);
 	Flashlight->SetVisibility(false);
 
@@ -97,12 +100,12 @@ void APPGunBase::BeginPlay()
 	ToggleFlashSoundCue = SoundData->GunToggleFlashSoundCue;
 
 	GrabComponent->SetIsWeapon(true);
-	if(GameInstance->GetSaveSettingOption()->bIsRightHandMainly)
+	if (GameInstance->GetSaveSettingOption()->bIsRightHandMainly)
 	{
 		bIsRightMainHand = true;
 		GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketTransform(GUN_RIGHT_GRIP, ERelativeTransformSpace::RTS_Actor).GetLocation());
 		MainHandType = EControllerHand::Right;
-		
+
 	}
 	else
 	{
@@ -127,9 +130,9 @@ void APPGunBase::Tick(float DeltaTime)
 
 	WeaponMesh->SetScalarParameterValueOnMaterials(TEXT("Alpha"), CurrentOverheat / MaxOverheat);
 
-	if(GameInstance->GetSaveSettingOption()->bIsRightHandMainly != bIsRightMainHand)
+	if (GameInstance->GetSaveSettingOption()->bIsRightHandMainly != bIsRightMainHand)
 	{
-		if(GameInstance->GetSaveSettingOption()->bIsRightHandMainly)
+		if (GameInstance->GetSaveSettingOption()->bIsRightHandMainly)
 		{
 			bIsRightMainHand = true;
 			GrabComponent->SetRelativeLocation(WeaponMesh->GetSocketTransform(GUN_RIGHT_GRIP, ERelativeTransformSpace::RTS_Actor).GetLocation());
@@ -141,7 +144,7 @@ void APPGunBase::Tick(float DeltaTime)
 		}
 		GrabComponent->SetMainHandType(MainHandType);
 	}
-	
+
 	if (!bHeld)
 	{
 		return;
@@ -149,7 +152,7 @@ void APPGunBase::Tick(float DeltaTime)
 
 	MuzzleNiagaraEffect->SetRelativeLocation(WeaponMesh->GetSocketLocation(GUN_MUZZLE_FOR_FX));
 	MuzzleNiagaraEffect->SetRelativeRotation(WeaponMesh->GetSocketRotation(GUN_MUZZLE_FOR_FX));
-	
+
 	FVector StartLocation = WeaponMesh->GetSocketLocation(GUN_MUZZLE_FOR_AIMING);
 	FVector ForwardVector = WeaponMesh->GetSocketTransform(GUN_MUZZLE_FOR_AIMING).GetUnitAxis(EAxis::X);
 	FVector EndLocation = StartLocation + ForwardVector * ShootDistance;
@@ -157,6 +160,11 @@ void APPGunBase::Tick(float DeltaTime)
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
+
+	for(AActor* ActorToIgnore : IgnoreActors)
+	{
+		CollisionParams.AddIgnoredActor(ActorToIgnore);
+	}
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
@@ -182,7 +190,7 @@ void APPGunBase::Tick(float DeltaTime)
 	{
 		return;
 	}
-
+	
 	// 테스트용 태그. 나중에 태그 모음집 헤더파일 만들어서 관리하기?
 	if (AimingActor->Tags.Contains("DestructibleObject"))
 	{
@@ -204,16 +212,15 @@ void APPGunBase::Tick(float DeltaTime)
 void APPGunBase::SetupWeaponData(UPPWeaponData* WeaponData)
 {
 	WeaponMesh->SetSkeletalMesh(WeaponData->WeaponMesh);
-	ShootDistance = WeaponData-> ShootDistance;
-	if(ShootDistance < 500.0f)
+	ShootDistance = WeaponData->ShootDistance;
+	if (ShootDistance < 500.0f)
 	{
 		// 하한치
 		ShootDistance = 500.0f;
 	}
 	NormalShotDamageMin = WeaponData->NormalShotDamageMin;
 	NormalShotDamageMax = WeaponData->NormalShotDamageMax;
-	HeadShotDamageMin = WeaponData->HeadShotDamageMin;
-	HeadShotDamageMax = WeaponData->HeadShotDamageMax;
+	HeadShotDamageScaleFactor = WeaponData->HeadShotDamageScaleFactor;
 	MaxOverheat = WeaponData->MaxOverheat;
 	UnavailableTime = WeaponData->UnavailableTime;
 	OverheatAmountPerSingleShoot = WeaponData->OverheatAmountPerSingleShoot;
@@ -264,9 +271,9 @@ void APPGunBase::OnFire()
 	bIsOnShooting = true;
 	bIsCooldownStart = false;
 	MuzzleNiagaraEffect->SetActive(true);
-    MuzzleNiagaraEffect->Deactivate();
-    MuzzleNiagaraEffect->Activate();
-    
+	MuzzleNiagaraEffect->Deactivate();
+	MuzzleNiagaraEffect->Activate();
+
 	OnFireSoundCue = FireSoundCueArray[FMath::RandRange(0, FireSoundCueArray.Num() - 1)];
 	UGameplayStatics::PlaySound2D(this, OnFireSoundCue);
 	UGameplayStatics::PlaySound2D(this, IncreaseOverheatSoundCue);
@@ -351,10 +358,8 @@ void APPGunBase::StopFire()
 
 		const float DeltaTime = FPPTimerHelper::GetActualDeltaTime(OverheatCoolDownTimerHandle);
 		CurrentOverheat -= OverheatCoolDownPerSecond * DeltaTime;
-		UE_LOG(LogTemp, Log, TEXT("Cooldowned: %f"), CurrentOverheat);
 		if (CurrentOverheat < KINDA_SMALL_NUMBER)
 		{
-			UE_LOG(LogTemp, Log, TEXT("No more overheat now"));
 			bIsCooldownStart = false;
 			CurrentOverheat = 0.f;
 			GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
@@ -417,7 +422,7 @@ void APPGunBase::SetupInputMappingContextByHandType(const EControllerHand InHand
 void APPGunBase::ToggleFlash()
 {
 	UGameplayStatics::PlaySound2D(this, ToggleFlashSoundCue);
-	if(Flashlight->IsVisible())
+	if (Flashlight->IsVisible())
 	{
 		Flashlight->SetVisibility(false);
 	}

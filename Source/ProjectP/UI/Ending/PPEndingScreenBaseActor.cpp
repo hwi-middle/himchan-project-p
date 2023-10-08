@@ -43,6 +43,11 @@ void APPEndingScreenBaseActor::BeginPlay()
 	
 	ScreenLight->SetIntensity(0.0f);
 	ToggleLight(false);
+
+	const FStringDataTable* EndingString = PrologueStringDataHandle[0].GetRow<FStringDataTable>(PrologueStringDataHandle[0].RowName.ToString());
+	FText EndingText = FText::FromName(EndingString->Kor);
+	EndingUIWidget->SetEndingText(EndingText);
+	NextArrayNum = 1;
 	
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPEndingScreenBaseActor::ClearAllTimerOnLevelChange);
@@ -85,6 +90,7 @@ void APPEndingScreenBaseActor::FadeInOrOutScreenImage(const bool IsFaded)
 			{
 				EndingUIWidget->SetScreenOpacity(0.0f);
 				GetWorldTimerManager().ClearTimer(FadeSequenceTimer);
+				
 				bool CheckRemainImage = EndingUIWidget->SetScreenImage(EndingUIWidget->GetCurrentScreenImageNum() + 1);
 				if(CheckRemainImage)
 				{
@@ -93,8 +99,15 @@ void APPEndingScreenBaseActor::FadeInOrOutScreenImage(const bool IsFaded)
 				else
 				{
 					MaxCreditBottomPosition = EndingUIWidget->GetCreditHeight();
+					FText EndingText = FText::FromString(TEXT(""));
+					EndingUIWidget->SetEndingText(EndingText);
 					ActivateCreditPanel();
+					return;
 				}
+				const FStringDataTable* EndingString = PrologueStringDataHandle[NextArrayNum].GetRow<FStringDataTable>(PrologueStringDataHandle[NextArrayNum].RowName.ToString());
+				FText EndingText = FText::FromName(EndingString->Kor);
+				EndingUIWidget->SetEndingText(EndingText);
+				NextArrayNum++;
 			}
 		}), TimerTick, true);
 	}

@@ -13,6 +13,8 @@
 #include "Sound/SoundCue.h"
 #include "PPTriggerWidgetBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLoadDelegate);
+
 UCLASS()
 class PROJECTP_API APPTriggerWidgetBase : public AActor
 {
@@ -27,6 +29,10 @@ public:
 
 	void DisplayWidgetContents();
 	void HideWidgetBackground();
+
+	UPROPERTY(BlueprintAssignable)
+	FLoadDelegate LoadDelegate;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -4,6 +4,7 @@
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "Engine/DamageEvents.h"
 #include "Engine/PostProcessVolume.h"
+#include "ProjectP/Constant/PPLevelName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
@@ -20,6 +21,7 @@ APPCharacterPlayer::APPCharacterPlayer()
 	TObjectPtr<USceneComponent> OriginalRootComponent = RootComponent;
 	RootComponent = CollisionCapsule;
 	OriginalRootComponent->SetupAttachment(RootComponent);
+	LoadAnotherLevelDelegate.AddDynamic(this, &APPCharacterPlayer::LoadLevelSequence);
 }
 
 void APPCharacterPlayer::Tick(const float DeltaTime)
@@ -43,7 +45,8 @@ void APPCharacterPlayer::BeginPlay()
 	PostProcessVolume = Cast<APostProcessVolume>(GetWorld()->PostProcessVolumes[0]);
 	FPostProcessSettings Settings = PostProcessVolume->Settings;
 
-	UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/Project-P/Material/PostProcess/PPTest.PPTest'"));
+	UMaterial* CustomPostProcessMaterial = LoadObject<UMaterial>(nullptr, TEXT("/Script/Engine.Material'/Game/Project-P/Material/PostProcess/PPHit.PPHit'"));
+	check(CustomPostProcessMaterial);
 	UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(CustomPostProcessMaterial, nullptr);
 
 	Settings.WeightedBlendables.Array.Empty();
@@ -52,25 +55,31 @@ void APPCharacterPlayer::BeginPlay()
 	DynamicMaterialInstance = MaterialInstanceDynamic;
 
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPCharacterPlayer::ClearAllTimerOnLevelChanged);
 	UPPSoundData* SoundData = GameInstance->GetSoundData();
+	UPPSaveSettingOption* SettingOption = GameInstance->GetSaveSettingOption();
+	SavedExposureValue = SettingOption->DisplayBrightnessValue;
+	SavedVignetteValue = SettingOption->DisplayVignettingValue;
 	CommanderHealthWaringSoundCue = SoundData->CommanderHealthWaringSoundCue;
 	LowHealthSoundCue = SoundData->PlayerLowHealthSoundCue;
 	HitSoundCue = SoundData->PlayerHitSoundCue;
 	DeadSoundCue = SoundData->PlayerDeadSoundCue;
 }
 
-void APPCharacterPlayer::ClearAllTimerOnLevelChange()
+void APPCharacterPlayer::ClearAllTimerOnLevelChanged()
 {
 	GetWorldTimerManager().ClearTimer(HitCheckTimer);
 	GetWorldTimerManager().ClearTimer(RecoveryTickTimer);
 	GetWorldTimerManager().ClearTimer(DamageFXFadeTimer);
 	GetWorldTimerManager().ClearTimer(LevelRestartTimer);
 	GetWorldTimerManager().ClearTimer(LowHealthWarningTimer);
+	GetWorldTimerManager().ClearTimer(LevelStartTimer);
 	HitCheckTimer.Invalidate();
 	RecoveryTickTimer.Invalidate();
 	DamageFXFadeTimer.Invalidate();
 	LevelRestartTimer.Invalidate();
 	LowHealthWarningTimer.Invalidate();
+	LevelStartTimer.Invalidate();
 }
 
 float APPCharacterPlayer::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -129,6 +138,28 @@ void APPCharacterPlayer::IncreaseHealth(const float Value)
 void APPCharacterPlayer::DecreaseHealth(const float Value)
 {
 	Health -= Value;
+}
+
+void APPCharacterPlayer::LoadLevelSequence()
+{
+	DisableInput(GetWorld()->GetFirstPlayerController());
+	GetWorldTimerManager().SetTimer(LevelRestartTimer, FTimerDelegate::CreateLambda([&]()
+		{
+			if(PostProcessVolume->Settings.AutoExposureBias <= -5.0f && PostProcessVolume->Settings.VignetteIntensity >= 2.5f)
+			{
+				GetWorldTimerManager().ClearTimer(LevelRestartTimer);
+				GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+				FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
+				UGameplayStatics::OpenLevel(this, ENDING_LEVEL);
+				if(LevelName == MAIN_LEVEL)
+				{
+					UGameplayStatics::OpenLevel(this, ENDING_LEVEL);
+				}
+				return;
+			}
+			PostProcessVolume->Settings.AutoExposureBias -= 0.02f;
+			PostProcessVolume->Settings.VignetteIntensity += 0.01f;
+		}), 0.01f, true);
 }
 
 void APPCharacterPlayer::RestartLevelSequence()

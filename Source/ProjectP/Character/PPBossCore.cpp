@@ -4,6 +4,7 @@
 #include "PPBossCore.h"
 
 #include "PPCharacterBoss.h"
+#include "ProjectP/Prop/Weapon/PPWeaponData.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
@@ -13,7 +14,8 @@ APPBossCore::APPBossCore()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	Tags.Add(TEXT("DestructibleObject"));
-	
+	PrimaryWeaponData = FPPConstructorHelper::FindAndGetObject<UPPWeaponData>(TEXT("/Script/ProjectP.PPWeaponData'/Game/DataAssets/Weapon/PrimaryWeaponData.PrimaryWeaponData'"), EAssertionLevel::Check);
+
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CoreMesh"));
 	USkeletalMesh* MeshRef = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/Boss/BossCore/heart_animation_2__1_.heart_animation_2__1_'"));
 	Mesh->SetSkeletalMesh(MeshRef);
@@ -30,7 +32,7 @@ APPBossCore::APPBossCore()
 	AdditionalCollision->SetVisibility(false);
 	AdditionalCollision->SetupAttachment(Mesh);
 	AdditionalCollision->SetRelativeLocation(FVector(0.0f, 40.0f, 170.0f));
-	AdditionalCollision->SetRelativeScale3D(FVector(0.65f,0.8f,0.6f));
+	AdditionalCollision->SetRelativeScale3D(FVector(0.65f,0.8f * 3,0.6f));
 	
 	UAnimSequence* AnimRef = FPPConstructorHelper::FindAndGetObject<UAnimSequence>(TEXT("/Script/Engine.AnimSequence'/Game/Project-P/Meshes/SkeletalMesh/Boss/BossCore/heart_animation_2__1__Anim.heart_animation_2__1__Anim'"));
 	Anim = AnimRef;
@@ -57,7 +59,7 @@ void APPBossCore::IncreaseHealth(const float Value)
 
 void APPBossCore::DecreaseHealth(const float Value)
 {
-	Boss->DecreaseHealth(Value);
+	Boss->DecreaseHealth(Value * PrimaryWeaponData->HeadShotDamageScaleFactor);
 }
 
 void APPBossCore::SetAdditionalCollisionEnable(const bool Value)

@@ -68,7 +68,7 @@ APPCharacterBoss::APPCharacterBoss()
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
-	APPBossCore* Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f, 14.f), FRotator::ZeroRotator);
+	Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f, 14.f), FRotator::ZeroRotator);
 	Core->SetBoss(this);
 	bIsAttacking = false;
 	GF_FX->SetActive(false);
@@ -120,15 +120,23 @@ void APPCharacterBoss::BeginPlay()
 	bIs_GF_FirstUsed = true;
 	AnimInstance = Cast<UPPBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetCloseAlpha(0.f);
+
+	bIsDead = false;
 }
 
 void APPCharacterBoss::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	if(bIsDead)
+	{
+		return;
+	}
+	
 	GF_FX->SetWorldLocation(GetActorLocation());
 
 	if (!bIsAttacking)
 	{
+		Core->SetAdditionalCollisionEnable(true);
 		AnimInstance->SetIsIdle(true);
 		ElapsedAttackDelay += DeltaSeconds;
 		if (ElapsedAttackDelay >= AttackDelay)
@@ -159,9 +167,10 @@ void APPCharacterBoss::Tick(float DeltaSeconds)
 	}
 	else
 	{
+		Core->SetAdditionalCollisionEnable(true);
 		AnimInstance->SetIsIdle(false);
 	}
-	
+
 	if (Health < BossData->MaxHP * 0.3f)
 	{
 		AnimInstance->SetIsIdle(false);
@@ -297,17 +306,6 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 
 		++GeneratedNum;
 	}
-	GetWorldTimerManager().SetTimer(LT_OnStageSilentTimer, FTimerDelegate::CreateLambda([&]()
-	{
-		for (int LeafNum = 0; LeafNum <= LT_OnStage.Num() / 2; LeafNum++)
-		{
-			if(LT_OnStage[LeafNum])
-			{
-				LT_OnStage[LeafNum]->SetExplodeIgnore();
-			}
-		}
-		GetWorldTimerManager().ClearTimer(LT_OnStageSilentTimer);
-	}), 0.1f, false, LT_TraceDuration);
 }
 
 void APPCharacterBoss::GenerateToxicFog()
@@ -335,7 +333,7 @@ void APPCharacterBoss::GenerateToxicFog()
 
 		if (GF_ElapsedTime >= GF_Duration)
 		{
-			FlushPersistentDebugLines(GetWorld());
+			// FlushPersistentDebugLines(GetWorld());
 			bHasGFSpawned = false;
 			GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
 			GF_FX->SetActive(false);
@@ -359,7 +357,7 @@ void APPCharacterBoss::GenerateToxicFog()
 			CollisionParams
 		);
 
-		DrawDebugSphere(GetWorld(), GetActorLocation(), GF_Radius, 64, FColor::Green, false, 1.f);
+		// DrawDebugSphere(GetWorld(), GetActorLocation(), GF_Radius, 64, FColor::Green, false, 1.f);
 
 		GF_ElapsedTime += FPPTimerHelper::GetActualDeltaTime(GreenFogTimerHandle);
 		if (!bHit)
@@ -392,6 +390,7 @@ void APPCharacterBoss::OpenAndCloseNuclearByRandomDelay()
 	const float ElapsedTimeAfterDelay = ElapsedTime - RequiredDelay;
 	const float Alpha = FMath::Sin(ElapsedTimeAfterDelay - Pi / 2) * 0.5f + 0.5f;
 	AnimInstance->SetCloseAlpha(Alpha);
+	Core->SetAdditionalCollisionEnable(Alpha < 0.5f);
 
 	if (ElapsedTimeAfterDelay >= 2 * Pi)
 	{
@@ -407,6 +406,7 @@ void APPCharacterBoss::OpenAndCloseNuclearContinuously()
 	ElapsedTime += GetWorld()->GetDeltaSeconds();
 	const float Alpha = FMath::Sin(ElapsedTime) * 0.5f + 0.5f;
 	AnimInstance->SetCloseAlpha(Alpha);
+	Core->SetAdditionalCollisionEnable(Alpha < 0.5f);
 }
 
 void APPCharacterBoss::IncreaseHealth(const float Value)
@@ -423,20 +423,10 @@ void APPCharacterBoss::DecreaseHealth(const float Value)
 	 * Do something
 	 */
 	Health -= Value;
-	if (Health <= 0)
+	if (Health <= 0 && !bIsDead)
 	{
-		// 테스트용 레벨 이동.
-		// 최종 구현에서는 입구 반대편 문을 가리던 덩굴이 사라지는 기믹(기획팀이 그랬음)
-		FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
-		if (LevelName == MAIN_LEVEL)
-		{
-			// 타이머 초기화 도중에 새로운 타이머 생성 방지
-			APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-			PlayerController->SetIgnoreMoveInput(true);
-			PlayerController->SetIgnoreLookInput(true);
-			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-			UGameplayStatics::OpenLevel(this, ENDING_LEVEL);
-		}
+		bIsDead = true;
+		OpenTriggerDoorDelegate.Broadcast();
 	}
 }
 
