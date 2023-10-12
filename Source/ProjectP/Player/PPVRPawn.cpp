@@ -400,11 +400,7 @@ void APPVRPawn::StartMove(const FInputActionValue& Value)
 	{
 		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
 	}
-	GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
-	{
-		WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
-		UGameplayStatics::PlaySound2D(this, WalkSoundCue);
-	}), WalkSoundRate, true);
+	GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, this, APPVRPawn::StartMoveDelegate, WalkSoundRate, true);
 }
 
 void APPVRPawn::CompleteMove(const FInputActionValue& Value)
@@ -430,20 +426,25 @@ void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 	}
 	if(MoveSpeed == MovementData->WalkSpeed)
 	{
-		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
-			UGameplayStatics::PlaySound2D(this, WalkSoundCue);
-		}), WalkSoundRate, true);
+		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, this, APPVRPawn::ToggleSprintDelegate, WalkSoundRate, true);
 	}
 	else
 	{
-		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
-			UGameplayStatics::PlaySound2D(this, WalkSoundCue);
-		}), SprintSoundRate, true);
+		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, this, APPVRPawn::ToggleSprintDelegate, SprintSoundRate, true);
 	}
+}
+
+//------------------Delegates-----------------------
+void APPVRPawn::StartMoveDelegate()
+{
+	WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
+	UGameplayStatics::PlaySound2D(this, WalkSoundCue);
+}
+
+void APPVRPawn::ToggleSprintDelegate()
+{
+	WalkSoundCue = WalkSoundCueArray[FMath::RandRange(0, WalkSoundCueArray.Num() - 1)];
+	UGameplayStatics::PlaySound2D(this, WalkSoundCue);
 }
 
 void APPVRPawn::PressAButtonAction(const FInputActionValue& Value)

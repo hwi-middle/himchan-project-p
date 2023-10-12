@@ -52,35 +52,40 @@ void APPPrologueActor::ClearAllTimerOnLevelChange()
 
 void APPPrologueActor::DisplayStringData()
 {
-	GetWorldTimerManager().SetTimer(StringDataChangeTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			const FStringDataTable* PrologueString = PrologueStringDataHandle[NextArrayNum].GetRow<FStringDataTable>(PrologueStringDataHandle[NextArrayNum].RowName.ToString());
-			FText PrologueText = FText::FromName(PrologueString->Kor);
-			PrologueWidget->SetPrologueText(PrologueText);
-			NextArrayNum++;
-			if(NextArrayNum >= PrologueStringDataHandle.Num())
-			{
-				LoadMainLevelSequence();
-				GetWorldTimerManager().ClearTimer(StringDataChangeTimerHandle);
-			}
-		}), HandleChangeTime, true, HandleChangeTime);
+	GetWorldTimerManager().SetTimer(StringDataChangeTimerHandle, this, APPPrologueActor::DisplayStringDataDelegate, HandleChangeTime, true, HandleChangeTime);
 }
 
 void APPPrologueActor::LoadMainLevelSequence()
 {
 	DisableInput(GetWorld()->GetFirstPlayerController());
-	GetWorldTimerManager().SetTimer(LoadMainLevelTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			if(PostProcessVolume->Settings.AutoExposureBias <= -5.0f && PostProcessVolume->Settings.VignetteIntensity >= 2.5f)
-			{
-				GetWorldTimerManager().ClearTimer(LoadMainLevelTimerHandle);
-				GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-				UGameplayStatics::OpenLevel(GetWorld(), MAIN_LEVEL);
-				return;
-			}
-			PostProcessVolume->Settings.AutoExposureBias -= 0.02f;
-			PostProcessVolume->Settings.VignetteIntensity += 0.01f;
-		}), 0.01f, true, HandleChangeTime);
+	GetWorldTimerManager().SetTimer(LoadMainLevelTimerHandle, this, APPPrologueActor::LoadMainLevelDelegate, 0.01f, true, HandleChangeTime);
+}
+
+//------------------------------------------Delegates--------------------------------------
+void APPPrologueActor::DisplayStringDataDelegate()
+{
+	const FStringDataTable* PrologueString = PrologueStringDataHandle[NextArrayNum].GetRow<FStringDataTable>(PrologueStringDataHandle[NextArrayNum].RowName.ToString());
+	FText PrologueText = FText::FromName(PrologueString->Kor);
+	PrologueWidget->SetPrologueText(PrologueText);
+	NextArrayNum++;
+	if (NextArrayNum >= PrologueStringDataHandle.Num())
+	{
+		LoadMainLevelSequence();
+		GetWorldTimerManager().ClearTimer(StringDataChangeTimerHandle);
+	}
+}
+
+void APPPrologueActor::LoadMainLevelDelegate()
+{
+	if (PostProcessVolume->Settings.AutoExposureBias <= -5.0f && PostProcessVolume->Settings.VignetteIntensity >= 2.5f)
+	{
+		GetWorldTimerManager().ClearTimer(LoadMainLevelTimerHandle);
+		GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+		UGameplayStatics::OpenLevel(GetWorld(), MAIN_LEVEL);
+		return;
+	}
+	PostProcessVolume->Settings.AutoExposureBias -= 0.02f;
+	PostProcessVolume->Settings.VignetteIntensity += 0.01f;
 }
 
 // Called every frame

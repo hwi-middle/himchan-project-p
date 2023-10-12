@@ -71,4 +71,10 @@ private:
 	void HideWarningSignAndAttack();
 	void HideTentacle();
 	void DestroyTentacle();
+
+private:
+	void ShowWarningSignDelegate();
+	void HideWarningSignAndAttackDelegate();
+	void HideTentacleDelegate();
+	void DestroyTentacleDelegate();
 };

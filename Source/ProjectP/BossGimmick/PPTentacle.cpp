@@ -74,11 +74,7 @@ void APPTentacle::ShowWarningSign()
 {
 	WarningZone = GetWorld()->SpawnActor<APPWarningZoneCylinder>(GetActorLocation(), FRotator::ZeroRotator);
 	WarningZone->Show(WarningFadeInDuration);
-	GetWorldTimerManager().SetTimer(WarningTimerHandle, FTimerDelegate::CreateLambda([&]()
-	{
-		HideWarningSignAndAttack();
-		GetWorldTimerManager().ClearTimer(WarningTimerHandle);
-	}), WarningFadeInDuration + WarningDuration, false);
+	GetWorldTimerManager().SetTimer(WarningTimerHandle, this, APPTentacle::ShowWarningSignDelegate, WarningFadeInDuration + WarningDuration, false);
 }
 
 void APPTentacle::HideWarningSignAndAttack()
@@ -88,69 +84,81 @@ void APPTentacle::HideWarningSignAndAttack()
 		WarningZone->HideAndDestroy(WarningFadeOutDuration);
 	}
 
-	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, FTimerDelegate::CreateLambda([&]()
-	{
-
-		FHitResult HitResult;
-		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredActor(this);
-
-		bool bHit = GetWorld()->SweepSingleByChannel(
-			HitResult,
-			GetActorLocation(),
-			GetActorLocation(),
-			FQuat::Identity,
-			ECC_CHECK_PAWN,
-			FCollisionShape::MakeSphere(DamageRadius),
-			CollisionParams
-		);
-
-		if (bHit)
-		{
-			APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(HitResult.GetActor());
-			if (Player)
-			{
-				FDamageEvent DamageEvent;
-				Player->TakeDamage(Damage, DamageEvent, nullptr, this);
-			}
-
-			GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
-			return;
-		}
-		AnimInstance->Show();
-		GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
-		HideTentacle();
-	}), WarningFadeOutDuration, false);
+	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, this, APPTentacle::HideWarningSignAndAttackDelegate, WarningFadeOutDuration, false);
 
 
 }
 
 void APPTentacle::HideTentacle()
 {
-	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, FTimerDelegate::CreateLambda([&]()
-	{
-		if (!FPPTimerHelper::IsDelayElapsed(HitPlayerTimerHandle, 1.4f))
-		{
-			return;
-		}
-		AnimInstance->Hide();
-		GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
-		FPPTimerHelper::InvalidateTimerHandle(HitPlayerTimerHandle);
-		DestroyTentacle();
-	}), 0.01f, true);
+	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, this, APPTentacle::HideTentacleDelegate, 0.01f, true);
 }
 
 void APPTentacle::DestroyTentacle()
 {
-	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, FTimerDelegate::CreateLambda([&]()
+	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, this, APPTentacle::DestroyTentacleDelegate, 0.01f, true);
+}
+
+//----------------------------Delegates------------------------
+void APPTentacle::ShowWarningSignDelegate()
+{
+	HideWarningSignAndAttack();
+	GetWorldTimerManager().ClearTimer(WarningTimerHandle);
+}
+
+void APPTentacle::HideWarningSignAndAttackDelegate()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		GetActorLocation(),
+		GetActorLocation(),
+		FQuat::Identity,
+		ECC_CHECK_PAWN,
+		FCollisionShape::MakeSphere(DamageRadius),
+		CollisionParams
+	);
+
+	if (bHit)
 	{
-		if (!FPPTimerHelper::IsDelayElapsed(HitPlayerTimerHandle, 2.0f))
+		APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(HitResult.GetActor());
+		if (Player)
 		{
-			return;
+			FDamageEvent DamageEvent;
+			Player->TakeDamage(Damage, DamageEvent, nullptr, this);
 		}
+
 		GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
-		FPPTimerHelper::InvalidateTimerHandle(HitPlayerTimerHandle);
-		Boss->SetIsAttacking(false);
-		Destroy();
-	}), 0.01f, true);
+		return;
+	}
+	AnimInstance->Show();
+	GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
+	HideTentacle();
+}
+
+void APPTentacle::HideTentacleDelegate()
+{
+	if (!FPPTimerHelper::IsDelayElapsed(HitPlayerTimerHandle, 1.4f))
+	{
+		return;
+	}
+	AnimInstance->Hide();
+	GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
+	FPPTimerHelper::InvalidateTimerHandle(HitPlayerTimerHandle);
+	DestroyTentacle();
+}
+
+void APPTentacle::DestroyTentacleDelegate()
+{
+	if (!FPPTimerHelper::IsDelayElapsed(HitPlayerTimerHandle, 2.0f))
+	{
+		return;
+	}
+	GetWorldTimerManager().ClearTimer(HitPlayerTimerHandle);
+	FPPTimerHelper::InvalidateTimerHandle(HitPlayerTimerHandle);
+	Boss->SetIsAttacking(false);
+	Destroy();
 }

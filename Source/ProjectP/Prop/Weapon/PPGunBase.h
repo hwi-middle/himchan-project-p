@@ -29,6 +29,10 @@ protected:
 
 private:
 	void ClearAllTimerOnLevelChange();
+
+private:
+	void OverHeatCoolDawnDelegate();
+	void BlockShootDelegate();
 	
 public:
 	// Called every frame

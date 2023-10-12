@@ -122,24 +122,7 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 	SettingWidget->SetSubWidgetAnimationWorking(true);
 
 	// 서브위젯 닫기 애니메이션.
-	GetWorldTimerManager().SetTimer(SubWidgetCloseTimer, FTimerDelegate::CreateLambda([&]()
-	{
-		SettingWidget->AddSubWidgetHeightOffset(WidgetHeightOffsetAddValue);
-		if(SettingWidget->GetSubWidgetHeight() >= SubWidgetHalfHeightValue)
-		{
-			SettingWidget->SetSubWidgetHeightOffset(SubWidgetHalfHeightValue);
-			bSubWidgetOpened = false;
-			SettingWidget->SetSubWidgetAnimationWorking(false);
-			SettingWidget->SetSubWidgetContentVisible(false);
-			// 전환하는 서브위젯이 있다면 다시 서브위젯 패널 열기.
-			// 왜 이런 고생을 하느냐면 멋지니까?
-			if(SwapSubWidget != ESubWidgetType::None)
-			{
-				OpenSubWidget(SwapSubWidget);
-			}
-			GetWorldTimerManager().ClearTimer(SubWidgetCloseTimer);
-		}
-	}), WidgetAnimationTick, true);
+	GetWorldTimerManager().SetTimer(SubWidgetCloseTimer, this, APPSettingBaseActor::CloseSubWidgetPanelDelegate, WidgetAnimationTick, true);
 }
 
 void APPSettingBaseActor::OpenSubWidgetPanel()
@@ -157,15 +140,37 @@ void APPSettingBaseActor::OpenSubWidgetPanel()
 	
 	SettingWidget->SetSubWidgetAnimationWorking(true);
 	// 서브위젯 열기 애니메이션
-	GetWorldTimerManager().SetTimer(SubWidgetOpenTimer, FTimerDelegate::CreateLambda([&]()
+	GetWorldTimerManager().SetTimer(SubWidgetOpenTimer, this, APPSettingBaseActor::OpenSubWidgetPanelDelegate, WidgetAnimationTick, true);
+}
+
+//-----------------------------------------------------Delegates--------------------------------------------
+void APPSettingBaseActor::CloseSubWidgetPanelDelegate()
+{
+	SettingWidget->AddSubWidgetHeightOffset(WidgetHeightOffsetAddValue);
+	if (SettingWidget->GetSubWidgetHeight() >= SubWidgetHalfHeightValue)
 	{
-		SettingWidget->AddSubWidgetHeightOffset(-WidgetHeightOffsetAddValue);
-		if(SettingWidget->GetSubWidgetHeight() <= 0.0f)
+		SettingWidget->SetSubWidgetHeightOffset(SubWidgetHalfHeightValue);
+		bSubWidgetOpened = false;
+		SettingWidget->SetSubWidgetAnimationWorking(false);
+		SettingWidget->SetSubWidgetContentVisible(false);
+		// 전환하는 서브위젯이 있다면 다시 서브위젯 패널 열기.
+		// 왜 이런 고생을 하느냐면 멋지니까?
+		if (SwapSubWidget != ESubWidgetType::None)
 		{
-			SettingWidget->SetSubWidgetHeightOffset(0.0f);
-			bSubWidgetOpened = true;
-			SettingWidget->SetSubWidgetAnimationWorking(false);
-			GetWorldTimerManager().ClearTimer(SubWidgetOpenTimer);
+			OpenSubWidget(SwapSubWidget);
 		}
-	}), WidgetAnimationTick, true);
+		GetWorldTimerManager().ClearTimer(SubWidgetCloseTimer);
+	}
+}
+
+void APPSettingBaseActor::OpenSubWidgetPanelDelegate()
+{
+	SettingWidget->AddSubWidgetHeightOffset(-WidgetHeightOffsetAddValue);
+	if (SettingWidget->GetSubWidgetHeight() <= 0.0f)
+	{
+		SettingWidget->SetSubWidgetHeightOffset(0.0f);
+		bSubWidgetOpened = true;
+		SettingWidget->SetSubWidgetAnimationWorking(false);
+		GetWorldTimerManager().ClearTimer(SubWidgetOpenTimer);
+	}
 }

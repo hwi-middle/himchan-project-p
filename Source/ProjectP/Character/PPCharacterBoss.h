@@ -45,9 +45,11 @@ private:
 	void GenerateLeafTempestOnRandomLocation(uint32 InNum);
 	void GenerateToxicFog();
 
-	
 	void OpenAndCloseNuclearByRandomDelay();
 	void OpenAndCloseNuclearContinuously();
+
+private:
+	void GenerateToxicFogDelegate();
 
 private:
 	// 보스 정보

@@ -43,6 +43,13 @@ protected:
 private:
 	void ClearAllTimerOnLevelChange();
 	
+private:
+	void DisplayWidgetBackgroundDelegate();
+	void HideWidgetBackgroundDelegate();
+	void DisplayWidgetContentsDelegate();
+	void HideWidgetContentsDelegate();
+	void WidgetFocusOnPlayerDelegate();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UWidgetComponent> TutorialWidgetComponent;

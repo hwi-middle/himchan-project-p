@@ -36,11 +36,15 @@ protected:
 public:
 	void Show(float InDuration);
 	void HideAndDestroy(float InDuration);
-	
+
+private:
+	void FadeInDelegate();
+	void FadeOutAndDestroyDelegate();
+
 private:
 	UPROPERTY()
 	float Alpha;
-	
+
 protected:
 	UPROPERTY()
 	TObjectPtr<class UStaticMeshComponent> Mesh;
