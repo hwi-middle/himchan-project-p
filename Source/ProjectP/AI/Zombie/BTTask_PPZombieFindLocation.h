@@ -4,16 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTask_PPZombieAttack.generated.h"
+#include "BTTask_PPZombieFindLocation.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTP_API UBTTask_PPZombieAttack : public UBTTaskNode
+class PROJECTP_API UBTTask_PPZombieFindLocation : public UBTTaskNode
 {
 	GENERATED_BODY()
+
 public:
-	UBTTask_PPZombieAttack();
+	UBTTask_PPZombieFindLocation();
+
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	
+private:
 };

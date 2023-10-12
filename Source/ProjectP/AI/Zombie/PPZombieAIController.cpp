@@ -7,23 +7,25 @@
 #include "BehaviorTree/BlackboardData.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "ProjectP/Character/PPCharacterPlayer.h"
+#include "ProjectP/Character/PPCharacterZombie.h"
 #include "ProjectP/Constant/PPBlackBoardKeyName.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 APPZombieAIController::APPZombieAIController()
 {
-	CommonBlackboardData = FPPConstructorHelper::FindAndGetObject<UBlackboardData>(TEXT("/Script/AIModule.BlackboardData'/Game/9-CommonAI/AI/BB_CommonMonster.BB_CommonMonster'"), EAssertionLevel::Check);
-	CommonBehaviorTree = FPPConstructorHelper::FindAndGetObject<UBehaviorTree>(TEXT("/Script/AIModule.BehaviorTree'/Game/9-CommonAI/AI/BT_CommonMonster.BT_CommonMonster'"), EAssertionLevel::Check);
+	CommonBlackboardData = FPPConstructorHelper::FindAndGetObject<UBlackboardData>(TEXT("/Script/AIModule.BlackboardData'/Game/186-ZombieAI/AI/BB_Zombie.BB_Zombie'"), EAssertionLevel::Check);
+	CommonBehaviorTree = FPPConstructorHelper::FindAndGetObject<UBehaviorTree>(TEXT("/Script/AIModule.BehaviorTree'/Game/186-ZombieAI/AI/BT_Zombie.BT_Zombie'"), EAssertionLevel::Check);
 	
 	CommonPerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPercptionComponent"));
 	CommonSight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("AI_Sight"));
+	
+	// CommonSight->SightRadius = ControllingPawn->GetAIDetectRadius();
+	// CommonSight->LoseSightRadius = ControllingPawn->GetAIMissingTargetRadius();
+	// CommonSight->PeripheralVisionAngleDegrees = ControllingPawn->GetAIDetectDegrees();
 
-	// 테스트용 매직 넘버 사용.
-	// 나중에 세부 구현 부분에서는 데이터 에셋으로 가져와서 사용하기
 	CommonSight->SightRadius = 500.f;
 	CommonSight->LoseSightRadius = 800.f;
 	CommonSight->PeripheralVisionAngleDegrees = 60.f;
-	
 	CommonSight->DetectionByAffiliation.bDetectEnemies = true;
 	CommonSight->DetectionByAffiliation.bDetectFriendlies = true;
 	CommonSight->DetectionByAffiliation.bDetectNeutrals = true;
@@ -58,16 +60,14 @@ void APPZombieAIController::DeActivateAI()
 void APPZombieAIController::SetTarget(const TArray<AActor*>& Actors)
 {
 	UBehaviorTreeComponent* BehaviorTreeComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
-	// AKWDummyMonster* ControllingPawn = Cast<AKWDummyMonster>(BehaviorTreeComponent->GetAIOwner()->GetPawn());
 	for(AActor* DetectActor : Actors)
 	{
 		FActorPerceptionBlueprintInfo PerceptionInfo;
 		PerceptionComponent->GetActorsPerception(DetectActor, PerceptionInfo);
-		APPCharacterPlayer* PlayerCharacter = Cast<APPCharacterPlayer>(DetectActor);
+		ACharacter* PlayerCharacter = Cast<ACharacter>(DetectActor);
 		if(PlayerCharacter)
 		{
 			Blackboard->SetValueAsObject(KEY_TARGET, PlayerCharacter);
-			CommonSight->PeripheralVisionAngleDegrees = 60.f;
 			return;
 		}
 	}
@@ -77,4 +77,7 @@ void APPZombieAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	ActivateAI();
+
+	APPCharacterZombie* ControllingPawn = Cast<APPCharacterZombie>(InPawn);
+	check(ControllingPawn);
 }
