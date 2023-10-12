@@ -22,7 +22,7 @@ APPZombieAIController::APPZombieAIController()
 	
 	CommonSight->SightRadius = ZombieAIData->DetectRadius;
 	CommonSight->LoseSightRadius = ZombieAIData->MissingTargetRadius;
-	CommonSight->PeripheralVisionAngleDegrees = ZombieAIData->MissingTargetRadius;
+	CommonSight->PeripheralVisionAngleDegrees = ZombieAIData->DetectDegrees;
 	
 	CommonSight->DetectionByAffiliation.bDetectEnemies = true;
 	CommonSight->DetectionByAffiliation.bDetectFriendlies = true;
