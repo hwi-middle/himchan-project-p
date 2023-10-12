@@ -15,21 +15,19 @@ APPZombieAIController::APPZombieAIController()
 {
 	CommonBlackboardData = FPPConstructorHelper::FindAndGetObject<UBlackboardData>(TEXT("/Script/AIModule.BlackboardData'/Game/186-ZombieAI/AI/BB_Zombie.BB_Zombie'"), EAssertionLevel::Check);
 	CommonBehaviorTree = FPPConstructorHelper::FindAndGetObject<UBehaviorTree>(TEXT("/Script/AIModule.BehaviorTree'/Game/186-ZombieAI/AI/BT_Zombie.BT_Zombie'"), EAssertionLevel::Check);
+	ZombieAIData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/186-ZombieAI/ZombieData.ZombieData'"), EAssertionLevel::Check);
 	
 	CommonPerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPercptionComponent"));
 	CommonSight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("AI_Sight"));
 	
-	// CommonSight->SightRadius = ControllingPawn->GetAIDetectRadius();
-	// CommonSight->LoseSightRadius = ControllingPawn->GetAIMissingTargetRadius();
-	// CommonSight->PeripheralVisionAngleDegrees = ControllingPawn->GetAIDetectDegrees();
-
-	CommonSight->SightRadius = 500.f;
-	CommonSight->LoseSightRadius = 800.f;
-	CommonSight->PeripheralVisionAngleDegrees = 60.f;
+	CommonSight->SightRadius = ZombieAIData->DetectRadius;
+	CommonSight->LoseSightRadius = ZombieAIData->MissingTargetRadius;
+	CommonSight->PeripheralVisionAngleDegrees = ZombieAIData->MissingTargetRadius;
+	
 	CommonSight->DetectionByAffiliation.bDetectEnemies = true;
 	CommonSight->DetectionByAffiliation.bDetectFriendlies = true;
 	CommonSight->DetectionByAffiliation.bDetectNeutrals = true;
-	CommonSight->SetMaxAge(0.1f);
+	CommonSight->SetMaxAge(0.05f);
 	
 	CommonPerceptionComp->ConfigureSense(*CommonSight);
 	CommonPerceptionComp->SetDominantSense(CommonSight->GetSenseImplementation());

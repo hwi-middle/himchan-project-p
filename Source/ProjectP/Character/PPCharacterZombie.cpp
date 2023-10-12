@@ -9,6 +9,7 @@
 
 APPCharacterZombie::APPCharacterZombie()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	AIControllerClass = APPZombieAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	

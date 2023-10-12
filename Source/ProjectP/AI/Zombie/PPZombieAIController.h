@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "ProjectP/Character/PPZombieData.h"
 #include "PPZombieAIController.generated.h"
 
 /**
@@ -39,4 +40,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UAISenseConfig_Sight> CommonSight;
+
+	UPROPERTY()
+	TObjectPtr<UPPZombieData> ZombieAIData;
 };
