@@ -24,9 +24,11 @@ EBTNodeResult::Type UBTTask_PPZombieAttack::ExecuteTask(UBehaviorTreeComponent& 
 	FAICharacterPatternFinished PatternFinished;
 	PatternFinished.AddLambda([&]()
 	{
+		ControllingPawn->SetNewState(ECharacterState::Tracking);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	});
+	
 	ControllingPawn->SetAIPatternDelegate(PatternFinished);
-	ControllingPawn->PlayPatternAnimMontage();
+	ControllingPawn->PlayPatternAnimMontage(ECharacterState::Attack);
 	return EBTNodeResult::InProgress;
 }
