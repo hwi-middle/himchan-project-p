@@ -22,17 +22,20 @@ public:
 	APPCharacterZombie();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+	FAICharacterPatternFinished PatternFinishedDelegate;
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginDestroy() override;
-	void SetDead(UAnimMontage* Montage, bool IsInterrupted);
+	void SetDead();
 	
 	// AI 호출
 	// AI 관련 클래스에서만 호출 가능하게 인자값으로 적절하게 무언가를 받는 방법을 고민하는 중이에요
 public:
-	void SetAIPatternDelegate(FAICharacterPatternFinished FinishedDelegate);
-	void PlayPatternAnimMontage(ECharacterState State);
+	void SetAIPatternDelegate(const FAICharacterPatternFinished& FinishedDelegate);
+	UFUNCTION()
+	void PlayPatternAnimMontage();
 	FORCEINLINE float GetHp() { return Health; }
 	FORCEINLINE float GetAIAttackRange() { return AttackRange; }
 	FORCEINLINE float GetAIPatrolRadius() { return PatrolRadius; }
@@ -47,11 +50,14 @@ public:
 private:
 	void CheckAttackHitResult();
 	// 애님 노티파이 연결
+	UFUNCTION()
 	void AttackHitCheckStart();
+	UFUNCTION()
 	void AttackHitCheckEnd();
 	
-	// 애님 노티파이 종료시 호출
-	void AttackFinishedNotify(UAnimMontage* Montage, bool IsInterrupted);
+	// 공격 애님 노티파이 종료시 호출
+	UFUNCTION()
+	void AttackFinishedNotify();
 
 	// 공격 관련 변수
 private:
@@ -67,8 +73,6 @@ private:
 	
 	// AI 관련 변수
 private:
-	FAICharacterPatternFinished PatternFinishedDelegate;
-
 	float Health;
 	
 	float PatrolRadius;
@@ -84,6 +88,12 @@ private:
 	float TrackingSpeed;
 
 	ECharacterState CurrentState;
+
+	// 죽음 애니메이션 관련 변수
+private:
+	FTimerHandle DeadTimerHandle;
+	
+	float AutoDestroyTime;
 	
 private:
 	UPROPERTY()

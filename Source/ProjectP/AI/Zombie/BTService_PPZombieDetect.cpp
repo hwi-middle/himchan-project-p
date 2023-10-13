@@ -24,6 +24,7 @@ void UBTService_PPZombieDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 	{
 		return;
 	}
+	
 	FVector Center = ControllingPawn->GetActorLocation();
 	UWorld* World = ControllingPawn->GetWorld();
 	if(!World)

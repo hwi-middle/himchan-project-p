@@ -23,20 +23,19 @@ APPCharacterZombie::APPCharacterZombie()
 	ZombieData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/186-ZombieAI/ZombieData.ZombieData'"), EAssertionLevel::Check);
 	GetMesh()->SetSkeletalMesh(ZombieData->ZombieMesh);
 	GetMesh()->SetAnimInstanceClass(FPPConstructorHelper::FindAndGetClass<UPPZombieAnimInstance>(TEXT("/Script/Engine.AnimBlueprint'/Game/186-ZombieAI/ABP_Zombie.ABP_Zombie_C'"), EAssertionLevel::Check));
-	
-	PatrolRadius = ZombieData->PatrolRadius;
-	DetectRadius = ZombieData->DetectRadius;
-	MissingTargetRadius = ZombieData->MissingTargetRadius;
-	ResearchSpeed = ZombieData->ResearchMoveSpeed;
-	TrackingSpeed = ZombieData->ResearchMoveSpeed;
-	DetectDegrees = ZombieData->DetectDegrees;
-	ZombieAnimMontage = ZombieData->ZombieAnimMontage;
 }
 
-float APPCharacterZombie::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
-                                     AActor* DamageCauser)
+float APPCharacterZombie::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	Health -= DamageAmount;
+	if(Health <= 0)
+	{
+		GetController()->Destroy();
+		CurrentState = ECharacterState::Dead;
+		PlayPatternAnimMontage();
+	}
+	return 0;
 }
 
 void APPCharacterZombie::BeginPlay()
@@ -44,6 +43,19 @@ void APPCharacterZombie::BeginPlay()
 	Super::BeginPlay();
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	Health = ZombieData->Health;
+	AttackDamage = ZombieData->AttackDamage;
+	AttackRange = ZombieData->AttackRange;
+	AttackHitCheckBox = ZombieData->AttackHitCheckBox;
+	AutoDestroyTime = ZombieData->AutoDestroyTime;
+
+	PatrolRadius = ZombieData->PatrolRadius;
+	DetectRadius = ZombieData->DetectRadius;
+	MissingTargetRadius = ZombieData->MissingTargetRadius;
+	ResearchSpeed = ZombieData->ResearchMoveSpeed;
+	TrackingSpeed = ZombieData->TrackingMoveSpeed;
+	DetectDegrees = ZombieData->DetectDegrees;
+	ZombieAnimMontage = ZombieData->ZombieAnimMontage;
+	
 	CurrentState = ECharacterState::Idle;
 	GetCharacterMovement()->MaxWalkSpeed = ZombieData->ResearchMoveSpeed;
 	UPPZombieAnimInstance* ZombieAnimInstance = Cast<UPPZombieAnimInstance>(GetMesh()->GetAnimInstance());
@@ -52,6 +64,8 @@ void APPCharacterZombie::BeginPlay()
 		// 애님 노티파이 연결
 		ZombieAnimInstance->HitCheckStartDelegate.AddUObject(this, &APPCharacterZombie::AttackHitCheckStart);
 		ZombieAnimInstance->HitCheckEndDelegate.AddUObject(this, &APPCharacterZombie::AttackHitCheckEnd);
+		ZombieAnimInstance->AttackAnimEndDelegate.AddUObject(this, &APPCharacterZombie::AttackFinishedNotify);
+		ZombieAnimInstance->DeadAnimEndDelegate.AddUObject(this, &APPCharacterZombie::SetDead);
 	}
 }
 
@@ -60,38 +74,49 @@ void APPCharacterZombie::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
+// 인스턴스에서 관리하기 Vs 파괴될 때 알아서 해제해주기 고민고민
 void APPCharacterZombie::BeginDestroy()
 {
 	Super::BeginDestroy();
+	if(GetWorldTimerManager().IsTimerActive(AttackHitCheckTimerHandle))
+	{
+		GetWorldTimerManager().ClearTimer(AttackHitCheckTimerHandle);
+		AttackHitCheckTimerHandle.Invalidate();
+	}
+	if(GetWorldTimerManager().IsTimerActive(DeadTimerHandle))
+	{
+		GetWorldTimerManager().ClearTimer(DeadTimerHandle);
+		DeadTimerHandle.Invalidate();
+	}
+	Destroy();
 }
 
-void APPCharacterZombie::SetDead(UAnimMontage* Montage, bool IsInterrupted)
+void APPCharacterZombie::SetDead()
 {
 	GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD_LOOP, ZombieAnimMontage);
 	GetMesh()->GetAnimInstance()->Montage_Pause();
+	GetWorldTimerManager().SetTimer(DeadTimerHandle, this, &APPCharacterZombie::BeginDestroy, AutoDestroyTime, false);
 }
 
-void APPCharacterZombie::SetAIPatternDelegate(FAICharacterPatternFinished FinishedDelegate)
+void APPCharacterZombie::SetAIPatternDelegate(const FAICharacterPatternFinished& FinishedDelegate)
 {
 	PatternFinishedDelegate = FinishedDelegate;
 }
 
-void APPCharacterZombie::PlayPatternAnimMontage(ECharacterState State)
+void APPCharacterZombie::PlayPatternAnimMontage()
 {
-	PlayAnimMontage(ZombieAnimMontage);
-	switch (State)
+	GetMesh()->GetAnimInstance()->Montage_Play(ZombieAnimMontage);
+	switch (CurrentState)
 	{
 	case ECharacterState::Attack:
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_ATTACK, ZombieAnimMontage);
-		GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &APPCharacterZombie::AttackFinishedNotify);
 		break;
 	case ECharacterState::Dead:
-		GetMesh()->GetAnimInstance()->OnMontageEnded.Clear();
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD, ZombieAnimMontage);
-		GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &APPCharacterZombie::SetDead);
 		break;
 	default:
-		checkNoEntry();
+		// Idle Or Tracking?
+		break;
 	}
 }
 
@@ -105,15 +130,17 @@ void APPCharacterZombie::CheckAttackHitResult()
 	GetMesh()->GetSocketLocation(ZOMBIE_FRONT),
 	GetMesh()->GetSocketLocation(ZOMBIE_FRONT),
 	FQuat::Identity,
-	ECC_CHECK_PAWN,
+	ECC_Pawn,
 	FCollisionShape::MakeBox(AttackHitCheckBox),
 	Params);
-			
+	DrawDebugBox(GetWorld(), GetMesh()->GetSocketLocation(ZOMBIE_FRONT), AttackHitCheckBox, FColor::Blue, false, 1.0f);
 	if(bResult && !bIsDamageCaused)
 	{
-		APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(HitResult.GetActor());
+		// APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(HitResult.GetActor());
+		ACharacter* Player = Cast<ACharacter>(HitResult.GetActor());
 		if(Player)
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, FString::Printf(TEXT("공격 체크")));
 			bIsDamageCaused = true;
 			FDamageEvent DamageEvent;
 			Player->TakeDamage(AttackDamage, DamageEvent, GetController(), this);
@@ -134,7 +161,7 @@ void APPCharacterZombie::AttackHitCheckEnd()
 	}
 }
 
-void APPCharacterZombie::AttackFinishedNotify(UAnimMontage* Montage, bool IsInterrupted)
+void APPCharacterZombie::AttackFinishedNotify()
 {
 	bIsDamageCaused = false;
 	PatternFinishedDelegate.Broadcast();

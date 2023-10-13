@@ -68,15 +68,20 @@ void UPPZombieAnimInstance::AnimNotify_AttackHitCheckEnd()
 	TrackBlendWithAttackValue = 0.f;
 }
 
+void UPPZombieAnimInstance::AnimNotify_AttackAnimEnd()
+{
+	AttackAnimEndDelegate.Broadcast();
+}
+
+void UPPZombieAnimInstance::AnimNotify_DeadAnimEnd()
+{
+	DeadAnimEndDelegate.Broadcast();
+}
+
 void UPPZombieAnimInstance::AnimBlendSequence()
 {
 	if(TrackBlendWithAttackValue)
 	{
 		TrackBlendWithAttackValue += TrackToAttackBlendSpeed;
-		if(TrackBlendWithAttackValue >= 1.0f)
-		{
-			TrackBlendWithAttackValue = 1.0f;
-			GetWorld()->GetTimerManager().ClearTimer(AnimBlendTimerHandle);
-		}
 	}
 }

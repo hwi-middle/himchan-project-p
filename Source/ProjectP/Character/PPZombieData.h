@@ -39,6 +39,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Status, DisplayName = "좀비 추적 상태 이동속도");
 	float TrackingMoveSpeed;
+
+	UPROPERTY(EditAnywhere, Category = Status, DisplayName = "사망 후 자동 소멸 시간");
+	float AutoDestroyTime;
 	
 public:
 	UPROPERTY(EditAnywhere, Category = Anim, DisplayName = "좀비 걷기 <-> 탐색 애니메이션 전환 요구 속도");

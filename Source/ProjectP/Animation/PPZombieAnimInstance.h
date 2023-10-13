@@ -8,6 +8,8 @@
 
 DECLARE_MULTICAST_DELEGATE(FAttackHitCheckStartDelegate)
 DECLARE_MULTICAST_DELEGATE(FAttackHitCheckEndDelegate)
+DECLARE_MULTICAST_DELEGATE(FAttackAnimEndDelegate)
+DECLARE_MULTICAST_DELEGATE(FDeadAnimEndDelegate)
 /**
  * 
  */
@@ -21,7 +23,8 @@ public:
 	FORCEINLINE void SetAttackBlendValue(float Value) { TrackBlendWithAttackValue = Value; }
 	FAttackHitCheckStartDelegate HitCheckStartDelegate;
 	FAttackHitCheckEndDelegate HitCheckEndDelegate;
-	
+	FAttackAnimEndDelegate AttackAnimEndDelegate;
+	FDeadAnimEndDelegate DeadAnimEndDelegate;
 protected:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeBeginPlay() override;
@@ -65,6 +68,12 @@ private:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AnimNotify_AttackHitCheckEnd();
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void AnimNotify_AttackAnimEnd();
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void AnimNotify_DeadAnimEnd();
+	
 	void AnimBlendSequence();
 	
 private:

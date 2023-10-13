@@ -9,6 +9,12 @@
 
 UBTTask_PPZombieAttack::UBTTask_PPZombieAttack()
 {
+	bNotifyTick = true;
+}
+
+void UBTTask_PPZombieAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+{
+	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 	
 }
 
@@ -21,14 +27,14 @@ EBTNodeResult::Type UBTTask_PPZombieAttack::ExecuteTask(UBehaviorTreeComponent& 
 		return EBTNodeResult::Failed;
 	}
 
-	FAICharacterPatternFinished PatternFinished;
+	// FAICharacterPatternFinished PatternFinished;
 	PatternFinished.AddLambda([&]()
 	{
-		ControllingPawn->SetNewState(ECharacterState::Tracking);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	});
-	
+
 	ControllingPawn->SetAIPatternDelegate(PatternFinished);
-	ControllingPawn->PlayPatternAnimMontage(ECharacterState::Attack);
+	ControllingPawn->SetNewState(ECharacterState::Attack);
+	ControllingPawn->PlayPatternAnimMontage();
 	return EBTNodeResult::InProgress;
 }
