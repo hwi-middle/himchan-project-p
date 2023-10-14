@@ -74,23 +74,6 @@ void APPCharacterZombie::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
-// 인스턴스에서 관리하기 Vs 파괴될 때 알아서 해제해주기 고민고민
-void APPCharacterZombie::BeginDestroy()
-{
-	Super::BeginDestroy();
-	if(GetWorldTimerManager().IsTimerActive(AttackHitCheckTimerHandle))
-	{
-		GetWorldTimerManager().ClearTimer(AttackHitCheckTimerHandle);
-		AttackHitCheckTimerHandle.Invalidate();
-	}
-	if(GetWorldTimerManager().IsTimerActive(DeadTimerHandle))
-	{
-		GetWorldTimerManager().ClearTimer(DeadTimerHandle);
-		DeadTimerHandle.Invalidate();
-	}
-	Destroy();
-}
-
 void APPCharacterZombie::SetDead()
 {
 	GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD_LOOP, ZombieAnimMontage);

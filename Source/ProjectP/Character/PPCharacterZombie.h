@@ -27,7 +27,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	virtual void BeginDestroy() override;
 	void SetDead();
 	
 	// AI 호출

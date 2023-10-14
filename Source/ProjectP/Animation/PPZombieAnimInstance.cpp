@@ -80,8 +80,5 @@ void UPPZombieAnimInstance::AnimNotify_DeadAnimEnd()
 
 void UPPZombieAnimInstance::AnimBlendSequence()
 {
-	if(TrackBlendWithAttackValue)
-	{
-		TrackBlendWithAttackValue += TrackToAttackBlendSpeed;
-	}
+	TrackBlendWithAttackValue += TrackToAttackBlendSpeed;
 }
