@@ -108,10 +108,7 @@ void APPTriggerWidgetBase::NotifyActorBeginOverlap(AActor* OtherActor)
 		}
 		
 		// 위젯 애니메이션. 배경 표시 후 내용 표시
-		GetWorldTimerManager().SetTimer(BackgroundOpacityTimer, this, APPTriggerWidgetBase::DisplayWidgetBackgroundDelegate, WidgetAnimationTick, true);
-		
-		// 위젯이 활성화 된 상태에서는 플레이어를 바라보도록 함
-		GetWorldTimerManager().SetTimer(TurnToPlayerTimer, this, APPTriggerWidgetBase::WidgetFocusOnPlayerDelegate, WidgetRotateDelay, true);
+		GetWorldTimerManager().SetTimer(BackgroundOpacityTimer, this, &APPTriggerWidgetBase::DisplayWidgetBackgroundDelegate, WidgetAnimationTick, true);
 	}
 }
 
@@ -133,18 +130,18 @@ void APPTriggerWidgetBase::NotifyActorEndOverlap(AActor* OtherActor)
 			GetWorldTimerManager().ClearTimer(TutorialPanelOpacityTimer);
 		}
 		// 위젯 애니메이션. 내용 숨긴 후 배경 숨기기
-		GetWorldTimerManager().SetTimer(TutorialPanelOpacityTimer, this, APPTriggerWidgetBase::HideWidgetContentsDelegate, WidgetAnimationTick, true);
+		GetWorldTimerManager().SetTimer(TutorialPanelOpacityTimer, this, &APPTriggerWidgetBase::HideWidgetContentsDelegate, WidgetAnimationTick, true);
 	}
 }
 
 void APPTriggerWidgetBase::DisplayWidgetContents()
 {
-	GetWorldTimerManager().SetTimer(TutorialPanelOpacityTimer, this, APPTriggerWidgetBase::DisplayWidgetContentsDelegate, WidgetAnimationTick, true);
+	GetWorldTimerManager().SetTimer(TutorialPanelOpacityTimer, this, &APPTriggerWidgetBase::DisplayWidgetContentsDelegate, WidgetAnimationTick, true);
 }
 
 void APPTriggerWidgetBase::HideWidgetBackground()
 {
-	GetWorldTimerManager().SetTimer(BackgroundOpacityTimer, this, APPTriggerWidgetBase::HideWidgetBackgroundDelegate, WidgetAnimationTick, true);
+	GetWorldTimerManager().SetTimer(BackgroundOpacityTimer, this, &APPTriggerWidgetBase::HideWidgetBackgroundDelegate, WidgetAnimationTick, true);
 }
 
 void APPTriggerWidgetBase::DisplayWidgetBackgroundDelegate()
@@ -187,10 +184,4 @@ void APPTriggerWidgetBase::HideWidgetContentsDelegate()
 		GetWorldTimerManager().ClearTimer(TutorialPanelOpacityTimer);
 		HideWidgetBackground();
 	}
-}
-
-void APPTriggerWidgetBase::WidgetFocusOnPlayerDelegate()
-{
-	FVector LookVector = -OverlapActor->GetActorForwardVector();
-	TutorialWidgetComponent->SetRelativeRotation(LookVector.Rotation());
 }

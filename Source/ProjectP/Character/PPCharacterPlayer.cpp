@@ -143,31 +143,31 @@ void APPCharacterPlayer::DecreaseHealth(const float Value)
 void APPCharacterPlayer::LoadLevelSequence()
 {
 	DisableInput(GetWorld()->GetFirstPlayerController());
-	GetWorldTimerManager().SetTimer(LevelRestartTimer, this, APPCharacterPlayer::LoadLevelDelegate, 0.01f, true);
+	GetWorldTimerManager().SetTimer(LevelRestartTimer, this, &APPCharacterPlayer::LoadLevelDelegate, 0.01f, true);
 }
 
 void APPCharacterPlayer::RestartLevelSequence()
 {
 	UGameplayStatics::PlaySound2D(this, DeadSoundCue);
 	DisableInput(GetWorld()->GetFirstPlayerController());
-	GetWorldTimerManager().SetTimer(LevelRestartTimer, this, APPCharacterPlayer::RestartLevelDelegate, 0.01f, true);
+	GetWorldTimerManager().SetTimer(LevelRestartTimer, this, &APPCharacterPlayer::RestartLevelDelegate, 0.01f, true);
 }
 
 void APPCharacterPlayer::EnableLowHealthWarning()
 {
-	GetWorldTimerManager().SetTimer(LowHealthWarningTimer, this, APPCharacterPlayer::EnableLowHealthWarningDelegate, 0.5f, true);
+	GetWorldTimerManager().SetTimer(LowHealthWarningTimer, this, &APPCharacterPlayer::EnableLowHealthWarningDelegate, 0.5f, true);
 }
 
 void APPCharacterPlayer::EnableHitCheckTimer()
 {
-	GetWorldTimerManager().SetTimer(HitCheckTimer, this, APPCharacterPlayer::EnableHitCheckTimerDelegate, ReturnToIdleStateTime, false);
+	GetWorldTimerManager().SetTimer(HitCheckTimer, this, &APPCharacterPlayer::EnableHitCheckTimerDelegate, ReturnToIdleStateTime, false);
 }
 
 void APPCharacterPlayer::EnableRecoveryHealthTimer()
 {
 	if (Health < PlayerStatusData->MaximumHealth)
 	{
-		GetWorldTimerManager().SetTimer(RecoveryTickTimer, this, APPCharacterPlayer::EnableRecoveryHealthTimerDelegate, 0.01f, true);
+		GetWorldTimerManager().SetTimer(RecoveryTickTimer, this, &APPCharacterPlayer::EnableRecoveryHealthTimerDelegate, 0.01f, true);
 	}
 }
 
@@ -176,7 +176,7 @@ void APPCharacterPlayer::ShowDamageFX()
 	DamageFXIntensity = 0.f;
 	ElapsedDamageFXFadeTime = 0.f;
 	GetWorldTimerManager().ClearTimer(DamageFXFadeTimer);
-	GetWorldTimerManager().SetTimer(DamageFXFadeTimer, this, APPCharacterPlayer::ShowDamageFXDelegate, 0.01f, true);
+	GetWorldTimerManager().SetTimer(DamageFXFadeTimer, this, &APPCharacterPlayer::ShowDamageFXDelegate, 0.01f, true);
 }
 
 //----------------------Delegates----------------------

@@ -70,43 +70,43 @@ void APPEndingScreenBaseActor::FadeInOrOutScreenImage(const bool IsFaded)
 	EndingUIWidget = Cast<UPPEndingUIWidget>(EndingScreenWidgetComponent->GetUserWidgetObject());
 	if(IsFaded)
 	{
-		GetWorldTimerManager().SetTimer(FadeSequenceTimer, this, APPEndingScreenBaseActor::FadeInScreenImageDelegate, TimerTick, true);
+		GetWorldTimerManager().SetTimer(FadeSequenceTimer, this, &APPEndingScreenBaseActor::FadeInScreenImageDelegate, TimerTick, true);
 	}
 	else
 	{
-		GetWorldTimerManager().SetTimer(FadeSequenceTimer, this, APPEndingScreenBaseActor::FadeOutScreenImageDelegate, TimerTick, true);
+		GetWorldTimerManager().SetTimer(FadeSequenceTimer, this, &APPEndingScreenBaseActor::FadeOutScreenImageDelegate, TimerTick, true);
 	}
 }
 
 void APPEndingScreenBaseActor::ActivateCreditPanel()
 {
-	GetWorldTimerManager().SetTimer(FadeSequenceTimer, this, APPEndingScreenBaseActor::ActivateCreditPanelDelegate, TimerTick, true);
+	GetWorldTimerManager().SetTimer(FadeSequenceTimer, this, &APPEndingScreenBaseActor::ActivateCreditPanelDelegate, TimerTick, true);
 }
 
 void APPEndingScreenBaseActor::MoveCreditPanel()
 {
-	GetWorldTimerManager().SetTimer(CreditMoveTimer, this, APPEndingScreenBaseActor::MoveCreditPanelDelegate, 0.01f, true);
+	GetWorldTimerManager().SetTimer(CreditMoveTimer, this, &APPEndingScreenBaseActor::MoveCreditPanelDelegate, 0.01f, true);
 }
 
 void APPEndingScreenBaseActor::ExitToLobby()
 {
-	GetWorldTimerManager().SetTimer(DelayTimer, this, APPEndingScreenBaseActor::ExitToLobbyDelegate, ExitToLobbyDelay, false);
+	GetWorldTimerManager().SetTimer(DelayTimer, this, &APPEndingScreenBaseActor::ExitToLobbyDelegate, ExitToLobbyDelay, false);
 }
 
 void APPEndingScreenBaseActor::EnableAutoFadeTimer()
 {
-	GetWorldTimerManager().SetTimer(DelayTimer, this, APPEndingScreenBaseActor::EnableAutoFadeTimerDelegate, AutoFadeTime, false);
+	GetWorldTimerManager().SetTimer(DelayTimer, this, &APPEndingScreenBaseActor::EnableAutoFadeTimerDelegate, AutoFadeTime, false);
 }
 
 void APPEndingScreenBaseActor::ToggleLight(bool IsEnable)
 {
 	if(!IsEnable)
 	{
-		GetWorldTimerManager().SetTimer(LightIntensityControlTimer, this, APPEndingScreenBaseActor::ToggleLightOnAndEndingImageSettingDelegate, TimerTick, true);
+		GetWorldTimerManager().SetTimer(LightIntensityControlTimer, this, &APPEndingScreenBaseActor::ToggleLightOnAndEndingImageSettingDelegate, TimerTick, true);
 	}
 	else
 	{
-		GetWorldTimerManager().SetTimer(LightIntensityControlTimer, this, APPEndingScreenBaseActor::ToggleLightOffDelegate, TimerTick, true);
+		GetWorldTimerManager().SetTimer(LightIntensityControlTimer, this, &APPEndingScreenBaseActor::ToggleLightOffDelegate, TimerTick, true);
 	}
 }
 

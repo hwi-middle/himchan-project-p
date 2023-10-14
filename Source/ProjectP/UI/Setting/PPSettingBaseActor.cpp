@@ -122,7 +122,7 @@ void APPSettingBaseActor::CloseSubWidgetPanel()
 	SettingWidget->SetSubWidgetAnimationWorking(true);
 
 	// 서브위젯 닫기 애니메이션.
-	GetWorldTimerManager().SetTimer(SubWidgetCloseTimer, this, APPSettingBaseActor::CloseSubWidgetPanelDelegate, WidgetAnimationTick, true);
+	GetWorldTimerManager().SetTimer(SubWidgetCloseTimer, this, &APPSettingBaseActor::CloseSubWidgetPanelDelegate, WidgetAnimationTick, true);
 }
 
 void APPSettingBaseActor::OpenSubWidgetPanel()
@@ -140,7 +140,7 @@ void APPSettingBaseActor::OpenSubWidgetPanel()
 	
 	SettingWidget->SetSubWidgetAnimationWorking(true);
 	// 서브위젯 열기 애니메이션
-	GetWorldTimerManager().SetTimer(SubWidgetOpenTimer, this, APPSettingBaseActor::OpenSubWidgetPanelDelegate, WidgetAnimationTick, true);
+	GetWorldTimerManager().SetTimer(SubWidgetOpenTimer, this, &APPSettingBaseActor::OpenSubWidgetPanelDelegate, WidgetAnimationTick, true);
 }
 
 //-----------------------------------------------------Delegates--------------------------------------------

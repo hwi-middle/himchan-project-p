@@ -316,7 +316,7 @@ void APPGunBase::OnFire()
 			CrossHairPlane->SetStaticMesh(OverheatedCrossHair);
 		}
 
-		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, this, APPGunBase::BlockShootDelegate, 0.01f, true);
+		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, this, &APPGunBase::BlockShootDelegate, 0.01f, true);
 	}
 }
 
@@ -327,7 +327,7 @@ void APPGunBase::StopFire()
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot;
 
 	// 정지 후 CooldownDelay 만큼의 시간이 흐르면 Cooldown 시작
-	GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, this, APPGunBase::OverHeatCoolDawnDelegate, 0.01f, true);
+	GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, this, &APPGunBase::OverHeatCoolDawnDelegate, 0.01f, true);
 }
 
 void APPGunBase::GrabOnHand(APPVRHand* InHand)

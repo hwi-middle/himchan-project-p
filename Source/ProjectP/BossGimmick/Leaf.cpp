@@ -23,7 +23,8 @@ ALeaf::ALeaf()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeafMesh"));
-	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/Environment/Boss/SM_Leaf.SM_Leaf'"));
+	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/Environment/Leaf/Mesh/SM_Leaf.SM_Leaf'"));
+	
 	Mesh->SetStaticMesh(MeshObj);
 
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
@@ -113,7 +114,7 @@ void ALeaf::Tick(float DeltaTime)
 
 void ALeaf::StartTracing()
 {
-	GetWorldTimerManager().SetTimer(DelayTracingTimerHandle, this, ALeaf::StartTracingDelegate, TraceStartDelay, false);
+	GetWorldTimerManager().SetTimer(DelayTracingTimerHandle, this, &ALeaf::StartTracingDelegate, TraceStartDelay, false);
 }
 
 void ALeaf::BlinkAndExplode()
@@ -121,7 +122,7 @@ void ALeaf::BlinkAndExplode()
 	CurrentBlinkSpeed = 0.f;
 	ElapsedBlinkTime = 0.f;
 
-	GetWorldTimerManager().SetTimer(BlinkTimerHandle, this, ALeaf::BlinkAndExplodeDelegate, 0.01f, true);
+	GetWorldTimerManager().SetTimer(BlinkTimerHandle, this, &ALeaf::BlinkAndExplodeDelegate, 0.01f, true);
 }
 
 bool ALeaf::CheckPlayerWithSphere(const float InRadius, FHitResult& Result)
@@ -176,7 +177,7 @@ void ALeaf::FadeOutAndDestroy()
 	ElapsedFadeOutTime = 0.f;
 	Mesh->SetScalarParameterValueOnMaterials(TEXT("BlinkSpeed"), 0.f);
 
-	GetWorldTimerManager().SetTimer(DestroyEffectTimerHandle, this, ALeaf::FadeOutAndDestroyDelegate, 0.01f, true);
+	GetWorldTimerManager().SetTimer(DestroyEffectTimerHandle, this, &ALeaf::FadeOutAndDestroyDelegate, 0.01f, true);
 }
 
 //----------------------------Delegates------------------------

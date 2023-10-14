@@ -52,13 +52,13 @@ void APPPrologueActor::ClearAllTimerOnLevelChange()
 
 void APPPrologueActor::DisplayStringData()
 {
-	GetWorldTimerManager().SetTimer(StringDataChangeTimerHandle, this, APPPrologueActor::DisplayStringDataDelegate, HandleChangeTime, true, HandleChangeTime);
+	GetWorldTimerManager().SetTimer(StringDataChangeTimerHandle, this, &APPPrologueActor::DisplayStringDataDelegate, HandleChangeTime, true, HandleChangeTime);
 }
 
 void APPPrologueActor::LoadMainLevelSequence()
 {
 	DisableInput(GetWorld()->GetFirstPlayerController());
-	GetWorldTimerManager().SetTimer(LoadMainLevelTimerHandle, this, APPPrologueActor::LoadMainLevelDelegate, 0.01f, true, HandleChangeTime);
+	GetWorldTimerManager().SetTimer(LoadMainLevelTimerHandle, this, &APPPrologueActor::LoadMainLevelDelegate, 0.01f, true, HandleChangeTime);
 }
 
 //------------------------------------------Delegates--------------------------------------

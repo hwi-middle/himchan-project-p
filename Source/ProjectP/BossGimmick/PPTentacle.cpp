@@ -74,7 +74,7 @@ void APPTentacle::ShowWarningSign()
 {
 	WarningZone = GetWorld()->SpawnActor<APPWarningZoneCylinder>(GetActorLocation(), FRotator::ZeroRotator);
 	WarningZone->Show(WarningFadeInDuration);
-	GetWorldTimerManager().SetTimer(WarningTimerHandle, this, APPTentacle::ShowWarningSignDelegate, WarningFadeInDuration + WarningDuration, false);
+	GetWorldTimerManager().SetTimer(WarningTimerHandle, this, &APPTentacle::ShowWarningSignDelegate, WarningFadeInDuration + WarningDuration, false);
 }
 
 void APPTentacle::HideWarningSignAndAttack()
@@ -84,19 +84,19 @@ void APPTentacle::HideWarningSignAndAttack()
 		WarningZone->HideAndDestroy(WarningFadeOutDuration);
 	}
 
-	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, this, APPTentacle::HideWarningSignAndAttackDelegate, WarningFadeOutDuration, false);
+	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, this, &APPTentacle::HideWarningSignAndAttackDelegate, WarningFadeOutDuration, false);
 
 
 }
 
 void APPTentacle::HideTentacle()
 {
-	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, this, APPTentacle::HideTentacleDelegate, 0.01f, true);
+	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, this, &APPTentacle::HideTentacleDelegate, 0.01f, true);
 }
 
 void APPTentacle::DestroyTentacle()
 {
-	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, this, APPTentacle::DestroyTentacleDelegate, 0.01f, true);
+	GetWorldTimerManager().SetTimer(HitPlayerTimerHandle, this, &APPTentacle::DestroyTentacleDelegate, 0.01f, true);
 }
 
 //----------------------------Delegates------------------------

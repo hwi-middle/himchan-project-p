@@ -322,7 +322,7 @@ void APPCharacterBoss::GenerateToxicFog()
 	{
 		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), GF_CommanderSoundCueArray[1]);
 	}
-	GetWorldTimerManager().SetTimer(GreenFogTimerHandle, this, APPCharacterBoss::GenerateToxicFogDelegate, 1.f, true, 0.f);
+	GetWorldTimerManager().SetTimer(GreenFogTimerHandle, this, &APPCharacterBoss::GenerateToxicFogDelegate, 1.f, true, 0.f);
 }
 
 void APPCharacterBoss::GenerateToxicFogDelegate()

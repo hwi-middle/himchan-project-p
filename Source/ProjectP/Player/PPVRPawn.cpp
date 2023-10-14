@@ -400,7 +400,7 @@ void APPVRPawn::StartMove(const FInputActionValue& Value)
 	{
 		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
 	}
-	GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, this, APPVRPawn::StartMoveDelegate, WalkSoundRate, true);
+	GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, this, &APPVRPawn::StartMoveDelegate, WalkSoundRate, true);
 }
 
 void APPVRPawn::CompleteMove(const FInputActionValue& Value)
@@ -426,11 +426,11 @@ void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 	}
 	if(MoveSpeed == MovementData->WalkSpeed)
 	{
-		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, this, APPVRPawn::ToggleSprintDelegate, WalkSoundRate, true);
+		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, this, &APPVRPawn::ToggleSprintDelegate, WalkSoundRate, true);
 	}
 	else
 	{
-		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, this, APPVRPawn::ToggleSprintDelegate, SprintSoundRate, true);
+		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, this, &APPVRPawn::ToggleSprintDelegate, SprintSoundRate, true);
 	}
 }
 

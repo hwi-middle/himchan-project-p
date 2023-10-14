@@ -70,7 +70,7 @@ void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 		LobbyWidget->SetButtonInteraction(false);
 		SettingWidgetActor->SetVisibility(true);
 		CurrentLocation = GetActorLocation();
-		GetWorldTimerManager().SetTimer(WidgetAnimationTimer, this, APPLobbyUIBaseActor::OpenSettingWidgetDelegate, WidgetAnimationTick, true);
+		GetWorldTimerManager().SetTimer(WidgetAnimationTimer, this, &APPLobbyUIBaseActor::OpenSettingWidgetDelegate, WidgetAnimationTick, true);
 		return;
 	}
 	if(SubWidget == ESubWidgetType::Exit)
@@ -78,7 +78,7 @@ void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 		// 시간 되면 위젯 추가로 만들고 일단은 패스
 		// ExitWidgetComponent->SetVisibility(true);
 		DisableInput(GetWorld()->GetFirstPlayerController());
-		GetWorldTimerManager().SetTimer(ExitGameFadeOutTimer, this, APPLobbyUIBaseActor::OpenExitWidgetDelegate, 0.01f, true);
+		GetWorldTimerManager().SetTimer(ExitGameFadeOutTimer, this, &APPLobbyUIBaseActor::OpenExitWidgetDelegate, 0.01f, true);
 	}
 }
 
@@ -88,12 +88,12 @@ void APPLobbyUIBaseActor::ReturnFromSettingToLobby()
 	
 	CurrentLocation = GetActorLocation();
 	LobbyWidgetComponent->SetVisibility(true);
-	GetWorldTimerManager().SetTimer(WidgetAnimationTimer, this, APPLobbyUIBaseActor::ReturnFromSettingToLobbyDelegate, WidgetAnimationTick, true);
+	GetWorldTimerManager().SetTimer(WidgetAnimationTimer, this, &APPLobbyUIBaseActor::ReturnFromSettingToLobbyDelegate, WidgetAnimationTick, true);
 }
 
 void APPLobbyUIBaseActor::EntryMainLevelSequence()
 {
-	GetWorldTimerManager().SetTimer(EntryMainLevelAnimationTimer, this, APPLobbyUIBaseActor::EntryMainLevelSequenceDelegate, 0.01f, true);
+	GetWorldTimerManager().SetTimer(EntryMainLevelAnimationTimer, this, &APPLobbyUIBaseActor::EntryMainLevelSequenceDelegate, 0.01f, true);
 }
 
 //----------------------Delegates------------------------------
