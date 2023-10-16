@@ -24,7 +24,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-protected:
-	UPROPERTY(BlueprintReadWrite)
+private:
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<UPPEventCaller> EventCallerComponent;
 };

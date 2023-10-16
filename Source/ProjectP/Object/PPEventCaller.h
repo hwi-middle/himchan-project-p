@@ -3,10 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PPEventReceiver.h"
 #include "Components/SceneComponent.h"
 #include "PPEventCaller.generated.h"
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEventDeliverDelegate);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTP_API UPPEventCaller : public USceneComponent
@@ -16,18 +15,18 @@ class PROJECTP_API UPPEventCaller : public USceneComponent
 public:	
 	// Sets default values for this component's properties
 	UPPEventCaller();
-
-	UPROPERTY(BlueprintAssignable)
-	FEventDeliverDelegate EventDeliverDelegate;
+	
+	FORCEINLINE void DeliverEvent() const { EventReceiver->AddEventStack(); }
 	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	FORCEINLINE void DeliverEvent() const { EventDeliverDelegate.Broadcast(); }
 	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+protected:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<APPEventReceiver> EventReceiver;
 };

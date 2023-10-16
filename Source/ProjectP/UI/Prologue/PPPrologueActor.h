@@ -24,7 +24,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void Tick(float DeltaTime) override;
 	virtual void BeginPlay() override;
-
+	
 protected:
 	void DisplayStringData();
 	void LoadMainLevelSequence();

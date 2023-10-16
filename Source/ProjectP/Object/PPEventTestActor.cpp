@@ -22,6 +22,6 @@ void APPEventTestActor::BeginPlay()
 void APPEventTestActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 

@@ -24,6 +24,5 @@ void UPPEventCaller::BeginPlay()
 void UPPEventCaller::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 }
 

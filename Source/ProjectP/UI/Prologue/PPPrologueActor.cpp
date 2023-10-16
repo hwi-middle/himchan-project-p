@@ -4,6 +4,7 @@
 #include "ProjectP/UI/Prologue/PPPrologueActor.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "ProjectP/Character/PPCharacterPlayer.h"
 #include "ProjectP/Constant/PPLevelName.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/StringDataTable.h"
