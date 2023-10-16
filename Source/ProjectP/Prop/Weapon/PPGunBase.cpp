@@ -316,24 +316,7 @@ void APPGunBase::OnFire()
 			CrossHairPlane->SetStaticMesh(OverheatedCrossHair);
 		}
 
-		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, FTimerDelegate::CreateLambda([&]()
-		{
-			GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
-
-			CurrentOverheat = FMath::Lerp(MaxOverheat, 0.f, ElapsedUnavailableTime / UnavailableTime);
-
-			if (ElapsedUnavailableTime >= UnavailableTime)
-			{
-				bIsUnavailable = false;
-				LineColor = FColor::Green;
-				CurrentOverheat = 0.f;
-				CrossHairPlane->SetStaticMesh(DefaultCrossHair);
-				GetWorldTimerManager().ClearTimer(BlockShootTimerHandle);
-				FPPTimerHelper::InvalidateTimerHandle(BlockShootTimerHandle);
-				return;
-			}
-			ElapsedUnavailableTime += FPPTimerHelper::GetActualDeltaTime(BlockShootTimerHandle);
-		}), 0.01f, true);
+		GetWorldTimerManager().SetTimer(BlockShootTimerHandle, this, &APPGunBase::BlockShootDelegate, 0.01f, true);
 	}
 }
 
@@ -344,30 +327,7 @@ void APPGunBase::StopFire()
 	ElapsedTimeAfterLastShoot = ShootDelayPerShoot;
 
 	// 정지 후 CooldownDelay 만큼의 시간이 흐르면 Cooldown 시작
-	GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, FTimerDelegate::CreateLambda([&]()
-	{
-		if (!FPPTimerHelper::IsDelayElapsed(OverheatCoolDownTimerHandle, CooldownDelay))
-		{
-			return;
-		}
-
-		if (!bIsCooldownStart)
-		{
-			bIsCooldownStart = true;
-			UGameplayStatics::PlaySound2D(this, CoolDownSoundCue);
-		}
-
-		const float DeltaTime = FPPTimerHelper::GetActualDeltaTime(OverheatCoolDownTimerHandle);
-		CurrentOverheat -= OverheatCoolDownPerSecond * DeltaTime;
-		if (CurrentOverheat < KINDA_SMALL_NUMBER)
-		{
-			bIsCooldownStart = false;
-			CurrentOverheat = 0.f;
-			GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
-			FPPTimerHelper::InvalidateTimerHandle(BlockShootTimerHandle);
-		}
-	}), 0.01f, true);
-
+	GetWorldTimerManager().SetTimer(OverheatCoolDownTimerHandle, this, &APPGunBase::OverHeatCoolDawnDelegate, 0.01f, true);
 }
 
 void APPGunBase::GrabOnHand(APPVRHand* InHand)
@@ -431,4 +391,47 @@ void APPGunBase::ToggleFlash()
 	{
 		Flashlight->SetIntensity(0.0f);
 	}
+}
+
+void APPGunBase::OverHeatCoolDawnDelegate()
+{
+	if (!FPPTimerHelper::IsDelayElapsed(OverheatCoolDownTimerHandle, CooldownDelay))
+	{
+		return;
+	}
+
+	if (!bIsCooldownStart)
+	{
+		bIsCooldownStart = true;
+		UGameplayStatics::PlaySound2D(this, CoolDownSoundCue);
+	}
+
+	const float DeltaTime = FPPTimerHelper::GetActualDeltaTime(OverheatCoolDownTimerHandle);
+	CurrentOverheat -= OverheatCoolDownPerSecond * DeltaTime;
+	if (CurrentOverheat < KINDA_SMALL_NUMBER)
+	{
+		bIsCooldownStart = false;
+		CurrentOverheat = 0.f;
+		GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
+		FPPTimerHelper::InvalidateTimerHandle(BlockShootTimerHandle);
+	}
+}
+
+void APPGunBase::BlockShootDelegate()
+{
+	GetWorldTimerManager().ClearTimer(OverheatCoolDownTimerHandle);
+
+	CurrentOverheat = FMath::Lerp(MaxOverheat, 0.f, ElapsedUnavailableTime / UnavailableTime);
+
+	if (ElapsedUnavailableTime >= UnavailableTime)
+	{
+		bIsUnavailable = false;
+		LineColor = FColor::Green;
+		CurrentOverheat = 0.f;
+		CrossHairPlane->SetStaticMesh(DefaultCrossHair);
+		GetWorldTimerManager().ClearTimer(BlockShootTimerHandle);
+		FPPTimerHelper::InvalidateTimerHandle(BlockShootTimerHandle);
+		return;
+	}
+	ElapsedUnavailableTime += FPPTimerHelper::GetActualDeltaTime(BlockShootTimerHandle);
 }

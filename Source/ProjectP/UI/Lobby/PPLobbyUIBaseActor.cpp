@@ -70,18 +70,7 @@ void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 		LobbyWidget->SetButtonInteraction(false);
 		SettingWidgetActor->SetVisibility(true);
 		CurrentLocation = GetActorLocation();
-		GetWorldTimerManager().SetTimer(WidgetAnimationTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			AddActorLocalOffset(FVector(0.0f, -WidgetAnimationMoveValue, 0.0f));
-			if(CurrentLocation.Y - WidgetMaximumMovementAmount >= GetActorLocation().Y)
-			{
-				SetActorLocation(CurrentLocation + FVector(0.0f, -WidgetMaximumMovementAmount, 0.0f));
-				CurrentLocation = GetActorLocation();
-				LobbyWidgetComponent->SetVisibility(false);
-				LobbyWidget->SetButtonInteraction(true);
-				GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
-			}
-		}), WidgetAnimationTick, true);
+		GetWorldTimerManager().SetTimer(WidgetAnimationTimer, this, &APPLobbyUIBaseActor::OpenSettingWidgetDelegate, WidgetAnimationTick, true);
 		return;
 	}
 	if(SubWidget == ESubWidgetType::Exit)
@@ -89,17 +78,7 @@ void APPLobbyUIBaseActor::OpenSubWidget(ESubWidgetType SubWidget)
 		// 시간 되면 위젯 추가로 만들고 일단은 패스
 		// ExitWidgetComponent->SetVisibility(true);
 		DisableInput(GetWorld()->GetFirstPlayerController());
-		GetWorldTimerManager().SetTimer(ExitGameFadeOutTimer, FTimerDelegate::CreateLambda([&]()
-			{
-				if(PostProcessVolume->Settings.AutoExposureBias <= -5.0f && PostProcessVolume->Settings.VignetteIntensity >= 2.5f)
-				{
-					GetWorldTimerManager().ClearTimer(ExitGameFadeOutTimer);
-					UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
-					return;
-				}
-				PostProcessVolume->Settings.AutoExposureBias -= 0.02f;
-				PostProcessVolume->Settings.VignetteIntensity += 0.01f;
-			}), 0.01f, true);
+		GetWorldTimerManager().SetTimer(ExitGameFadeOutTimer, this, &APPLobbyUIBaseActor::OpenExitWidgetDelegate, 0.01f, true);
 	}
 }
 
@@ -109,32 +88,62 @@ void APPLobbyUIBaseActor::ReturnFromSettingToLobby()
 	
 	CurrentLocation = GetActorLocation();
 	LobbyWidgetComponent->SetVisibility(true);
-	GetWorldTimerManager().SetTimer(WidgetAnimationTimer, FTimerDelegate::CreateLambda([&]()
-	{
-		AddActorLocalOffset(FVector(0.0f, WidgetAnimationMoveValue, 0.0f));
-		if(CurrentLocation.Y + WidgetMaximumMovementAmount <= GetActorLocation().Y)
-		{
-			SetActorLocation(CurrentLocation + FVector(0.0f, WidgetMaximumMovementAmount, 0.0f));
-			CurrentLocation = GetActorLocation();
-			SettingWidgetActor->SetVisibility(false);
-			GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
-		}
-	}), WidgetAnimationTick, true);
+	GetWorldTimerManager().SetTimer(WidgetAnimationTimer, this, &APPLobbyUIBaseActor::ReturnFromSettingToLobbyDelegate, WidgetAnimationTick, true);
 }
 
 void APPLobbyUIBaseActor::EntryMainLevelSequence()
 {
-	GetWorldTimerManager().SetTimer(EntryMainLevelAnimationTimer, FTimerDelegate::CreateLambda([&]()
+	GetWorldTimerManager().SetTimer(EntryMainLevelAnimationTimer, this, &APPLobbyUIBaseActor::EntryMainLevelSequenceDelegate, 0.01f, true);
+}
+
+//----------------------Delegates------------------------------
+void APPLobbyUIBaseActor::OpenSettingWidgetDelegate()
+{
+	AddActorLocalOffset(FVector(0.0f, -WidgetAnimationMoveValue, 0.0f));
+	if (CurrentLocation.Y - WidgetMaximumMovementAmount >= GetActorLocation().Y)
 	{
-		LobbyWidget->AddWidgetHeightOffset(5.0f);
-		if(LobbyWidget->GetSubWidgetHeight() >= LobbyWidgetMaximumHeight)
-		{
-			LobbyWidget->SetWidgetHeightOffset(LobbyWidgetMaximumHeight);
-			// Level Blueprint Delegate
-			EntryMainLevelDelegate.Broadcast();
-			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-		}
-	}), 0.01f, true);
+		SetActorLocation(CurrentLocation + FVector(0.0f, -WidgetMaximumMovementAmount, 0.0f));
+		CurrentLocation = GetActorLocation();
+		LobbyWidgetComponent->SetVisibility(false);
+		LobbyWidget->SetButtonInteraction(true);
+		GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
+	}
+}
+
+void APPLobbyUIBaseActor::OpenExitWidgetDelegate()
+{
+	if (PostProcessVolume->Settings.AutoExposureBias <= -5.0f && PostProcessVolume->Settings.VignetteIntensity >= 2.5f)
+	{
+		GetWorldTimerManager().ClearTimer(ExitGameFadeOutTimer);
+		UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
+		return;
+	}
+	PostProcessVolume->Settings.AutoExposureBias -= 0.02f;
+	PostProcessVolume->Settings.VignetteIntensity += 0.01f;
+}
+
+void APPLobbyUIBaseActor::ReturnFromSettingToLobbyDelegate()
+{
+	AddActorLocalOffset(FVector(0.0f, WidgetAnimationMoveValue, 0.0f));
+	if (CurrentLocation.Y + WidgetMaximumMovementAmount <= GetActorLocation().Y)
+	{
+		SetActorLocation(CurrentLocation + FVector(0.0f, WidgetMaximumMovementAmount, 0.0f));
+		CurrentLocation = GetActorLocation();
+		SettingWidgetActor->SetVisibility(false);
+		GetWorldTimerManager().ClearTimer(WidgetAnimationTimer);
+	}
+}
+
+void APPLobbyUIBaseActor::EntryMainLevelSequenceDelegate()
+{
+	LobbyWidget->AddWidgetHeightOffset(5.0f);
+	if (LobbyWidget->GetSubWidgetHeight() >= LobbyWidgetMaximumHeight)
+	{
+		LobbyWidget->SetWidgetHeightOffset(LobbyWidgetMaximumHeight);
+		// Level Blueprint Delegate
+		EntryMainLevelDelegate.Broadcast();
+		GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+	}
 }
 
 

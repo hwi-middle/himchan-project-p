@@ -42,6 +42,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void EntryMainLevelSequence();
 	
+private:
+	void OpenSettingWidgetDelegate();
+	void OpenExitWidgetDelegate();
+	void ReturnFromSettingToLobbyDelegate();
+	void EntryMainLevelSequenceDelegate();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 	TObjectPtr<UWidgetComponent> LobbyWidgetComponent;

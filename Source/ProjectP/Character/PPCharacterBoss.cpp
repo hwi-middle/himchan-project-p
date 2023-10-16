@@ -25,7 +25,6 @@
 #include "PPVRBossData.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
-#include "ProjectP/AI/Boss/PPBossAIController.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "Math/UnrealMathUtility.h"
 #include "ProjectP/BossGimmick/Leaf.h"
@@ -322,58 +321,60 @@ void APPCharacterBoss::GenerateToxicFog()
 	{
 		UGameplayStatics::PlaySound2D(GetWorld()->GetFirstPlayerController(), GF_CommanderSoundCueArray[1]);
 	}
-	GetWorldTimerManager().SetTimer(GreenFogTimerHandle, FTimerDelegate::CreateLambda([&]()
+	GetWorldTimerManager().SetTimer(GreenFogTimerHandle, this, &APPCharacterBoss::GenerateToxicFogDelegate, 1.f, true, 0.f);
+}
+
+void APPCharacterBoss::GenerateToxicFogDelegate()
+{
+	if (!bHasGFSpawned)
 	{
-		if (!bHasGFSpawned)
-		{
-			UGameplayStatics::PlaySound2D(this, GF_SpawnSound);
-			GF_FX->SetActive(true);
-			bHasGFSpawned = true;
-		}
+		UGameplayStatics::PlaySound2D(this, GF_SpawnSound);
+		GF_FX->SetActive(true);
+		bHasGFSpawned = true;
+	}
 
-		if (GF_ElapsedTime >= GF_Duration)
-		{
-			// FlushPersistentDebugLines(GetWorld());
-			bHasGFSpawned = false;
-			GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
-			GF_FX->SetActive(false);
-			SetIsAttacking(false);
-			FPPTimerHelper::InvalidateTimerHandle(GreenFogTimerHandle);
-			return;
-		}
+	if (GF_ElapsedTime >= GF_Duration)
+	{
+		// FlushPersistentDebugLines(GetWorld());
+		bHasGFSpawned = false;
+		GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
+		GF_FX->SetActive(false);
+		SetIsAttacking(false);
+		FPPTimerHelper::InvalidateTimerHandle(GreenFogTimerHandle);
+		return;
+	}
 
-		FVector SpawnLocation = GetActorLocation();
-		FHitResult HitResult;
-		FCollisionQueryParams CollisionParams;
-		CollisionParams.AddIgnoredActor(this);
+	FVector SpawnLocation = GetActorLocation();
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
 
-		bool bHit = GetWorld()->SweepSingleByChannel(
-			HitResult,
-			SpawnLocation,
-			SpawnLocation,
-			FQuat::Identity,
-			ECC_CHECK_PAWN,
-			FCollisionShape::MakeSphere(GF_Radius),
-			CollisionParams
-		);
+	bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		SpawnLocation,
+		SpawnLocation,
+		FQuat::Identity,
+		ECC_CHECK_PAWN,
+		FCollisionShape::MakeSphere(GF_Radius),
+		CollisionParams
+	);
 
-		// DrawDebugSphere(GetWorld(), GetActorLocation(), GF_Radius, 64, FColor::Green, false, 1.f);
+	// DrawDebugSphere(GetWorld(), GetActorLocation(), GF_Radius, 64, FColor::Green, false, 1.f);
 
-		GF_ElapsedTime += FPPTimerHelper::GetActualDeltaTime(GreenFogTimerHandle);
-		if (!bHit)
-		{
-			return;
-		}
+	GF_ElapsedTime += FPPTimerHelper::GetActualDeltaTime(GreenFogTimerHandle);
+	if (!bHit)
+	{
+		return;
+	}
 
-		APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(HitResult.GetActor());
-		if (!Player)
-		{
-			return;
-		}
+	APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(HitResult.GetActor());
+	if (!Player)
+	{
+		return;
+	}
 
-		FDamageEvent DamageEvent;
-		Player->TakeDamage(GF_Damage, DamageEvent, nullptr, this);
-	}), 1.f, true, 0.f);
+	FDamageEvent DamageEvent;
+	Player->TakeDamage(GF_Damage, DamageEvent, nullptr, this);
 }
 
 void APPCharacterBoss::OpenAndCloseNuclearByRandomDelay()

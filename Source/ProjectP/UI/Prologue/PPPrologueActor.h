@@ -30,6 +30,10 @@ protected:
 	void LoadMainLevelSequence();
 	
 private:
+	void DisplayStringDataDelegate();
+	void LoadMainLevelDelegate();
+
+private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UWidgetComponent> PrologueWidgetComponent;
 

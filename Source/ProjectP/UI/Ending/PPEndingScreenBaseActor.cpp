@@ -70,123 +70,138 @@ void APPEndingScreenBaseActor::FadeInOrOutScreenImage(const bool IsFaded)
 	EndingUIWidget = Cast<UPPEndingUIWidget>(EndingScreenWidgetComponent->GetUserWidgetObject());
 	if(IsFaded)
 	{
-		GetWorldTimerManager().SetTimer(FadeSequenceTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			EndingUIWidget->SetScreenOpacity(EndingUIWidget->GetScreenOpacity() + TimerTick / ImageFadeSequenceTime);
-			if(EndingUIWidget->GetScreenOpacity() >= 1.0f)
-			{
-				EndingUIWidget->SetScreenOpacity(1.0f);
-				GetWorldTimerManager().ClearTimer(FadeSequenceTimer);
-				EnableAutoFadeTimer();
-			}
-		}), TimerTick, true);
+		GetWorldTimerManager().SetTimer(FadeSequenceTimer, this, &APPEndingScreenBaseActor::FadeInScreenImageDelegate, TimerTick, true);
 	}
 	else
 	{
-		GetWorldTimerManager().SetTimer(FadeSequenceTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			EndingUIWidget->SetScreenOpacity(EndingUIWidget->GetScreenOpacity() - TimerTick / ImageFadeSequenceTime);
-			if(EndingUIWidget->GetScreenOpacity() <= 0.0f)
-			{
-				EndingUIWidget->SetScreenOpacity(0.0f);
-				GetWorldTimerManager().ClearTimer(FadeSequenceTimer);
-				
-				bool CheckRemainImage = EndingUIWidget->SetScreenImage(EndingUIWidget->GetCurrentScreenImageNum() + 1);
-				if(CheckRemainImage)
-				{
-					FadeInOrOutScreenImage(true);
-				}
-				else
-				{
-					MaxCreditBottomPosition = EndingUIWidget->GetCreditHeight();
-					FText EndingText = FText::FromString(TEXT(""));
-					EndingUIWidget->SetEndingText(EndingText);
-					ActivateCreditPanel();
-					return;
-				}
-				const FStringDataTable* EndingString = PrologueStringDataHandle[NextArrayNum].GetRow<FStringDataTable>(PrologueStringDataHandle[NextArrayNum].RowName.ToString());
-				FText EndingText = FText::FromName(EndingString->Kor);
-				EndingUIWidget->SetEndingText(EndingText);
-				NextArrayNum++;
-			}
-		}), TimerTick, true);
+		GetWorldTimerManager().SetTimer(FadeSequenceTimer, this, &APPEndingScreenBaseActor::FadeOutScreenImageDelegate, TimerTick, true);
 	}
 }
 
 void APPEndingScreenBaseActor::ActivateCreditPanel()
 {
-	GetWorldTimerManager().SetTimer(FadeSequenceTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			EndingUIWidget->SetCreditOpacity(EndingUIWidget->GetCreditOpacity() + TimerTick / ImageFadeSequenceTime);
-			if(EndingUIWidget->GetCreditOpacity() >= 1.0f)
-			{
-				EndingUIWidget->SetCreditOpacity(1.0f);
-				GetWorldTimerManager().ClearTimer(FadeSequenceTimer);
-				MoveCreditPanel();
-			}
-		}), TimerTick, true);
+	GetWorldTimerManager().SetTimer(FadeSequenceTimer, this, &APPEndingScreenBaseActor::ActivateCreditPanelDelegate, TimerTick, true);
 }
 
 void APPEndingScreenBaseActor::MoveCreditPanel()
 {
-	GetWorldTimerManager().SetTimer(CreditMoveTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			float CreditPosition = EndingUIWidget->AddCreditPosition(-CreditAddPositionValue);
-			if(CreditPosition <= -MaxCreditBottomPosition)
-			{
-				GetWorldTimerManager().ClearTimer(CreditMoveTimer);
-				ToggleLight(true);	
-				ExitToLobby();
-			}
-		}), 0.01f, true);
+	GetWorldTimerManager().SetTimer(CreditMoveTimer, this, &APPEndingScreenBaseActor::MoveCreditPanelDelegate, 0.01f, true);
 }
 
 void APPEndingScreenBaseActor::ExitToLobby()
 {
-	GetWorldTimerManager().SetTimer(DelayTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-			UGameplayStatics::OpenLevel(this, LOBBY_LEVEL);
-		}), ExitToLobbyDelay, false);
+	GetWorldTimerManager().SetTimer(DelayTimer, this, &APPEndingScreenBaseActor::ExitToLobbyDelegate, ExitToLobbyDelay, false);
 }
 
 void APPEndingScreenBaseActor::EnableAutoFadeTimer()
 {
-	GetWorldTimerManager().SetTimer(DelayTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			FadeInOrOutScreenImage(false);
-			GetWorldTimerManager().ClearTimer(DelayTimer);
-		}), AutoFadeTime, false);
+	GetWorldTimerManager().SetTimer(DelayTimer, this, &APPEndingScreenBaseActor::EnableAutoFadeTimerDelegate, AutoFadeTime, false);
 }
 
 void APPEndingScreenBaseActor::ToggleLight(bool IsEnable)
 {
 	if(!IsEnable)
 	{
-		GetWorldTimerManager().SetTimer(LightIntensityControlTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			ScreenLight->SetIntensity(ScreenLight->Intensity + LightEnhanceIntensityPerTick);
-			if(ScreenLight->Intensity >= LightMaxIntensity)
-			{
-				ScreenLight->SetIntensity(LightMaxIntensity);
-				GetWorldTimerManager().ClearTimer(LightIntensityControlTimer);
-				// 엔딩 이미지 재생 시작.
-				FadeInOrOutScreenImage(true);
-			}
-		}), TimerTick, true);
+		GetWorldTimerManager().SetTimer(LightIntensityControlTimer, this, &APPEndingScreenBaseActor::ToggleLightOnAndEndingImageSettingDelegate, TimerTick, true);
 	}
 	else
 	{
-		GetWorldTimerManager().SetTimer(LightIntensityControlTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			ScreenLight->SetIntensity(ScreenLight->Intensity - LightEnhanceIntensityPerTick);
-			if(ScreenLight->Intensity <= 0.0f)
-			{
-				ScreenLight->SetIntensity(0.0f);
-				GetWorldTimerManager().ClearTimer(LightIntensityControlTimer);
-			}
-		}), TimerTick, true);
+		GetWorldTimerManager().SetTimer(LightIntensityControlTimer, this, &APPEndingScreenBaseActor::ToggleLightOffDelegate, TimerTick, true);
 	}
 }
 
+void APPEndingScreenBaseActor::FadeInScreenImageDelegate()
+{
+	EndingUIWidget->SetScreenOpacity(EndingUIWidget->GetScreenOpacity() + TimerTick / ImageFadeSequenceTime);
+	if (EndingUIWidget->GetScreenOpacity() >= 1.0f)
+	{
+		EndingUIWidget->SetScreenOpacity(1.0f);
+		GetWorldTimerManager().ClearTimer(FadeSequenceTimer);
+		EnableAutoFadeTimer();
+	}
+}
+
+void APPEndingScreenBaseActor::FadeOutScreenImageDelegate()
+{
+	EndingUIWidget->SetScreenOpacity(EndingUIWidget->GetScreenOpacity() - TimerTick / ImageFadeSequenceTime);
+	if (EndingUIWidget->GetScreenOpacity() <= 0.0f)
+	{
+		EndingUIWidget->SetScreenOpacity(0.0f);
+		GetWorldTimerManager().ClearTimer(FadeSequenceTimer);
+
+		bool CheckRemainImage = EndingUIWidget->SetScreenImage(EndingUIWidget->GetCurrentScreenImageNum() + 1);
+		if (CheckRemainImage)
+		{
+			FadeInOrOutScreenImage(true);
+		}
+		else
+		{
+			MaxCreditBottomPosition = EndingUIWidget->GetCreditHeight();
+			FText EndingText = FText::FromString(TEXT(""));
+			EndingUIWidget->SetEndingText(EndingText);
+			ActivateCreditPanel();
+			return;
+		}
+		const FStringDataTable* EndingString = PrologueStringDataHandle[NextArrayNum].GetRow<FStringDataTable>(PrologueStringDataHandle[NextArrayNum].RowName.ToString());
+		FText EndingText = FText::FromName(EndingString->Kor);
+		EndingUIWidget->SetEndingText(EndingText);
+		NextArrayNum++;
+	}
+}
+
+void APPEndingScreenBaseActor::ActivateCreditPanelDelegate()
+{
+	EndingUIWidget->SetCreditOpacity(EndingUIWidget->GetCreditOpacity() + TimerTick / ImageFadeSequenceTime);
+	if (EndingUIWidget->GetCreditOpacity() >= 1.0f)
+	{
+		EndingUIWidget->SetCreditOpacity(1.0f);
+		GetWorldTimerManager().ClearTimer(FadeSequenceTimer);
+		MoveCreditPanel();
+	}
+}
+
+void APPEndingScreenBaseActor::MoveCreditPanelDelegate()
+{
+	float CreditPosition = EndingUIWidget->AddCreditPosition(-CreditAddPositionValue);
+	if (CreditPosition <= -MaxCreditBottomPosition)
+	{
+		GetWorldTimerManager().ClearTimer(CreditMoveTimer);
+		ToggleLight(true);
+		ExitToLobby();
+	}
+}
+
+void APPEndingScreenBaseActor::ExitToLobbyDelegate()
+{
+	GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+	UGameplayStatics::OpenLevel(this, LOBBY_LEVEL);
+}
+
+void APPEndingScreenBaseActor::EnableAutoFadeTimerDelegate()
+{
+	FadeInOrOutScreenImage(false);
+	GetWorldTimerManager().ClearTimer(DelayTimer);
+}
+
+void APPEndingScreenBaseActor::ToggleLightOnAndEndingImageSettingDelegate()
+{
+	ScreenLight->SetIntensity(ScreenLight->Intensity + LightEnhanceIntensityPerTick);
+	if (ScreenLight->Intensity >= LightMaxIntensity)
+	{
+		ScreenLight->SetIntensity(LightMaxIntensity);
+		GetWorldTimerManager().ClearTimer(LightIntensityControlTimer);
+		// 엔딩 이미지 재생 시작.
+		FadeInOrOutScreenImage(true);
+	}
+}
+
+void APPEndingScreenBaseActor::ToggleLightOffDelegate()
+{
+	ScreenLight->SetIntensity(ScreenLight->Intensity - LightEnhanceIntensityPerTick);
+	if (ScreenLight->Intensity <= 0.0f)
+	{
+		ScreenLight->SetIntensity(0.0f);
+		GetWorldTimerManager().ClearTimer(LightIntensityControlTimer);
+	}
+}
 

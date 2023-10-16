@@ -23,7 +23,8 @@ ALeaf::ALeaf()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeafMesh"));
-	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/Environment/Boss/SM_Leaf.SM_Leaf'"));
+	UStaticMesh* MeshObj = FPPConstructorHelper::FindAndGetObject<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/Environment/Leaf/Mesh/SM_Leaf.SM_Leaf'"));
+	
 	Mesh->SetStaticMesh(MeshObj);
 
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
@@ -113,11 +114,7 @@ void ALeaf::Tick(float DeltaTime)
 
 void ALeaf::StartTracing()
 {
-	GetWorldTimerManager().SetTimer(DelayTracingTimerHandle, FTimerDelegate::CreateLambda([&]()
-	{
-		bIsActivated = true;
-		GetWorldTimerManager().ClearTimer(DelayTracingTimerHandle);
-	}), TraceStartDelay, false);
+	GetWorldTimerManager().SetTimer(DelayTracingTimerHandle, this, &ALeaf::StartTracingDelegate, TraceStartDelay, false);
 }
 
 void ALeaf::BlinkAndExplode()
@@ -125,32 +122,7 @@ void ALeaf::BlinkAndExplode()
 	CurrentBlinkSpeed = 0.f;
 	ElapsedBlinkTime = 0.f;
 
-	GetWorldTimerManager().SetTimer(BlinkTimerHandle, FTimerDelegate::CreateLambda([&]()
-	{
-		const float Alpha = ElapsedBlinkTime / BlinkDuration;
-		if (Alpha >= 1.f)
-		{
-			FHitResult HitResult;
-			if (CheckPlayerWithSphere(ExplodeRangeRadius, HitResult))
-			{
-				FDamageEvent DamageEvent;
-				HitResult.GetActor()->TakeDamage(Damage, DamageEvent, nullptr, this);
-			}
-			if(!bIsIgnored)
-			{
-				UGameplayStatics::PlaySound2D(this, ExplodeSoundCue);
-			}
-			GetWorldTimerManager().ClearTimer(BlinkTimerHandle);
-			FPPTimerHelper::InvalidateTimerHandle(BlinkTimerHandle);
-			FadeOutAndDestroy();
-			return;
-		}
-
-		CurrentBlinkSpeed = FMath::Lerp(0.f, MaxBlinkSpeed, Alpha);
-		Mesh->SetScalarParameterValueOnMaterials(TEXT("BlinkSpeed"), CurrentBlinkSpeed);
-
-		ElapsedBlinkTime += FPPTimerHelper::GetActualDeltaTime(BlinkTimerHandle);
-	}), 0.01f, true);
+	GetWorldTimerManager().SetTimer(BlinkTimerHandle, this, &ALeaf::BlinkAndExplodeDelegate, 0.01f, true);
 }
 
 bool ALeaf::CheckPlayerWithSphere(const float InRadius, FHitResult& Result)
@@ -205,22 +177,58 @@ void ALeaf::FadeOutAndDestroy()
 	ElapsedFadeOutTime = 0.f;
 	Mesh->SetScalarParameterValueOnMaterials(TEXT("BlinkSpeed"), 0.f);
 
-	GetWorldTimerManager().SetTimer(DestroyEffectTimerHandle, FTimerDelegate::CreateLambda([&]()
+	GetWorldTimerManager().SetTimer(DestroyEffectTimerHandle, this, &ALeaf::FadeOutAndDestroyDelegate, 0.01f, true);
+}
+
+//----------------------------Delegates------------------------
+void ALeaf::StartTracingDelegate()
+{
+	bIsActivated = true;
+	GetWorldTimerManager().ClearTimer(DelayTracingTimerHandle);
+}
+
+void ALeaf::BlinkAndExplodeDelegate()
+{
+	const float Alpha = ElapsedBlinkTime / BlinkDuration;
+	if (Alpha >= 1.f)
 	{
-		float CurrentOpacity = 0.0f;
-		Mesh->GetMaterial(0)->GetScalarParameterValue(TEXT("Opacity"), CurrentOpacity);
-		if (CurrentOpacity <= 0.0f)
+		FHitResult HitResult;
+		if (CheckPlayerWithSphere(ExplodeRangeRadius, HitResult))
 		{
-			GetWorldTimerManager().ClearTimer(DestroyEffectTimerHandle);
-			GlobalLeafNum--;
-			if (GlobalLeafNum == 0)
-			{
-				Boss->SetIsAttacking(false);
-			}
-			FPPTimerHelper::InvalidateTimerHandle(DestroyEffectTimerHandle);
-			Destroy();
+			FDamageEvent DamageEvent;
+			HitResult.GetActor()->TakeDamage(Damage, DamageEvent, nullptr, this);
 		}
-		Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), FMath::Lerp(1.f, 0.f, ElapsedFadeOutTime / FadeOutDuration));
-		ElapsedFadeOutTime += FPPTimerHelper::GetActualDeltaTime(DestroyEffectTimerHandle);
-	}), 0.01f, true);
+		if (!bIsIgnored)
+		{
+			UGameplayStatics::PlaySound2D(this, ExplodeSoundCue);
+		}
+		GetWorldTimerManager().ClearTimer(BlinkTimerHandle);
+		FPPTimerHelper::InvalidateTimerHandle(BlinkTimerHandle);
+		FadeOutAndDestroy();
+		return;
+	}
+
+	CurrentBlinkSpeed = FMath::Lerp(0.f, MaxBlinkSpeed, Alpha);
+	Mesh->SetScalarParameterValueOnMaterials(TEXT("BlinkSpeed"), CurrentBlinkSpeed);
+
+	ElapsedBlinkTime += FPPTimerHelper::GetActualDeltaTime(BlinkTimerHandle);
+}
+
+void ALeaf::FadeOutAndDestroyDelegate()
+{
+	float CurrentOpacity = 0.0f;
+	Mesh->GetMaterial(0)->GetScalarParameterValue(TEXT("Opacity"), CurrentOpacity);
+	if (CurrentOpacity <= 0.0f)
+	{
+		GetWorldTimerManager().ClearTimer(DestroyEffectTimerHandle);
+		GlobalLeafNum--;
+		if (GlobalLeafNum == 0)
+		{
+			Boss->SetIsAttacking(false);
+		}
+		FPPTimerHelper::InvalidateTimerHandle(DestroyEffectTimerHandle);
+		Destroy();
+	}
+	Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), FMath::Lerp(1.f, 0.f, ElapsedFadeOutTime / FadeOutDuration));
+	ElapsedFadeOutTime += FPPTimerHelper::GetActualDeltaTime(DestroyEffectTimerHandle);
 }

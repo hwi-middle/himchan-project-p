@@ -128,4 +128,12 @@ private:
 	void EnableHitCheckTimer();
 	void EnableRecoveryHealthTimer();
 	void ShowDamageFX();
+
+private:
+	void LoadLevelDelegate();
+	void RestartLevelDelegate();
+	void EnableLowHealthWarningDelegate();
+	void EnableHitCheckTimerDelegate();
+	void EnableRecoveryHealthTimerDelegate();
+	void ShowDamageFXDelegate();
 };

@@ -45,6 +45,11 @@ private:
 	void FadeOutAndDestroy();
 
 private:
+	void StartTracingDelegate();
+	void BlinkAndExplodeDelegate();
+	void FadeOutAndDestroyDelegate();
+
+private:
 	static uint32 GlobalLeafNum;
 
 	UPROPERTY()

@@ -43,16 +43,7 @@ void APPWarningZoneBase::Show(float InDuration)
 	FadeTimerRate = 0.01f;
 	Duration = InDuration;
 	
-	GetWorldTimerManager().SetTimer(FadeTimerHandle, FTimerDelegate::CreateLambda([&]()
-	{
-		Alpha += 1 / Duration * FadeTimerRate;
-		Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), Alpha);
-		if (Alpha >= Opacity)
-		{
-			Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), Opacity);
-			GetWorldTimerManager().ClearTimer(FadeTimerHandle);
-		}
-	}), FadeTimerRate, true);
+	GetWorldTimerManager().SetTimer(FadeTimerHandle, this, &APPWarningZoneBase::FadeInDelegate, FadeTimerRate, true);
 }
 
 void APPWarningZoneBase::HideAndDestroy(float InDuration)
@@ -62,15 +53,29 @@ void APPWarningZoneBase::HideAndDestroy(float InDuration)
 	Duration = InDuration;
 
 	GetWorldTimerManager().ClearTimer(FadeTimerHandle);
-	GetWorldTimerManager().SetTimer(FadeTimerHandle, FTimerDelegate::CreateLambda([&]()
+	GetWorldTimerManager().SetTimer(FadeTimerHandle, this, &APPWarningZoneBase::FadeOutAndDestroyDelegate, FadeTimerRate, true);
+}
+
+//----------------------------Delegates------------------------
+void APPWarningZoneBase::FadeOutAndDestroyDelegate()
+{
+	Alpha -= 1 / Duration * FadeTimerRate;
+	Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), Alpha);
+	if (Alpha <= KINDA_SMALL_NUMBER)
 	{
-		Alpha -= 1 / Duration * FadeTimerRate;
-		Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), Alpha);
-		if (Alpha <= KINDA_SMALL_NUMBER)
-		{
-			Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), 0.f);
-			GetWorldTimerManager().ClearTimer(FadeTimerHandle);
-			Destroy();
-		}
-	}), FadeTimerRate, true);
+		Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), 0.f);
+		GetWorldTimerManager().ClearTimer(FadeTimerHandle);
+		Destroy();
+	}
+}
+
+void APPWarningZoneBase::FadeInDelegate()
+{
+	Alpha += 1 / Duration * FadeTimerRate;
+	Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), Alpha);
+	if (Alpha >= Opacity)
+	{
+		Mesh->SetScalarParameterValueOnMaterials(TEXT("Opacity"), Opacity);
+		GetWorldTimerManager().ClearTimer(FadeTimerHandle);
+	}
 }

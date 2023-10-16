@@ -108,23 +108,7 @@ void APPTriggerWidgetBase::NotifyActorBeginOverlap(AActor* OtherActor)
 		}
 		
 		// 위젯 애니메이션. 배경 표시 후 내용 표시
-		GetWorldTimerManager().SetTimer(BackgroundOpacityTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			TutorialWidget->AddWidgetWidthValue(-WidgetWidthAddValue);
-			if(TutorialWidget->GetPadding().Left <= 0.0f)
-			{
-				TutorialWidget->AddWidgetWidthValue(0.0f);
-				GetWorldTimerManager().ClearTimer(BackgroundOpacityTimer);
-				DisplayWidgetContents();
-			}
-		}), WidgetAnimationTick, true);
-		
-		// 위젯이 활성화 된 상태에서는 플레이어를 바라보도록 함
-		GetWorldTimerManager().SetTimer(TurnToPlayerTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			FVector LookVector = -OverlapActor->GetActorForwardVector();
-			TutorialWidgetComponent->SetRelativeRotation(LookVector.Rotation());
-		}), WidgetRotateDelay, true);
+		GetWorldTimerManager().SetTimer(BackgroundOpacityTimer, this, &APPTriggerWidgetBase::DisplayWidgetBackgroundDelegate, WidgetAnimationTick, true);
 	}
 }
 
@@ -146,42 +130,58 @@ void APPTriggerWidgetBase::NotifyActorEndOverlap(AActor* OtherActor)
 			GetWorldTimerManager().ClearTimer(TutorialPanelOpacityTimer);
 		}
 		// 위젯 애니메이션. 내용 숨긴 후 배경 숨기기
-		GetWorldTimerManager().SetTimer(TutorialPanelOpacityTimer, FTimerDelegate::CreateLambda([&]()
-		{
-			TutorialWidget->SetTutorialPanelOpacity(TutorialWidget->GetTutorialPanelOpacity() - WidgetOpacityAddValue);
-			if(TutorialWidget->GetTutorialPanelOpacity() <= 0.0f)
-			{
-				TutorialWidget->SetTutorialPanelOpacity(0.0f);
-				GetWorldTimerManager().ClearTimer(TutorialPanelOpacityTimer);
-				HideWidgetBackground();
-			}
-		}), WidgetAnimationTick, true);
+		GetWorldTimerManager().SetTimer(TutorialPanelOpacityTimer, this, &APPTriggerWidgetBase::HideWidgetContentsDelegate, WidgetAnimationTick, true);
 	}
 }
 
 void APPTriggerWidgetBase::DisplayWidgetContents()
 {
-	GetWorldTimerManager().SetTimer(TutorialPanelOpacityTimer, FTimerDelegate::CreateLambda([&]()
-	{
-		TutorialWidget->SetTutorialPanelOpacity(TutorialWidget->GetTutorialPanelOpacity() + WidgetOpacityAddValue);
-		if(TutorialWidget->GetTutorialPanelOpacity() >= 1.0f)
-		{
-			TutorialWidget->SetTutorialPanelOpacity(1.0f);
-			GetWorldTimerManager().ClearTimer(TutorialPanelOpacityTimer);
-		}
-	}), WidgetAnimationTick, true);
+	GetWorldTimerManager().SetTimer(TutorialPanelOpacityTimer, this, &APPTriggerWidgetBase::DisplayWidgetContentsDelegate, WidgetAnimationTick, true);
 }
 
 void APPTriggerWidgetBase::HideWidgetBackground()
 {
-	GetWorldTimerManager().SetTimer(BackgroundOpacityTimer, FTimerDelegate::CreateLambda([&]()
-	{
-		TutorialWidget->AddWidgetWidthValue(WidgetWidthAddValue);
-		if(TutorialWidget->GetPadding().Left >= WidgetHalfWidthValue)
-		{
-			TutorialWidget->AddWidgetWidthValue(WidgetHalfWidthValue);
-			GetWorldTimerManager().ClearTimer(BackgroundOpacityTimer);
-		}
-	}), WidgetAnimationTick, true);
+	GetWorldTimerManager().SetTimer(BackgroundOpacityTimer, this, &APPTriggerWidgetBase::HideWidgetBackgroundDelegate, WidgetAnimationTick, true);
 }
 
+void APPTriggerWidgetBase::DisplayWidgetBackgroundDelegate()
+{
+	TutorialWidget->AddWidgetWidthValue(-WidgetWidthAddValue);
+	if (TutorialWidget->GetPadding().Left <= 0.0f)
+	{
+		TutorialWidget->AddWidgetWidthValue(0.0f);
+		GetWorldTimerManager().ClearTimer(BackgroundOpacityTimer);
+		DisplayWidgetContents();
+	}
+}
+
+void APPTriggerWidgetBase::HideWidgetBackgroundDelegate()
+{
+	TutorialWidget->AddWidgetWidthValue(WidgetWidthAddValue);
+	if (TutorialWidget->GetPadding().Left >= WidgetHalfWidthValue)
+	{
+		TutorialWidget->AddWidgetWidthValue(WidgetHalfWidthValue);
+		GetWorldTimerManager().ClearTimer(BackgroundOpacityTimer);
+	}
+}
+
+void APPTriggerWidgetBase::DisplayWidgetContentsDelegate()
+{
+	TutorialWidget->SetTutorialPanelOpacity(TutorialWidget->GetTutorialPanelOpacity() + WidgetOpacityAddValue);
+	if (TutorialWidget->GetTutorialPanelOpacity() >= 1.0f)
+	{
+		TutorialWidget->SetTutorialPanelOpacity(1.0f);
+		GetWorldTimerManager().ClearTimer(TutorialPanelOpacityTimer);
+	}
+}
+
+void APPTriggerWidgetBase::HideWidgetContentsDelegate()
+{
+	TutorialWidget->SetTutorialPanelOpacity(TutorialWidget->GetTutorialPanelOpacity() - WidgetOpacityAddValue);
+	if (TutorialWidget->GetTutorialPanelOpacity() <= 0.0f)
+	{
+		TutorialWidget->SetTutorialPanelOpacity(0.0f);
+		GetWorldTimerManager().ClearTimer(TutorialPanelOpacityTimer);
+		HideWidgetBackground();
+	}
+}

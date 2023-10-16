@@ -37,6 +37,10 @@ protected:
 	void CloseSubWidgetPanel();
 	void OpenSubWidgetPanel();
 
+private:
+	void CloseSubWidgetPanelDelegate();
+	void OpenSubWidgetPanelDelegate();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UWidgetComponent> SettingWidgetComponent;

@@ -40,6 +40,15 @@ protected:
 	void EnableAutoFadeTimer();
 	void ToggleLight(bool IsEnable);
 
+private:
+	void FadeInScreenImageDelegate();
+	void FadeOutScreenImageDelegate();
+	void ActivateCreditPanelDelegate();
+	void MoveCreditPanelDelegate();
+	void ExitToLobbyDelegate();
+	void EnableAutoFadeTimerDelegate();
+	void ToggleLightOnAndEndingImageSettingDelegate();
+	void ToggleLightOffDelegate();
 	// Variable Section
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "WidgetCompoent")

@@ -171,6 +171,10 @@ private:
 	void StartMove(const FInputActionValue& Value);
 	void CompleteMove(const FInputActionValue& Value);
 	void ToggleSprint(const FInputActionValue& Value);
+
+private:
+	void StartMoveDelegate();
+	void ToggleSprintDelegate();
 	
 private:
 	void PressAButtonAction(const FInputActionValue& Value);
