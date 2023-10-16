@@ -45,7 +45,25 @@ void UBTService_PPZombieDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 		CollisionQueryParams
 		);
 
-	if(!bResult)
+	bool bIsPlayerDetect = false;
+
+	if(bResult)
+	{
+		for (auto const& OverlapResult : OverlapResults)
+		{
+			APPCharacterPlayer* PlayerCharacter = Cast<APPCharacterPlayer>(OverlapResult.GetActor());
+			// ACharacter* PlayerCharacter = Cast<ACharacter>(OverlapResult.GetActor());
+			if(PlayerCharacter)
+			{
+				OwnerComp.GetBlackboardComponent()->SetValueAsObject(KEY_TARGET, PlayerCharacter);
+				bIsPlayerDetect = true;
+				ControllingPawn->SetTrackingSpeed();
+				DrawDebugSphere(World, Center, DetectRadius, 32, FColor::Green, false, 0.1f);
+				return;
+			}
+		}
+	}
+	if(!bIsPlayerDetect)
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(KEY_TARGET, nullptr);
 		if(OwnerComp.GetBlackboardComponent()->GetValueAsVector(KEY_BASE_LOCATION) != ControllingPawn->GetActorLocation())
@@ -56,20 +74,6 @@ void UBTService_PPZombieDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 		{
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(KEY_IS_NOT_LOCATE_SPAWN, false);
 			ControllingPawn->SetResearchSpeed();
-		}
-		return;
-	}
-	
-	for (auto const& OverlapResult : OverlapResults)
-	{
-		APPCharacterPlayer* PlayerCharacter = Cast<APPCharacterPlayer>(OverlapResult.GetActor());
-		// ACharacter* PlayerCharacter = Cast<ACharacter>(OverlapResult.GetActor());
-		if(PlayerCharacter)
-		{
-			OwnerComp.GetBlackboardComponent()->SetValueAsObject(KEY_TARGET, PlayerCharacter);
-			ControllingPawn->SetTrackingSpeed();
-			DrawDebugSphere(World, Center, DetectRadius, 32, FColor::Green, false, 0.1f);
-			return;
 		}
 	}
 }
