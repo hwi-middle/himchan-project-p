@@ -65,7 +65,7 @@ void APPCharacterZombie::BeginPlay()
 		ZombieAnimInstance->HitCheckStartDelegate.AddUObject(this, &APPCharacterZombie::AttackHitCheckStart);
 		ZombieAnimInstance->HitCheckEndDelegate.AddUObject(this, &APPCharacterZombie::AttackHitCheckEnd);
 		ZombieAnimInstance->AttackAnimEndDelegate.AddUObject(this, &APPCharacterZombie::AttackFinishedNotify);
-		ZombieAnimInstance->DeadAnimEndDelegate.AddUObject(this, &APPCharacterZombie::SetDead);
+		ZombieAnimInstance->DeadAnimEndDelegate.AddUObject(this, &APPCharacterZombie::SetDeadLoop);
 	}
 }
 
@@ -78,25 +78,21 @@ void APPCharacterZombie::Tick(float DeltaSeconds)
 void APPCharacterZombie::BeginDestroy()
 {
 	Super::BeginDestroy();
-	if(DeadTimerHandle.IsValid())
-	{
-		GetWorldTimerManager().ClearTimer(DeadTimerHandle);
-		DeadTimerHandle.Invalidate();
-	}
-
-	if(AttackHitCheckTimerHandle.IsValid())
-	{
-		GetWorldTimerManager().ClearTimer(AttackHitCheckTimerHandle);
-		AttackHitCheckTimerHandle.Invalidate();
-	}
-	Destroy();
+	DeadTimerHandle.Invalidate();
+	AttackHitCheckTimerHandle.Invalidate();
 }
 
-void APPCharacterZombie::SetDead()
+void APPCharacterZombie::SetDeadLoop()
 {
+	GetMesh()->GetAnimInstance()->Montage_Play(ZombieAnimMontage);
 	GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD_LOOP, ZombieAnimMontage);
-	GetMesh()->GetAnimInstance()->Montage_Pause();
-	GetWorldTimerManager().SetTimer(DeadTimerHandle, this, &APPCharacterZombie::BeginDestroy, AutoDestroyTime, false);
+	GetMesh()->GetAnimInstance()->Montage_Pause(ZombieAnimMontage);
+	GetWorldTimerManager().SetTimer(DeadTimerHandle, this, &APPCharacterZombie::DestroyThis, AutoDestroyTime, false);
+}
+
+void APPCharacterZombie::DestroyThis()
+{
+	Destroy();
 }
 
 void APPCharacterZombie::SetAIPatternDelegate(const FAICharacterPatternFinished& FinishedDelegate)

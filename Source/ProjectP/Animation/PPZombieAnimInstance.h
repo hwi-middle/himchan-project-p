@@ -72,7 +72,7 @@ private:
 	FORCEINLINE void AnimNotify_AttackAnimEnd();
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_DeadAnimEnd();
+	FORCEINLINE void AnimNotify_EnterDeadLoop();
 	
 	void AnimBlendSequence();
 	

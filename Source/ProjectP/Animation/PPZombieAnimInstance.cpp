@@ -73,7 +73,7 @@ void UPPZombieAnimInstance::AnimNotify_AttackAnimEnd()
 	AttackAnimEndDelegate.Broadcast();
 }
 
-void UPPZombieAnimInstance::AnimNotify_DeadAnimEnd()
+void UPPZombieAnimInstance::AnimNotify_EnterDeadLoop()
 {
 	DeadAnimEndDelegate.Broadcast();
 }

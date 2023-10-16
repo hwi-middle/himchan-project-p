@@ -28,7 +28,8 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginDestroy() override;
-	void SetDead();
+	void SetDeadLoop();
+	void DestroyThis();
 	
 	// AI 호출
 	// AI 관련 클래스에서만 호출 가능하게 인자값으로 적절하게 무언가를 받는 방법을 고민하는 중이에요
