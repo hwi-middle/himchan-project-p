@@ -31,7 +31,7 @@ bool UBTDecorator_PPAttackRangeCheck::CalculateRawConditionValue(UBehaviorTreeCo
 	if(TargetActor)
 	{
 		float TargetDistance = ControllingPawn->GetDistanceTo(TargetActor);
-		return TargetDistance <= ControllingPawn->GetAIAttackRange() ? true : false;
+		return TargetDistance <= ControllingPawn->GetAIAttackRange();
 	}
 	return false;
 }

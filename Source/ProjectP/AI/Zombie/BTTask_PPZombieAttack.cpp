@@ -27,7 +27,7 @@ EBTNodeResult::Type UBTTask_PPZombieAttack::ExecuteTask(UBehaviorTreeComponent& 
 		return EBTNodeResult::Failed;
 	}
 
-	// FAICharacterPatternFinished PatternFinished;
+	FAICharacterPatternFinished PatternFinished;
 	PatternFinished.AddLambda([&]()
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);

@@ -74,6 +74,24 @@ void APPCharacterZombie::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
+//TODO: 시간이 된다면 다른 클래스들도 BeginDestroy()에 타이머 해제 추가하기
+void APPCharacterZombie::BeginDestroy()
+{
+	Super::BeginDestroy();
+	if(DeadTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(DeadTimerHandle);
+		DeadTimerHandle.Invalidate();
+	}
+
+	if(AttackHitCheckTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(AttackHitCheckTimerHandle);
+		AttackHitCheckTimerHandle.Invalidate();
+	}
+	Destroy();
+}
+
 void APPCharacterZombie::SetDead()
 {
 	GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD_LOOP, ZombieAnimMontage);

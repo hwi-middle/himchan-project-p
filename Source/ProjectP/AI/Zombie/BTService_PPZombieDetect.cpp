@@ -34,6 +34,7 @@ void UBTService_PPZombieDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 	
 	float DetectRadius = ControllingPawn->GetAIMissingTargetRadius();
 	TArray<FOverlapResult> OverlapResults;
+	//TODO: 별도의 플레이어 전용 채널로 변경하기
 	FCollisionQueryParams CollisionQueryParams(SCENE_QUERY_STAT(Detect), false, ControllingPawn);
 	bool bResult = World->OverlapMultiByChannel(
 		OverlapResults,
@@ -43,26 +44,8 @@ void UBTService_PPZombieDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 		FCollisionShape::MakeSphere(DetectRadius),
 		CollisionQueryParams
 		);
-	
-	bool bIsPlayerDetect = false;
-	if(bResult)
-	{
-		for (auto const& OverlapResult : OverlapResults)
-		{
-			// APPCharacterPlayer* PlayerCharacter = Cast<APPCharacterPlayer>(OverlapResult.GetActor());
-			ACharacter* PlayerCharacter = Cast<ACharacter>(OverlapResult.GetActor());
-			if(PlayerCharacter)
-			{
-				bIsPlayerDetect = true;
-				OwnerComp.GetBlackboardComponent()->SetValueAsObject(KEY_TARGET, PlayerCharacter);
-				ControllingPawn->SetTrackingSpeed();
-				DrawDebugSphere(World, Center, DetectRadius, 32, FColor::Green, false, 0.1f);
-				// DrawDebugPoint(World, PlayerCharacter->GetActorLocation(), 10.0f, FColor::Blue, false, 1.0f);
-				// DrawDebugLine(World, ControllingPawn->GetActorLocation(), PlayerCharacter->GetActorLocation(), FColor::Red, false, 1.0f);
-			}
-		}
-	}
-	if(!bIsPlayerDetect)
+
+	if(!bResult)
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(KEY_TARGET, nullptr);
 		if(OwnerComp.GetBlackboardComponent()->GetValueAsVector(KEY_BASE_LOCATION) != ControllingPawn->GetActorLocation())
@@ -74,5 +57,19 @@ void UBTService_PPZombieDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 			OwnerComp.GetBlackboardComponent()->SetValueAsBool(KEY_IS_NOT_LOCATE_SPAWN, false);
 			ControllingPawn->SetResearchSpeed();
 		}
-	} 
+		return;
+	}
+	
+	for (auto const& OverlapResult : OverlapResults)
+	{
+		APPCharacterPlayer* PlayerCharacter = Cast<APPCharacterPlayer>(OverlapResult.GetActor());
+		// ACharacter* PlayerCharacter = Cast<ACharacter>(OverlapResult.GetActor());
+		if(PlayerCharacter)
+		{
+			OwnerComp.GetBlackboardComponent()->SetValueAsObject(KEY_TARGET, PlayerCharacter);
+			ControllingPawn->SetTrackingSpeed();
+			DrawDebugSphere(World, Center, DetectRadius, 32, FColor::Green, false, 0.1f);
+			return;
+		}
+	}
 }

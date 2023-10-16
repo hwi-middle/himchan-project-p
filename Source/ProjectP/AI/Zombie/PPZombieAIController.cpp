@@ -62,7 +62,8 @@ void APPZombieAIController::SetTarget(const TArray<AActor*>& Actors)
 	{
 		FActorPerceptionBlueprintInfo PerceptionInfo;
 		PerceptionComponent->GetActorsPerception(DetectActor, PerceptionInfo);
-		ACharacter* PlayerCharacter = Cast<ACharacter>(DetectActor);
+		APPCharacterPlayer* PlayerCharacter = Cast<APPCharacterPlayer>(DetectActor);
+		// ACharacter* PlayerCharacter = Cast<ACharacter>(DetectActor);
 		if(PlayerCharacter)
 		{
 			Blackboard->SetValueAsObject(KEY_TARGET, PlayerCharacter);
