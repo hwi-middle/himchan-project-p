@@ -7,6 +7,7 @@ void UPPPrologueWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
+	SkipButton->OnClicked.AddDynamic(this, &UPPPrologueWidget::SkipPrologue);
 }
 
 void UPPPrologueWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

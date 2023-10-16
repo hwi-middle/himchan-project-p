@@ -34,6 +34,7 @@ void APPPrologueActor::BeginPlay()
 	const FStringDataTable* PrologueString = PrologueStringDataHandle[0].GetRow<FStringDataTable>(PrologueStringDataHandle[0].RowName.ToString());
 	FText PrologueText = FText::FromName(PrologueString->Kor);
 	PrologueWidget->SetPrologueText(PrologueText);
+	PrologueWidget->SkipPrologueDelegate.AddUObject(this, &APPPrologueActor::LoadMainLevelSequence);
 	NextArrayNum = 1;
 	
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();

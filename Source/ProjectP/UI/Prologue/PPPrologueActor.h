@@ -27,7 +27,6 @@ protected:
 
 protected:
 	void DisplayStringData();
-	
 	void LoadMainLevelSequence();
 	
 private:
