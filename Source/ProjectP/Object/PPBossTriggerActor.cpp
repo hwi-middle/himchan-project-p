@@ -13,7 +13,6 @@ APPBossTriggerActor::APPBossTriggerActor()
 	PrimaryActorTick.bCanEverTick = true;
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BOX"));
 	TriggerBox->SetBoxExtent(FVector(50,50,50));
-	bIsLevelChanger = false;
 }
 
 // Called when the game starts or when spawned
@@ -21,6 +20,7 @@ void APPBossTriggerActor::BeginPlay()
 {
 	Super::BeginPlay();
 	TriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	TargetBoss->SetDead(true);
 }
 
 void APPBossTriggerActor::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -30,7 +30,8 @@ void APPBossTriggerActor::NotifyActorBeginOverlap(AActor* OtherActor)
 	TObjectPtr<ACharacter> TestPlayer = Cast<ACharacter>(OtherActor);
 	if(Player || TestPlayer)
 	{
-		BossEnableDelegate.Broadcast();
+		TargetBoss->SetDead(false);
+		TargetReceiver->AddEventStack();
 	}
 }
 

@@ -119,8 +119,7 @@ void APPCharacterBoss::BeginPlay()
 	bIs_GF_FirstUsed = true;
 	AnimInstance = Cast<UPPBossAnimInstance>(GetMesh()->GetAnimInstance());
 	AnimInstance->SetCloseAlpha(0.f);
-
-	bIsDead = false;
+	
 }
 
 void APPCharacterBoss::Tick(float DeltaSeconds)

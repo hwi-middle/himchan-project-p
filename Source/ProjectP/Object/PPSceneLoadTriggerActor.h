@@ -6,16 +6,16 @@
 #include "Components/BoxComponent.h"
 #include "Engine/PostProcessVolume.h"
 #include "GameFramework/Actor.h"
-#include "PPSceneLoadTrigger.generated.h"
+#include "PPSceneLoadTriggerActor.generated.h"
 
 UCLASS()
-class PROJECTP_API APPSceneLoadTrigger : public AActor
+class PROJECTP_API APPSceneLoadTriggerActor : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	APPSceneLoadTrigger();
+	APPSceneLoadTriggerActor();
 	virtual void Tick(float DeltaTime) override;
 protected:
 	// Called when the game starts or when spawned
@@ -34,8 +34,17 @@ private:
 private:
 	UPROPERTY()
 	TObjectPtr<APostProcessVolume> PostProcessVolume;
+	
+	UPROPERTY(EditAnywhere, DisplayName = "페이드 아웃 목표 노출 값(-)")
+	float TargetExposureBias;
+	
+	UPROPERTY(EditAnywhere, DisplayName = "페이드 아웃 목표 비네트 값(+)")
+	float TargetVignetteIntensity;
 
-	UPROPERTY()
-	FTimerHandle LoadLevelTimerHandle;
+	UPROPERTY(EditAnywhere, DisplayName = "페이드 아웃 프레임당 노출 감소 값")
+	float AddExposureBias;
 
+	UPROPERTY(EditAnywhere, DisplayName = "페이드 아웃 프레임당 비네트 증가 값")
+	float AddVignetteIntensity;
+	
 };

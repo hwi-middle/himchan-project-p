@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PPEventReceiver.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
+#include "ProjectP/Character/PPCharacterBoss.h"
 #include "PPBossTriggerActor.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBossEnableDelegate);
@@ -18,8 +20,6 @@ public:
 	// Sets default values for this actor's properties
 	APPBossTriggerActor();
 
-	UPROPERTY(BlueprintAssignable)
-	FBossEnableDelegate BossEnableDelegate;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -29,15 +29,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere)
-	FTimerHandle LevelChangeHandle;
-	
+private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UBoxComponent> TriggerBox;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<ULevel> NextLevel;
+	UPROPERTY(EditAnywhere, DisplayName = "활성화할 보스 타겟")
+	TObjectPtr<APPCharacterBoss> TargetBoss;
+
+	UPROPERTY(EditAnywhere, DisplayName = "닫으려는 문 타겟")
+	TObjectPtr<APPEventReceiver> TargetReceiver;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	uint32 bIsLevelChanger : 1;
 };
