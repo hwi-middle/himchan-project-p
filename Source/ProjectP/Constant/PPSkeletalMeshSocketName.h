@@ -10,3 +10,6 @@
 #define GUN_LASER "Laser"
 #define GUN_LEFT_GRIP "LeftGrip"
 #define GUN_RIGHT_GRIP "RightGrip"
+
+// 좀비
+#define ZOMBIE_FRONT "Zombie_Front"

@@ -25,7 +25,6 @@
 #include "PPVRBossData.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
-#include "ProjectP/AI/Boss/PPBossAIController.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "Math/UnrealMathUtility.h"
 #include "ProjectP/BossGimmick/Leaf.h"
