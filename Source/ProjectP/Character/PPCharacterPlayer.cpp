@@ -36,7 +36,11 @@ void APPCharacterPlayer::BeginPlay()
 
 	DamageFXFadeInDuration = PlayerStatusData->DamageFXFadeInDuration;
 	DamageFXFadeOutDuration = PlayerStatusData->DamageFXFadeOutDuration;
-
+	TargetExposureBias = PlayerStatusData->TargetExposureBias;
+	TargetVignetteIntensity = PlayerStatusData->TargetVignetteIntensity;
+	AddExposureBias = PlayerStatusData->AddExposureBias;
+	AddVignetteIntensity = PlayerStatusData->AddVignetteIntensity;
+	
 	if (GetWorld()->PostProcessVolumes.IsEmpty())
 	{
 		return;
@@ -182,7 +186,7 @@ void APPCharacterPlayer::ShowDamageFX()
 //----------------------Delegates----------------------
 void APPCharacterPlayer::LoadLevelDelegate()
 {
-	if (PostProcessVolume->Settings.AutoExposureBias <= -5.0f && PostProcessVolume->Settings.VignetteIntensity >= 2.5f)
+	if (PostProcessVolume->Settings.AutoExposureBias <= -TargetExposureBias && PostProcessVolume->Settings.VignetteIntensity >= TargetVignetteIntensity)
 	{
 		GetWorldTimerManager().ClearTimer(LevelRestartTimer);
 		GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
@@ -194,13 +198,13 @@ void APPCharacterPlayer::LoadLevelDelegate()
 		}
 		return;
 	}
-	PostProcessVolume->Settings.AutoExposureBias -= 0.02f;
-	PostProcessVolume->Settings.VignetteIntensity += 0.01f;
+	PostProcessVolume->Settings.AutoExposureBias -=AddExposureBias;
+	PostProcessVolume->Settings.VignetteIntensity += AddVignetteIntensity;
 }
 
 void APPCharacterPlayer::RestartLevelDelegate()
 {
-	if (PostProcessVolume->Settings.AutoExposureBias <= -5.0f && PostProcessVolume->Settings.VignetteIntensity >= 2.5f)
+	if (PostProcessVolume->Settings.AutoExposureBias <= -TargetExposureBias && PostProcessVolume->Settings.VignetteIntensity >= TargetVignetteIntensity)
 	{
 		GetWorldTimerManager().ClearTimer(LevelRestartTimer);
 		GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
@@ -208,8 +212,8 @@ void APPCharacterPlayer::RestartLevelDelegate()
 		UGameplayStatics::OpenLevel(this, FName(*LevelName));
 		return;
 	}
-	PostProcessVolume->Settings.AutoExposureBias -= 0.02f;
-	PostProcessVolume->Settings.VignetteIntensity += 0.01f;
+	PostProcessVolume->Settings.AutoExposureBias -= AddExposureBias;
+	PostProcessVolume->Settings.VignetteIntensity += AddVignetteIntensity;
 }
 
 void APPCharacterPlayer::EnableLowHealthWarningDelegate()

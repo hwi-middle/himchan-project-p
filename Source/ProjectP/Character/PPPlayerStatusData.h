@@ -33,4 +33,16 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Misc)
 	float DamageFXFadeOutDuration;
+
+	UPROPERTY(EditAnywhere, Category = Misc, DisplayName = "페이드 아웃 목표 노출 값(-)")
+	float TargetExposureBias;
+	
+	UPROPERTY(EditAnywhere, Category = Misc, DisplayName = "페이드 아웃 목표 비네트 값(+)")
+	float TargetVignetteIntensity;
+
+	UPROPERTY(EditAnywhere, Category = Misc, DisplayName = "페이드 아웃 프레임당 노출 감소 값")
+	float AddExposureBias;
+
+	UPROPERTY(EditAnywhere, Category = Misc, DisplayName = "페이드 아웃 프레임당 비네트 증가 값")
+	float AddVignetteIntensity;
 };
