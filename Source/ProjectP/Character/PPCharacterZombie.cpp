@@ -17,25 +17,16 @@
 APPCharacterZombie::APPCharacterZombie()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	Tags.Add(TEXT("DestructibleObject"));
 	AIControllerClass = APPZombieAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	
 	ZombieData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/186-ZombieAI/ZombieData.ZombieData'"), EAssertionLevel::Check);
 	GetMesh()->SetSkeletalMesh(ZombieData->ZombieMesh);
 	GetMesh()->SetAnimInstanceClass(FPPConstructorHelper::FindAndGetClass<UPPZombieAnimInstance>(TEXT("/Script/Engine.AnimBlueprint'/Game/186-ZombieAI/ABP_Zombie.ABP_Zombie_C'"), EAssertionLevel::Check));
-}
-
-float APPCharacterZombie::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	Health -= DamageAmount;
-	if(Health <= 0)
-	{
-		GetController()->Destroy();
-		CurrentState = ECharacterState::Dead;
-		PlayPatternAnimMontage();
-	}
-	return 0;
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetMesh()->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 }
 
 void APPCharacterZombie::BeginPlay()
@@ -114,6 +105,24 @@ void APPCharacterZombie::PlayPatternAnimMontage()
 	default:
 		// Idle Or Tracking?
 		break;
+	}
+}
+
+void APPCharacterZombie::IncreaseHealth(const float Value)
+{
+	Health += Value;
+}
+void APPCharacterZombie::DecreaseHealth(const float Value)
+{
+	Health -= Value;
+	if(Health <= 0)
+	{
+		if(GetController())
+		{
+			GetController()->Destroy();
+		}
+		CurrentState = ECharacterState::Dead;
+		PlayPatternAnimMontage();
 	}
 }
 
