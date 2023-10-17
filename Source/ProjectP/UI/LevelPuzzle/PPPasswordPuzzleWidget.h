@@ -5,9 +5,20 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "PPPasswordPuzzleWidget.generated.h"
 
-class UTextBlock;
+/*
+  ___  ______  _   __ _   _  _____  _____  _   _  _____ 
+ / _ \ | ___ \| | / /| \ | ||_   _||  __ \| | | ||_   _|
+/ /_\ \| |_/ /| |/ / |  \| |  | |  | |  \/| |_| |  | |  
+|  _  ||    / |    \ | . ` |  | |  | | __ |  _  |  | |  
+| | | || |\ \ | |\  \| |\  | _| |_ | |_\ \| | | |  | |  
+\_| |_/\_| \_|\_| \_/\_| \_/ \___/  \____/\_| |_/  \_/  
+																										
+ */
+DECLARE_MULTICAST_DELEGATE(FCorrectPasswordDelegate);
+
 /**
  * 
  */
@@ -33,6 +44,9 @@ UCLASS()
 class PROJECTP_API UPPPasswordPuzzleWidget : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+	FCorrectPasswordDelegate CorrectPasswordDelegate;
+	FORCEINLINE void SetCorrectPassword(FString Password) { CorrectPassword = Password; GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, Password);}
 protected:
 	virtual void NativeConstruct() override;
 	
@@ -49,21 +63,49 @@ protected:
 	UPROPERTY()
 	uint32 MaxDigit;
 
+	UPROPERTY()
+	FString CorrectPassword;
+	
 private:
 	void PerformButtonInteraction(const EPasswordPuzzleButton InButton);
 	void AppendPasswordDigit(uint32 InDigit);
 	void DeletePasswordDigit();
+	void CheckCorrectPasswordDigit();
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressNum0() { PerformButtonInteraction(EPasswordPuzzleButton::Num0); }
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressNum1() { PerformButtonInteraction(EPasswordPuzzleButton::Num1); }
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressNum2() { PerformButtonInteraction(EPasswordPuzzleButton::Num2); }
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressNum3() { PerformButtonInteraction(EPasswordPuzzleButton::Num3); }
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressNum4() { PerformButtonInteraction(EPasswordPuzzleButton::Num4); }
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressNum5() { PerformButtonInteraction(EPasswordPuzzleButton::Num5); }
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressNum6() { PerformButtonInteraction(EPasswordPuzzleButton::Num6); }
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressNum7() { PerformButtonInteraction(EPasswordPuzzleButton::Num7); }
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressNum8() { PerformButtonInteraction(EPasswordPuzzleButton::Num8); }
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressNum9() { PerformButtonInteraction(EPasswordPuzzleButton::Num9); }
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressDelete() { PerformButtonInteraction(EPasswordPuzzleButton::Delete); }
+	
+	UFUNCTION()
 	FORCEINLINE void OnPressConfirm() { PerformButtonInteraction(EPasswordPuzzleButton::Confirm); }
 	
 public:

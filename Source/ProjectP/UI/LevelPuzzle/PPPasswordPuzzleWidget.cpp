@@ -41,12 +41,12 @@ void UPPPasswordPuzzleWidget::NativeConstruct()
 	ButtonArray[EPasswordPuzzleButton::Delete]->OnClicked.AddDynamic(this, &UPPPasswordPuzzleWidget::OnPressDelete);
 	ButtonArray[EPasswordPuzzleButton::Confirm]->OnClicked.AddDynamic(this, &UPPPasswordPuzzleWidget::OnPressConfirm);
 	UE_LOG(LogTemp, Log, TEXT("NativeConstruct"));
-
 }
 
 void UPPPasswordPuzzleWidget::PerformButtonInteraction(const EPasswordPuzzleButton InButton)
 {
 	UE_LOG(LogTemp, Log, TEXT("PerformButtonInteraction"));
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("버튼 인터렉션 작동: %d"), static_cast<uint8>(InButton)));
 	switch (InButton)
 	{
 	case Num0:
@@ -65,7 +65,8 @@ void UPPPasswordPuzzleWidget::PerformButtonInteraction(const EPasswordPuzzleButt
 		DeletePasswordDigit();
 		break;
 	case Confirm:
-		// TODO
+		// TODO: 휘중님 바부
+		CheckCorrectPasswordDigit();
 		break;
 	default:
 		checkNoEntry();
@@ -85,5 +86,26 @@ void UPPPasswordPuzzleWidget::AppendPasswordDigit(uint32 InDigit)
 
 void UPPPasswordPuzzleWidget::DeletePasswordDigit()
 {
-	PasswordDigitArray[CurrentDigit--]->SetText(FText::FromString(TEXT("")));
+	if(CurrentDigit <= 0)
+	{
+		return;
+	}
+	PasswordDigitArray[--CurrentDigit]->SetText(FText::FromString(TEXT(" ")));
+}
+
+void UPPPasswordPuzzleWidget::CheckCorrectPasswordDigit()
+{
+	FString InputPassword;
+	for (auto PassNum : PasswordDigitArray)
+	{
+		InputPassword.Append(PassNum->GetText().ToString());
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, InputPassword);
+	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, CorrectPassword);
+	
+	if(InputPassword == CorrectPassword)
+	{
+		CorrectPasswordDelegate.Broadcast();
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("비밀번호 일치 확인")));
+	}
 }

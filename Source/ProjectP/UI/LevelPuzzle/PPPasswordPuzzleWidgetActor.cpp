@@ -16,6 +16,8 @@ APPPasswordPuzzleWidgetActor::APPPasswordPuzzleWidgetActor()
 	PasswordPuzzleWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("LobbyUIWidget"));
 	PasswordPuzzleWidgetComponent->SetupAttachment(RootComponent);
 	PasswordPuzzleWidgetComponent->SetCastShadow(false);
+
+	EventCallerComponent = CreateDefaultSubobject<UPPEventCaller>(TEXT("Event Caller"));
 }
 
 // Called when the game starts or when spawned
@@ -23,13 +25,13 @@ void APPPasswordPuzzleWidgetActor::BeginPlay()
 {
 	Super::BeginPlay();
 	PasswordPuzzleWidget = CastChecked<UPPPasswordPuzzleWidget>(PasswordPuzzleWidgetComponent->GetUserWidgetObject());
-
+	PasswordPuzzleWidget->SetCorrectPassword(CorrectPassword);
+	PasswordPuzzleWidget->CorrectPasswordDelegate.AddUObject(this, &APPPasswordPuzzleWidgetActor::DeliverCorrectEvent);
 }
 
 // Called every frame
 void APPPasswordPuzzleWidgetActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
