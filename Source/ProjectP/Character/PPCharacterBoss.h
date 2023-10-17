@@ -169,4 +169,25 @@ private:
 
 	UPROPERTY()
 	uint32 bIs_GF_FirstUsed : 1;
+
+
+//커스텀 커맨드
+private:
+	UFUNCTION(Exec)
+	void PP_Boss_Log_HP();
+
+	UFUNCTION(Exec)
+	void PP_Boss_Increase_HP(float value);
+
+	UFUNCTION(Exec)
+	void PP_Boss_Decrease_HP(float value);
+
+	UFUNCTION(Exec)
+	void PP_Boss_Gimmick_Leaf();
+
+	UFUNCTION(Exec)
+	void PP_Boss_Gimmick_Tentacle();
+
+	UFUNCTION(Exec)
+	void PP_Boss_Gimmick_Gas();
 };
