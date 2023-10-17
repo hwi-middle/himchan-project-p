@@ -188,9 +188,11 @@ void APPGunBase::Tick(float DeltaTime)
 
 	if (!AimingActor)
 	{
+		UE_LOG(LogTemp, Log, TEXT("Aiming Nothing"));
 		return;
 	}
-	
+
+	UE_LOG(LogTemp, Log, TEXT("Aiming %s"), *AimingActor->GetName());
 	// 테스트용 태그. 나중에 태그 모음집 헤더파일 만들어서 관리하기?
 	if (AimingActor->Tags.Contains("DestructibleObject"))
 	{
