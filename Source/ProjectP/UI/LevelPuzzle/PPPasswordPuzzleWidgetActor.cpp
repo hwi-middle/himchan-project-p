@@ -13,7 +13,7 @@ APPPasswordPuzzleWidgetActor::APPPasswordPuzzleWidgetActor()
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	PasswordPuzzleWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("LobbyUIWidget"));
+	PasswordPuzzleWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PasswordPuzzleUIWidget"));
 	PasswordPuzzleWidgetComponent->SetupAttachment(RootComponent);
 	PasswordPuzzleWidgetComponent->SetCastShadow(false);
 
