@@ -121,6 +121,19 @@ private:
 	
 	UPROPERTY()
 	float SavedVignetteValue;
+
+private:
+	UPROPERTY()
+	float TargetExposureBias;
+	
+	UPROPERTY()
+	float TargetVignetteIntensity;
+
+	UPROPERTY()
+	float AddExposureBias;
+
+	UPROPERTY()
+	float AddVignetteIntensity;
 	
 private:
 	void RestartLevelSequence();

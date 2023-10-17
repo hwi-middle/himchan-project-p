@@ -7,6 +7,7 @@
 #include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Enumeration/PPBossPattern.h"
 #include "ProjectP/Interface/CharacterStatusInterface.h"
+#include "ProjectP/Object/PPEventReceiver.h"
 #include "Sound/SoundCue.h"
 #include "PPCharacterBoss.generated.h"
 
@@ -26,7 +27,9 @@ public:
 	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	void SetIsAttacking(const bool Value);
-
+	
+	FORCEINLINE void SetDead(const bool Value) { bIsDead = Value; }
+	
 	// TestOnly
 	void TestPattern(EBossPattern Pattern);
 
