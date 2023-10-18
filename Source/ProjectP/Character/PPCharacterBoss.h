@@ -172,4 +172,5 @@ private:
 
 	UPROPERTY()
 	uint32 bIs_GF_FirstUsed : 1;
+
 };

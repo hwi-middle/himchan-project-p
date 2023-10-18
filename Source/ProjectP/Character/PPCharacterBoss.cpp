@@ -457,3 +457,4 @@ void APPCharacterBoss::TestPattern(EBossPattern Pattern)
 		checkNoEntry();
 	}
 }
+

@@ -10,6 +10,8 @@
 #include "ProjectP/Util/StringDataTable.h"
 #include "ProjectP/Util/PPSaveSettingOption.h"
 #include "ProjectP/Util/PPSoundData.h"
+#include "ProjectP/Character/PPCharacterBoss.h"
+#include "ProjectP/Character/PPCharacterPlayer.h"
 #include "PPGameInstance.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FClearTimerHandleDelegate)
@@ -50,5 +52,45 @@ private:
 	// 사운드 재생 및 등록에 사용 할 사운드데이터
 	UPROPERTY()
 	TObjectPtr<UPPSoundData> SoundData;
+
+
+
+private:
+	UPROPERTY()
+	TObjectPtr<class APPCharacterBoss> BossCharacter;
+
+	UPROPERTY()
+	TObjectPtr<class APPCharacterPlayer> PlayerCharacter;
+
+	FString message;
+
+private:
+	UFUNCTION(Exec)
+	void PP_Boss_Log_HP();
+
+	UFUNCTION(Exec)
+	void PP_Boss_Increase_HP(float value);
+
+	UFUNCTION(Exec)
+	void PP_Boss_Decrease_HP(float value);
+
+	UFUNCTION(Exec)
+	void PP_Boss_Gimmick_Leaf();
+
+	UFUNCTION(Exec)
+	void PP_Boss_Gimmick_Tentacle();
+
+	UFUNCTION(Exec)
+	void PP_Boss_Gimmick_Gas();
+
+private:
+	UFUNCTION(Exec)
+	void PP_Player_Log_HP();
+
+	UFUNCTION(Exec)
+	void PP_Player_Increase_HP(float value);
+
+	UFUNCTION(Exec)
+	void PP_Player_Decrease_HP(float value);
 };
 
