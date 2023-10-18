@@ -133,7 +133,7 @@ void APPCharacterBoss::Tick(float DeltaSeconds)
 	
 	GF_FX->SetWorldLocation(GetActorLocation());
 
-	if (!bIsAttacking)
+	if (!bIsAttacking) // 보스전 너무 단조롭다면 패턴 여러개 사용하는 경우도 나오게끔 시간 체크만 하는게 나을지도
 	{
 		Core->SetAdditionalCollisionEnable(true);
 		AnimInstance->SetIsIdle(true);
@@ -162,6 +162,8 @@ void APPCharacterBoss::Tick(float DeltaSeconds)
 			}
 
 			PreviousPattern = RandPattern;
+			// ElapsedAttackDelay = 0.f;
+			// AttackDelay = FMath::RandRange(AttackDelayMin, AttackDelayMax);
 		}
 	}
 	else
@@ -220,6 +222,9 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 		FVector SpawnLocation = FVector(RandomPont.X, RandomPont.Y, 0.f) + GetActorLocation();
 		SpawnLocation.Z = 0.f;
 
+		FVector CollisionCheckLocation = SpawnLocation;
+		CollisionCheckLocation.Z = 100.f;
+		
 		// 환경과 충돌이 있는지 검사
 		FHitResult HitResult;
 		FCollisionQueryParams CollisionParams;
@@ -227,8 +232,8 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 
 		bool bHit = GetWorld()->SweepSingleByChannel(
 			HitResult,
-			SpawnLocation,
-			SpawnLocation,
+			CollisionCheckLocation,
+			CollisionCheckLocation,
 			FQuat::Identity,
 			ECC_WorldStatic,
 			FCollisionShape::MakeSphere(50.f),
