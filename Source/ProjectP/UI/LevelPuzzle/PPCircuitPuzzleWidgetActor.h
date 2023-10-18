@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PPCircuitPuzzleWidget.h"
+#include "Components/BoxComponent.h"
 #include "Components/Button.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
@@ -36,7 +37,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
+	float WidgetHalfWidthValue;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
+	float WidgetWidthAddValue;
+	
+protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 	TObjectPtr<UWidgetComponent> CircuitPuzzleWidgetComponent;
 
@@ -45,12 +53,16 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UPPEventCaller> EventCallerComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UBoxComponent> TriggerBox;
 	
 private:
 	void RotatePressedButton(UButton* Button, ECircuitNum ButtonNum);
 	void RotateAction();
 	void CheckCurrentButtonCorrect();
 	ECircuitDirection SetNextDirection(ECircuitDirection Direction);
+
 private:
 	UPROPERTY()
 	TObjectPtr<UButton> RotateButton;

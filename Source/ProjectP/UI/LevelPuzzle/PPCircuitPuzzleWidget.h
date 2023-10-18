@@ -31,12 +31,15 @@ class PROJECTP_API UPPCircuitPuzzleWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	FCorrectCircuitDelegate CorrectCircuitDelegate;
-	FPassTargetCircuitDelegate PassTargetCircuitDelegate;
-	
-public:
+	FORCEINLINE void AddWidgetWidthValue(const float Value) { SetPadding(FMargin(GetPadding().Left + Value, GetPadding().Top, GetPadding().Right + Value, GetPadding().Bottom)); }
+	FORCEINLINE void SetWidgetWidthValue(const float Value) { SetPadding(FMargin(Value, GetPadding().Top, Value, GetPadding().Bottom)); }
+	FORCEINLINE float GetWidgetWidthValue() { return GetPadding().Left; }
+
 	FORCEINLINE void SetEnableTexture() {EndPointImage->SetBrushFromTexture(EnableTexture); }
 	
+	FCorrectCircuitDelegate CorrectCircuitDelegate;
+	FPassTargetCircuitDelegate PassTargetCircuitDelegate;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UImage> StartPointImage;

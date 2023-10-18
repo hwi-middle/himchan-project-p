@@ -7,6 +7,7 @@
 #include "ProjectP/Object/PPEventCaller.h"
 #include "PPPasswordPuzzleWidgetActor.generated.h"
 
+class UBoxComponent;
 /*
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -88,11 +89,20 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
+	float WidgetHalfWidthValue;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
+	float WidgetWidthAddValue;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 	TObjectPtr<UWidgetComponent> PasswordPuzzleWidgetComponent;
@@ -103,9 +113,20 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Gimmick")
 	TObjectPtr<UPPEventCaller> EventCallerComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UBoxComponent> TriggerBox;
+	
 	UPROPERTY(EditAnywhere, Category = "Gimmick", DisplayName = "정답 비밀번호")
 	FString CorrectPassword;
 	
 private:
 	FORCEINLINE void DeliverCorrectEvent() { EventCallerComponent->DeliverEvent(); }
+	void DisplayWidgetBackgroundDelegate();
+	void HideWidgetBackgroundDelegate();
+
+private:
+	FTimerHandle DisplayTimerHandle;
+
+	FTimerHandle HideTimerHandle;
+	
 };
