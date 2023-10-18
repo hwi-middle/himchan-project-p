@@ -456,38 +456,3 @@ void APPCharacterBoss::TestPattern(EBossPattern Pattern)
 	}
 }
 
-//커스텀 커맨드
-void APPCharacterBoss::PP_Boss_Log_HP()
-{
-	FString message = FString::Printf(TEXT("Boss HP : %f"), GetCurrentHealth());
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Emerald, message);
-}
-
-void APPCharacterBoss::PP_Boss_Increase_HP(float value)
-{
-	IncreaseHealth(value);
-	FString message = FString::Printf(TEXT("Increased Boss HP : %f"), GetCurrentHealth());
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Emerald, message);
-}
-
-void APPCharacterBoss::PP_Boss_Decrease_HP(float value)
-{
-	DecreaseHealth(value);
-	FString message = FString::Printf(TEXT("Decreased Boss HP : %f"), GetCurrentHealth());
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Emerald, message);
-}
-
-void APPCharacterBoss::PP_Boss_Gimmick_Leaf()
-{
-	GenerateLeafTempestOnRandomLocation(LT_LeafNum);
-}
-
-void APPCharacterBoss::PP_Boss_Gimmick_Tentacle()
-{
-	GenerateTentaclesOnRandomLocation(VG_TentacleNum);
-}
-
-void APPCharacterBoss::PP_Boss_Gimmick_Gas()
-{
-	GenerateToxicFog();
-}

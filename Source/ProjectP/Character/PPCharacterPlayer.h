@@ -136,15 +136,4 @@ private:
 	void EnableHitCheckTimerDelegate();
 	void EnableRecoveryHealthTimerDelegate();
 	void ShowDamageFXDelegate();
-
-//커스텀 커맨드
-private:
-	UFUNCTION(Exec)
-	void PP_Player_Log_HP();
-
-	UFUNCTION(Exec)
-	void PP_Player_Increase_HP(float value);
-
-	UFUNCTION(Exec)
-	void PP_Player_Decrease_HP(float value);
 };

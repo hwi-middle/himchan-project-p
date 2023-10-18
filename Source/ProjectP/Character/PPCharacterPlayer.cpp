@@ -260,24 +260,3 @@ void APPCharacterPlayer::ShowDamageFXDelegate()
 		GetWorldTimerManager().ClearTimer(DamageFXFadeTimer);
 	}
 }
-
-//커스텀 커맨드
-void APPCharacterPlayer::PP_Player_Log_HP()
-{
-	FString message = FString::Printf(TEXT("Player HP : %f"), GetCurrentHealth());
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Emerald, message);
-}
-
-void APPCharacterPlayer::PP_Player_Increase_HP(float value)
-{
-	IncreaseHealth(value);
-	FString message = FString::Printf(TEXT("Increased Player HP : %f"), GetCurrentHealth());
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Emerald, message);
-}
-
-void APPCharacterPlayer::PP_Player_Decrease_HP(float value)
-{
-	DecreaseHealth(value);
-	FString message = FString::Printf(TEXT("Decreased Player HP : %f"), GetCurrentHealth());
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Emerald, message);
-}
