@@ -73,6 +73,12 @@ private:
 	
 	UPROPERTY(EditAnywhere, DisplayName = "첫번째 회로 정답 방향")
 	ECircuitDirection FirstCircuitTargetDirection;
+
+	UPROPERTY(EditAnywhere, DisplayName = "첫번째 회로 복수 정답 처리 여부")
+	uint32 bIsFirstCircuitMultiAnswer : 1;
+
+	UPROPERTY(EditAnywhere, DisplayName = "첫번째 회로 두번째 정답 방향")
+	ECircuitDirection FirstCircuitTargetDirectionTwo;
 	
 	UPROPERTY(EditAnywhere, DisplayName = "두번째 회로 정답 방향")
 	ECircuitDirection SecondCircuitTargetDirection;
@@ -80,13 +86,19 @@ private:
 	UPROPERTY(EditAnywhere, DisplayName = "세번째 회로 정답 방향")
 	ECircuitDirection ThirdCircuitTargetDirection;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, DisplayName = "세번째 회로 복수 정답 처리 여부")
+	uint32 bIsThirdCircuitMultiAnswer : 1;
+
+	UPROPERTY(EditAnywhere, DisplayName = "세번째 회로 두번째 정답 방향")
+	ECircuitDirection ThirdCircuitTargetDirectionTwo;
+	
+	UPROPERTY(EditAnywhere, DisplayName = "첫번째 회로 시작 방향")
 	ECircuitDirection CurrentFirstCircuitDirection;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, DisplayName = "두번째 회로 시작 방향")
 	ECircuitDirection CurrentSecondCircuitDirection;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, DisplayName = "세번째 회로 시작 방향")
 	ECircuitDirection CurrentThirdCircuitDirection;
 
 	UPROPERTY()

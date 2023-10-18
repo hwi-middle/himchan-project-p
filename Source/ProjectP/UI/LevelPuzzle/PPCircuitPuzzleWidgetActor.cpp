@@ -79,9 +79,7 @@ void APPCircuitPuzzleWidgetActor::BeginPlay()
 	CircuitPuzzleWidget = CastChecked<UPPCircuitPuzzleWidget>(CircuitPuzzleWidgetComponent->GetUserWidgetObject());
 	CircuitPuzzleWidget->PassTargetCircuitDelegate.AddUObject(this, &APPCircuitPuzzleWidgetActor::RotatePressedButton);
 	CircuitPuzzleWidget->SetWidgetWidthValue(WidgetHalfWidthValue);
-	CurrentFirstCircuitDirection = ECircuitDirection::Top;
-	CurrentSecondCircuitDirection = ECircuitDirection::Top;
-	CurrentThirdCircuitDirection = ECircuitDirection::Top;
+	CircuitPuzzleWidget->SetDefaultAngle(static_cast<uint32>(CurrentFirstCircuitDirection), static_cast<uint32>(CurrentSecondCircuitDirection), static_cast<uint32>(CurrentThirdCircuitDirection));
 	
 	bIsRotationOnGoing = false;
 	bIsFirstCircuitCorrected = false;
@@ -150,7 +148,7 @@ void APPCircuitPuzzleWidgetActor::RotatePressedButton(UButton* Button, ECircuitN
 
 void APPCircuitPuzzleWidgetActor::RotateAction()
 {
-    CurrentRotation = RotateButton->GetRenderTransformAngle() + 1;
+    CurrentRotation = RotateButton->GetRenderTransformAngle() + 2;
     if(CurrentRotation == 360)
     {
         CurrentRotation = 0;
@@ -173,24 +171,39 @@ void APPCircuitPuzzleWidgetActor::CheckCurrentButtonCorrect()
 	{
 	case ECircuitNum::First:
 		CurrentFirstCircuitDirection = SetNextDirection(CurrentFirstCircuitDirection);
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("첫번째 회로 회전")));
 		break;
 	case ECircuitNum::Second:
 		CurrentSecondCircuitDirection = SetNextDirection(CurrentSecondCircuitDirection);
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("두번째 회로 회전")));
 		break;
 	case ECircuitNum::Third:
 		CurrentThirdCircuitDirection = SetNextDirection(CurrentThirdCircuitDirection);
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("세번째 회로 회전")));
 		break;
 	default:
 		checkNoEntry();
 	}
 	bIsFirstCircuitCorrected = CurrentFirstCircuitDirection == FirstCircuitTargetDirection;
+	if(bIsFirstCircuitMultiAnswer && !bIsFirstCircuitCorrected)
+	{
+		bIsFirstCircuitCorrected = CurrentFirstCircuitDirection == FirstCircuitTargetDirectionTwo;
+	}
+	
 	bIsSecondCircuitCorrected = CurrentSecondCircuitDirection == SecondCircuitTargetDirection;
+	
 	bIsThirdCircuitCorrected = CurrentThirdCircuitDirection == ThirdCircuitTargetDirection;
+	if(bIsThirdCircuitMultiAnswer && !bIsThirdCircuitCorrected)
+	{
+		bIsThirdCircuitCorrected = CurrentThirdCircuitDirection == ThirdCircuitTargetDirectionTwo;
+	}
+	
 	if(bIsFirstCircuitCorrected && bIsSecondCircuitCorrected && bIsThirdCircuitCorrected)
 	{
 	    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("모든 회로 일치 확인")));
 		bIsRotationOnGoing = true;
 		CircuitPuzzleWidget->SetEnableTexture();
+		CircuitPuzzleWidget->SetEnableTint();
 		EventCallerComponent->DeliverEvent();
 	}
 }
@@ -201,15 +214,19 @@ ECircuitDirection APPCircuitPuzzleWidgetActor::SetNextDirection(ECircuitDirectio
 	{
 	case ECircuitDirection::Top:
 		Direction = ECircuitDirection::Right;
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("회전된 회로 방향: 오른쪽")));
 		break;
 	case ECircuitDirection::Right:
 		Direction = ECircuitDirection::Bottom;
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("회전된 회로 방향: 아래")));
 		break;
 	case ECircuitDirection::Bottom:
 		Direction = ECircuitDirection::Left;
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("회전된 회로 방향: 왼쪽")));
 		break;
 	case ECircuitDirection::Left:
 		Direction = ECircuitDirection::Top;
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("회전된 회로 방향: 위")));
 		break;
 	default:
 		checkNoEntry();
