@@ -30,9 +30,15 @@ void APPPasswordPuzzleWidgetActor::BeginPlay()
 	Super::BeginPlay();
 	PasswordPuzzleWidget = CastChecked<UPPPasswordPuzzleWidget>(PasswordPuzzleWidgetComponent->GetUserWidgetObject());
 	PasswordPuzzleWidget->SetCorrectPassword(CorrectPassword);
-	PasswordPuzzleWidget->SetPadding(FMargin(WidgetHalfWidthValue, PasswordPuzzleWidget->GetPadding().Top, WidgetHalfWidthValue, PasswordPuzzleWidget->GetPadding().Bottom));
+	PasswordPuzzleWidget->SetWidgetWidthValue(WidgetHalfWidthValue);
 	PasswordPuzzleWidget->CorrectPasswordDelegate.AddUObject(this, &APPPasswordPuzzleWidgetActor::DeliverCorrectEvent);
 	
+}
+
+// Called every frame
+void APPPasswordPuzzleWidgetActor::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 void APPPasswordPuzzleWidgetActor::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -73,16 +79,10 @@ void APPPasswordPuzzleWidgetActor::NotifyActorEndOverlap(AActor* OtherActor)
 	}
 }
 
-// Called every frame
-void APPPasswordPuzzleWidgetActor::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void APPPasswordPuzzleWidgetActor::DisplayWidgetBackgroundDelegate()
 {
 	PasswordPuzzleWidget->AddWidgetWidthValue(-WidgetWidthAddValue);
-	if (PasswordPuzzleWidget->GetPadding().Left <= 0.0f)
+	if (PasswordPuzzleWidget->GetWidgetWidthValue() <= 0.0f)
 	{
 		PasswordPuzzleWidget->SetWidgetWidthValue(0.f);
 		GetWorldTimerManager().ClearTimer(DisplayTimerHandle);
@@ -92,7 +92,7 @@ void APPPasswordPuzzleWidgetActor::DisplayWidgetBackgroundDelegate()
 void APPPasswordPuzzleWidgetActor::HideWidgetBackgroundDelegate()
 {
 	PasswordPuzzleWidget->AddWidgetWidthValue(WidgetWidthAddValue);
-	if (PasswordPuzzleWidget->GetPadding().Left >= WidgetHalfWidthValue)
+	if (PasswordPuzzleWidget->GetWidgetWidthValue() >= WidgetHalfWidthValue)
 	{
 		PasswordPuzzleWidget->SetWidgetWidthValue(WidgetHalfWidthValue);
 		GetWorldTimerManager().ClearTimer(HideTimerHandle);

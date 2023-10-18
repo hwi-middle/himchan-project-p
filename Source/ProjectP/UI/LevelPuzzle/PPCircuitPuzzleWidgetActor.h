@@ -29,14 +29,15 @@ public:
 	// Sets default values for this actor's properties
 	APPCircuitPuzzleWidgetActor();
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category ="UI")
 	float WidgetHalfWidthValue;
@@ -101,4 +102,13 @@ private:
 	uint8 bIsThirdCircuitCorrected : 1;
 
 	uint8 bIsRotationOnGoing : 1;
+
+private:
+	void DisplayWidgetBackgroundDelegate();
+	void HideWidgetBackgroundDelegate();
+	
+private:
+	FTimerHandle DisplayTimerHandle;
+
+	FTimerHandle HideTimerHandle;
 };
