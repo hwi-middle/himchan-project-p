@@ -35,6 +35,7 @@ public:
 	FPassTargetCircuitDelegate PassTargetCircuitDelegate;
 	
 public:
+	FORCEINLINE void SetEnableTexture() {EndPointImage->SetBrushFromTexture(EnableTexture); }
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
@@ -73,6 +74,6 @@ private:
 	
 private:
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<UTexture> EnableTexture;
+	TObjectPtr<UTexture2D> EnableTexture;
 	
 };

@@ -60,13 +60,14 @@ APPCharacterBoss::APPCharacterBoss()
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
 
 	Tags.Add(TEXT("DestructibleObject"));
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	GetMesh()->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 }
 
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetMesh()->SetCollisionProfileName(CP_ENEMY);
+	
 	Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f, 14.f), FRotator::ZeroRotator);
 	Core->SetBoss(this);
 	bIsAttacking = false;
@@ -132,7 +133,7 @@ void APPCharacterBoss::Tick(float DeltaSeconds)
 	
 	GF_FX->SetWorldLocation(GetActorLocation());
 
-	if (!bIsAttacking)
+	if (!bIsAttacking) // 보스전 너무 단조롭다면 패턴 여러개 사용하는 경우도 나오게끔 시간 체크만 하는게 나을지도
 	{
 		Core->SetAdditionalCollisionEnable(true);
 		AnimInstance->SetIsIdle(true);
@@ -161,6 +162,8 @@ void APPCharacterBoss::Tick(float DeltaSeconds)
 			}
 
 			PreviousPattern = RandPattern;
+			// ElapsedAttackDelay = 0.f;
+			// AttackDelay = FMath::RandRange(AttackDelayMin, AttackDelayMax);
 		}
 	}
 	else
@@ -219,6 +222,9 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 		FVector SpawnLocation = FVector(RandomPont.X, RandomPont.Y, 0.f) + GetActorLocation();
 		SpawnLocation.Z = 0.f;
 
+		FVector CollisionCheckLocation = SpawnLocation;
+		CollisionCheckLocation.Z = 100.f;
+		
 		// 환경과 충돌이 있는지 검사
 		FHitResult HitResult;
 		FCollisionQueryParams CollisionParams;
@@ -226,10 +232,10 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 
 		bool bHit = GetWorld()->SweepSingleByChannel(
 			HitResult,
-			SpawnLocation,
-			SpawnLocation,
+			CollisionCheckLocation,
+			CollisionCheckLocation,
 			FQuat::Identity,
-			ECC_ENVIRONMENT,
+			ECC_WorldStatic,
 			FCollisionShape::MakeSphere(50.f),
 			CollisionParams
 		);
@@ -285,7 +291,7 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 			SpawnLocation,
 			SpawnLocation,
 			FQuat::Identity,
-			ECC_ENVIRONMENT,
+			ECC_WorldStatic,
 			FCollisionShape::MakeSphere(50.f),
 			CollisionParams
 		);
@@ -353,7 +359,7 @@ void APPCharacterBoss::GenerateToxicFogDelegate()
 		SpawnLocation,
 		SpawnLocation,
 		FQuat::Identity,
-		ECC_CHECK_PAWN,
+		ECC_CHECK_PLAYER,
 		FCollisionShape::MakeSphere(GF_Radius),
 		CollisionParams
 	);
@@ -411,17 +417,14 @@ void APPCharacterBoss::OpenAndCloseNuclearContinuously()
 
 void APPCharacterBoss::IncreaseHealth(const float Value)
 {
-	/*
-	 * Do something
-	 */
+	Super::IncreaseHealth(Value);
+
 	Health += Value;
 }
 
 void APPCharacterBoss::DecreaseHealth(const float Value)
 {
-	/*
-	 * Do something
-	 */
+	Super::DecreaseHealth(Value);
 	Health -= Value;
 	if (Health <= 0 && !bIsDead)
 	{

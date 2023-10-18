@@ -6,6 +6,7 @@
 #include "Engine/PostProcessVolume.h"
 #include "ProjectP/Constant/PPLevelName.h"
 #include "ProjectP/Game/PPGameInstance.h"
+#include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
@@ -17,7 +18,7 @@ APPCharacterPlayer::APPCharacterPlayer()
 	PlayerStatusData = FPPConstructorHelper::FindAndGetObject<UPPPlayerStatusData>(TEXT("/Script/ProjectP.PPPlayerStatusData'/Game/DataAssets/Player/PlayerStatusData.PlayerStatusData'"), EAssertionLevel::Check);
 	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollsionCapsule"));
 	CollisionCapsule->InitCapsuleSize(15.0f, 90.0f);
-	CollisionCapsule->SetCollisionProfileName(TEXT("Pawn"));
+	CollisionCapsule->SetCollisionProfileName(CP_PLAYER);
 	TObjectPtr<USceneComponent> OriginalRootComponent = RootComponent;
 	RootComponent = CollisionCapsule;
 	OriginalRootComponent->SetupAttachment(RootComponent);

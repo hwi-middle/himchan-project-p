@@ -117,7 +117,7 @@ void APPTentacle::HideWarningSignAndAttackDelegate()
 		GetActorLocation(),
 		GetActorLocation(),
 		FQuat::Identity,
-		ECC_CHECK_PAWN,
+		ECC_CHECK_PLAYER,
 		FCollisionShape::MakeSphere(DamageRadius),
 		CollisionParams
 	);

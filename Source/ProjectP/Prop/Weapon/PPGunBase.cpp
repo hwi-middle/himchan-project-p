@@ -170,7 +170,7 @@ void APPGunBase::Tick(float DeltaTime)
 		HitResult,
 		StartLocation,
 		EndLocation,
-		ECC_Visibility,
+		ECC_PLAYER_ATTACK,
 		CollisionParams
 	);
 

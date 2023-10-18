@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOpenTriggerDoorDelegate);
  * 
  */
 UCLASS()
-class PROJECTP_API APPCharacterBoss : public APPCharacterEnemy, public ICharacterStatusInterface
+class PROJECTP_API APPCharacterBoss : public APPCharacterEnemy
 {
 	GENERATED_BODY()
 
@@ -25,7 +25,7 @@ public:
 	APPCharacterBoss();
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
-	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
+	FORCEINLINE const virtual float GetCurrentHealth() override { Super::GetCurrentHealth(); return Health; }
 	void SetIsAttacking(const bool Value);
 	
 	FORCEINLINE void SetDead(const bool Value) { bIsDead = Value; }
