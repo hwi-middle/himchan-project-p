@@ -60,13 +60,14 @@ APPCharacterBoss::APPCharacterBoss()
 	GetMesh()->SetAnimInstanceClass(BossAnimInstanceClass);
 
 	Tags.Add(TEXT("DestructibleObject"));
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	GetMesh()->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 }
 
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetMesh()->SetCollisionProfileName(CP_ENEMY);
+	
 	Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f, 14.f), FRotator::ZeroRotator);
 	Core->SetBoss(this);
 	bIsAttacking = false;
@@ -229,7 +230,7 @@ void APPCharacterBoss::GenerateTentaclesOnRandomLocation(uint32 InNum)
 			SpawnLocation,
 			SpawnLocation,
 			FQuat::Identity,
-			ECC_ENVIRONMENT,
+			ECC_WorldStatic,
 			FCollisionShape::MakeSphere(50.f),
 			CollisionParams
 		);
@@ -285,7 +286,7 @@ void APPCharacterBoss::GenerateLeafTempestOnRandomLocation(uint32 InNum)
 			SpawnLocation,
 			SpawnLocation,
 			FQuat::Identity,
-			ECC_ENVIRONMENT,
+			ECC_WorldStatic,
 			FCollisionShape::MakeSphere(50.f),
 			CollisionParams
 		);
@@ -353,7 +354,7 @@ void APPCharacterBoss::GenerateToxicFogDelegate()
 		SpawnLocation,
 		SpawnLocation,
 		FQuat::Identity,
-		ECC_CHECK_PAWN,
+		ECC_CHECK_PLAYER,
 		FCollisionShape::MakeSphere(GF_Radius),
 		CollisionParams
 	);
@@ -411,17 +412,14 @@ void APPCharacterBoss::OpenAndCloseNuclearContinuously()
 
 void APPCharacterBoss::IncreaseHealth(const float Value)
 {
-	/*
-	 * Do something
-	 */
+	Super::IncreaseHealth(Value);
+
 	Health += Value;
 }
 
 void APPCharacterBoss::DecreaseHealth(const float Value)
 {
-	/*
-	 * Do something
-	 */
+	Super::DecreaseHealth(Value);
 	Health -= Value;
 	if (Health <= 0 && !bIsDead)
 	{

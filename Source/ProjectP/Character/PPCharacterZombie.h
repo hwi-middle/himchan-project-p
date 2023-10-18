@@ -15,7 +15,7 @@ DECLARE_MULTICAST_DELEGATE(FAICharacterPatternFinished)
  * 
  */
 UCLASS()
-class PROJECTP_API APPCharacterZombie : public APPCharacterEnemy, public ICharacterStatusInterface
+class PROJECTP_API APPCharacterZombie : public APPCharacterEnemy
 {
 	GENERATED_BODY()
 
@@ -48,10 +48,10 @@ public:
 	FORCEINLINE void SetTrackingSpeed() { GetCharacterMovement()->MaxWalkSpeed = TrackingSpeed; }
 
 	// 인터페이스 구현
-protected:
+public:
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
-	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; };
+	FORCEINLINE const virtual float GetCurrentHealth() override { Super::GetCurrentHealth(); return Health; }
 
 	// 공격 관련 함수
 private:
@@ -101,7 +101,7 @@ private:
 	FTimerHandle DeadTimerHandle;
 
 	float AutoDestroyTime;
-
+	
 private:
 	UPROPERTY()
 	TObjectPtr<UPPZombieData> ZombieData;

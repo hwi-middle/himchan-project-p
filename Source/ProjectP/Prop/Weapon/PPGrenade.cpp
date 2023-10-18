@@ -60,7 +60,7 @@ void APPGrenade::Tick(float DeltaTime)
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);
 
-	bool bHit = GetWorld()->SweepSingleByChannel(
+	bool bHitResult = GetWorld()->SweepSingleByChannel(
 		Result,
 		GetActorLocation(),
 		GetActorLocation(),
@@ -70,7 +70,7 @@ void APPGrenade::Tick(float DeltaTime)
 		CollisionParams
 	);
 
-	if (bHit)
+	if (bHitResult)
 	{
 		bIsActivated = true;
 		GetWorldTimerManager().SetTimerForNextTick(this, &APPGrenade::Activate);
@@ -88,20 +88,20 @@ void APPGrenade::Activate()
 		return;
 	}
 
-	FHitResult Result;
+	TArray<FHitResult> HitResults;
 	FCollisionQueryParams CollisionParams;
 	float Radius = 500.f; // TODO: 매직넘버 쓰면 안되긴 함 ㅎㅎ
 	CollisionParams.AddIgnoredActor(this);
 	CollisionParams.AddIgnoredActor(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Red, false, 1.f);
-
-	bool bHit = GetWorld()->SweepSingleByChannel(
-		Result,
+	
+	bool bHit = GetWorld()->SweepMultiByChannel(
+		HitResults,
 		GetActorLocation(),
 		GetActorLocation(),
 		FQuat::Identity,
-		ECC_Visibility,
+		ECC_PLAYER_ATTACK,
 		FCollisionShape::MakeSphere(Radius),
 		CollisionParams
 	);
@@ -112,13 +112,14 @@ void APPGrenade::Activate()
 		return;
 	}
 
-	// TODO: 좀비 PPCharacterZombie 머지 되면 필터링 하기, 일단은 보스만 캐스팅해서 검사
-	APPCharacterBoss* Enemy = Cast<APPCharacterBoss>(Result.GetActor());
-	if (Enemy)
+	for (auto Result : HitResults)
 	{
-		FDamageEvent DamageEvent;
-		Enemy->TakeDamage(10.f, DamageEvent, nullptr, this);
+		// TODO: 좀비 PPCharacterZombie 머지 되면 필터링 하기, 일단은 보스만 캐스팅해서 검사
+		ICharacterStatusInterface* Enemy = Cast<ICharacterStatusInterface>(Result.GetActor());
+		if (Enemy)
+		{
+			Enemy->DecreaseHealth(100.f);
+		}
 	}
-
 	Destroy();
 }
