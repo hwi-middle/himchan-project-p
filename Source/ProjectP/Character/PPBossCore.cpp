@@ -17,7 +17,7 @@ APPBossCore::APPBossCore()
 	PrimaryWeaponData = FPPConstructorHelper::FindAndGetObject<UPPWeaponData>(TEXT("/Script/ProjectP.PPWeaponData'/Game/DataAssets/Weapon/PrimaryWeaponData.PrimaryWeaponData'"), EAssertionLevel::Check);
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CoreMesh"));
-	USkeletalMesh* MeshRef = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/Boss/BossCore/heart_animation_2__1_.heart_animation_2__1_'"));
+	USkeletalMesh* MeshRef = FPPConstructorHelper::FindAndGetObject<USkeletalMesh>(TEXT("/Script/Engine.SkeletalMesh'/Game/Project-P/Meshes/SkeletalMesh/BossCore/Meshs/SK_Heart.SK_Heart'"), EAssertionLevel::Check);
 	Mesh->SetSkeletalMesh(MeshRef);
 	const float ScaleFactor = 2.198526;
 	Mesh->SetWorldScale3D(FVector(ScaleFactor));
@@ -34,7 +34,7 @@ APPBossCore::APPBossCore()
 	AdditionalCollision->SetRelativeLocation(FVector(0.0f, 40.0f, 170.0f));
 	AdditionalCollision->SetRelativeScale3D(FVector(0.65f,0.8f * 3,0.6f));
 	
-	UAnimSequence* AnimRef = FPPConstructorHelper::FindAndGetObject<UAnimSequence>(TEXT("/Script/Engine.AnimSequence'/Game/Project-P/Meshes/SkeletalMesh/Boss/BossCore/heart_animation_2__1__Anim.heart_animation_2__1__Anim'"));
+	UAnimSequence* AnimRef = FPPConstructorHelper::FindAndGetObject<UAnimSequence>(TEXT("/Script/Engine.AnimSequence'/Game/Project-P/Meshes/SkeletalMesh/BossCore/Animation/AS_Heart.AS_Heart'"), EAssertionLevel::Check);
 	Anim = AnimRef;
 }
 
