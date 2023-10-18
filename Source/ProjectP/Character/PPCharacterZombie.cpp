@@ -25,13 +25,16 @@ APPCharacterZombie::APPCharacterZombie()
 	ZombieData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/186-ZombieAI/ZombieData.ZombieData'"), EAssertionLevel::Check);
 	GetMesh()->SetSkeletalMesh(ZombieData->ZombieMesh);
 	GetMesh()->SetAnimInstanceClass(FPPConstructorHelper::FindAndGetClass<UPPZombieAnimInstance>(TEXT("/Script/Engine.AnimBlueprint'/Game/186-ZombieAI/ABP_Zombie.ABP_Zombie_C'"), EAssertionLevel::Check));
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	GetMesh()->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
+	// GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	// GetMesh()->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 }
 
 void APPCharacterZombie::BeginPlay()
 {
 	Super::BeginPlay();
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetMesh()->SetCollisionProfileName(CP_ENEMY);
+	
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	Health = ZombieData->Health;
 	AttackDamage = ZombieData->AttackDamage;
@@ -110,10 +113,16 @@ void APPCharacterZombie::PlayPatternAnimMontage()
 
 void APPCharacterZombie::IncreaseHealth(const float Value)
 {
+	Super::IncreaseHealth(Value);
 	Health += Value;
 }
 void APPCharacterZombie::DecreaseHealth(const float Value)
 {
+	Super::DecreaseHealth(Value);
+	if(CurrentState == ECharacterState::Dead)
+	{
+		return;
+	}
 	Health -= Value;
 	if(Health <= 0)
 	{
@@ -136,14 +145,14 @@ void APPCharacterZombie::CheckAttackHitResult()
 	GetMesh()->GetSocketLocation(ZOMBIE_FRONT),
 	GetMesh()->GetSocketLocation(ZOMBIE_FRONT),
 	FQuat::Identity,
-	ECC_Pawn,
+	ECC_ENEMY_ATTACK,
 	FCollisionShape::MakeBox(AttackHitCheckBox),
 	Params);
 	DrawDebugBox(GetWorld(), GetMesh()->GetSocketLocation(ZOMBIE_FRONT), AttackHitCheckBox, FColor::Blue, false, 1.0f);
 	if(bResult && !bIsDamageCaused)
 	{
-		// APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(HitResult.GetActor());
-		ACharacter* Player = Cast<ACharacter>(HitResult.GetActor());
+		APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(HitResult.GetActor());
+		// ACharacter* TestPlayer = Cast<ACharacter>(HitResult.GetActor());
 		if(Player)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, FString::Printf(TEXT("공격 체크")));

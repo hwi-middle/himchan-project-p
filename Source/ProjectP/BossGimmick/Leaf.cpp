@@ -43,7 +43,7 @@ ALeaf::ALeaf()
 	Tags.Add(TEXT("DestructibleObject"));
 	Mesh->SetSimulatePhysics(false);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	Mesh->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
+	Mesh->SetCollisionProfileName(CP_ENEMY);
 	Health = 0.1f;
 	bIsActivated = false;
 	bIsIgnored = false;
@@ -135,7 +135,7 @@ bool ALeaf::CheckPlayerWithSphere(const float InRadius, FHitResult& Result)
 		GetActorLocation(),
 		GetActorLocation(),
 		FQuat::Identity,
-		ECC_CHECK_PAWN,
+		ECC_CHECK_PLAYER,
 		FCollisionShape::MakeSphere(InRadius),
 		CollisionParams
 	);
