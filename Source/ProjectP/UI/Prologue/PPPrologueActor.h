@@ -28,7 +28,7 @@ protected:
 protected:
 	void DisplayStringData();
 	void LoadMainLevelSequence();
-	
+	void SkipPrologueSequence();
 private:
 	void DisplayStringDataDelegate();
 	void LoadMainLevelDelegate();
@@ -57,4 +57,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float NextArrayNum;
+
+	uint32 bIsLoadingLevel : 1;
 };
