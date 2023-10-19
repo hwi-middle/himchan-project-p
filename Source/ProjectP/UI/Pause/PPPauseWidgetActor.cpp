@@ -89,7 +89,6 @@ void APPPauseWidgetActor::ReturnFromSettingToPause()
 
 void APPPauseWidgetActor::EntryLobbyLevel()
 {
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 	GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
 	UGameplayStatics::OpenLevel(this, LOBBY_LEVEL);
 	/*

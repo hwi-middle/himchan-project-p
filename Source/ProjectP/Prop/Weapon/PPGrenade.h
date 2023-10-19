@@ -7,8 +7,10 @@
 #include "ProjectP/Player/PPVRHand.h"
 #include "PPGrenade.generated.h"
 
+class UGrenadeData;
+
 UENUM()
-enum EGrenadeExplodeType
+enum EGrenadeExplodeType : uint8
 {
 	OnImpact,
 	OnImpactWithDelay,
@@ -39,6 +41,9 @@ private:
 	void Explode();
 
 private:
+	UPROPERTY()
+	TObjectPtr<UGrenadeData> GrenadeData;
+	
 	UPROPERTY(EditAnywhere)
 	TEnumAsByte<EGrenadeExplodeType> ExplodeType;
 
@@ -59,6 +64,15 @@ private:
 
 	UPROPERTY()
 	float ExplodeDelay;
+
+	UPROPERTY()
+	float ActivateRadius;
+	
+	UPROPERTY()
+	float ExplodeRadius;
+
+	UPROPERTY()
+	float ExplodeDamage;
 
 	FCollisionQueryParams CollisionParamsOnTick;
 };
