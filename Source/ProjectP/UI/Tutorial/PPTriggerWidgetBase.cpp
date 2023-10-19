@@ -43,7 +43,7 @@ void APPTriggerWidgetBase::BeginPlay()
 	TriggerEnterSoundCue = SoundData->WidgetOpenSoundCue;
 	TriggerOutSoundCue = SoundData->WidgetCloseSoundCue;
 
-	TutorialWidget->SetTutorialImage(TutorialImage);
+	TutorialWidget->SetBackgroundImage(TutorialImage);
 	const FStringDataTable* TitleString = TitleStringDataHandle.GetRow<FStringDataTable>(TitleStringDataHandle.RowName.ToString());
 	if(TitleString)
 	{
