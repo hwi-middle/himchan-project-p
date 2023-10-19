@@ -89,11 +89,15 @@ void APPPauseWidgetActor::ReturnFromSettingToPause()
 
 void APPPauseWidgetActor::EntryLobbyLevel()
 {
+	GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
+	UGameplayStatics::OpenLevel(this, LOBBY_LEVEL);
+	/*
 	FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
-	if(LevelName == MAIN_LEVEL)
+	if(LevelName == MAIN_LEVEL || LevelName == TEST_MERGED_LEVEL)
 	{
 		GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
 		UGameplayStatics::OpenLevel(this, LOBBY_LEVEL);
 	}
+	*/
 }
 
