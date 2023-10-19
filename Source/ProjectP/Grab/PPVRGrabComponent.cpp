@@ -103,10 +103,10 @@ void UPPVRGrabComponent::SetPrimitiveCompPhysics(const bool bInSimulate)
 	Cast<UPrimitiveComponent>(GetAttachParent())->SetSimulatePhysics(bInSimulate);
 }
 
-void UPPVRGrabComponent::SetShouldSimulateOnDrop()
-{
-	bShouldSimulateOnDrop = Cast<UPrimitiveComponent>(GetAttachParent())->IsAnySimulatingPhysics();
-}
+// void UPPVRGrabComponent::SetShouldSimulateOnDrop()
+// {
+// 	bShouldSimulateOnDrop = Cast<UPrimitiveComponent>(GetAttachParent())->IsAnySimulatingPhysics();
+// }
 
 void UPPVRGrabComponent::TryAttachComponentToHand(APPVRHand* InHand)
 {
