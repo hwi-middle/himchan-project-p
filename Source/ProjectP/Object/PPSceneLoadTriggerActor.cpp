@@ -38,10 +38,10 @@ void APPSceneLoadTriggerActor::BeginPlay()
 void APPSceneLoadTriggerActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	// APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(OtherActor);
-	ACharacter* Player = Cast<ACharacter>(OtherActor);
+	APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(OtherActor);
 	if(Player)
 	{
+		DisableInput(GetWorld()->GetFirstPlayerController());
 		LoadLevelSequence();
 	}
 }
