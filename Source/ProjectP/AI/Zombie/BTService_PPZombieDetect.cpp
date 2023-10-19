@@ -8,6 +8,7 @@
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "ProjectP/Character/PPCharacterZombie.h"
 #include "ProjectP/Constant/PPBlackBoardKeyName.h"
+#include "ProjectP/Util/PPCollisionChannels.h"
 
 UBTService_PPZombieDetect::UBTService_PPZombieDetect()
 {
@@ -34,13 +35,12 @@ void UBTService_PPZombieDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint
 	
 	float DetectRadius = ControllingPawn->GetAIMissingTargetRadius();
 	TArray<FOverlapResult> OverlapResults;
-	//TODO: 별도의 플레이어 전용 채널로 변경하기
 	FCollisionQueryParams CollisionQueryParams(SCENE_QUERY_STAT(Detect), false, ControllingPawn);
 	bool bResult = World->OverlapMultiByChannel(
 		OverlapResults,
 		Center,
 		FQuat::Identity,
-		ECollisionChannel::ECC_Pawn,
+		ECC_CHECK_PLAYER,
 		FCollisionShape::MakeSphere(DetectRadius),
 		CollisionQueryParams
 		);

@@ -43,7 +43,7 @@ void APPTriggerWidgetBase::BeginPlay()
 	TriggerEnterSoundCue = SoundData->WidgetOpenSoundCue;
 	TriggerOutSoundCue = SoundData->WidgetCloseSoundCue;
 
-	TutorialWidget->SetTutorialImage(TutorialImage);
+	TutorialWidget->SetBackgroundImage(TutorialImage);
 	const FStringDataTable* TitleString = TitleStringDataHandle.GetRow<FStringDataTable>(TitleStringDataHandle.RowName.ToString());
 	if(TitleString)
 	{
@@ -78,7 +78,7 @@ void APPTriggerWidgetBase::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 	
-	TObjectPtr<APPVRPawn> Player = Cast<APPVRPawn>(OtherActor);
+	TObjectPtr<APPCharacterPlayer> Player = Cast<APPCharacterPlayer>(OtherActor);
 	TObjectPtr<ACharacter> TestPlayer = Cast<ACharacter>(OtherActor);
 	if(Player || TestPlayer)
 	{
@@ -89,11 +89,13 @@ void APPTriggerWidgetBase::NotifyActorBeginOverlap(AActor* OtherActor)
 		case EEventTriggerType::None:
 			break;
 		case  EEventTriggerType::OneTimeOnly:
-			UGameplayStatics::PlaySound2D(this, CommanderSoundCue);
+			Player->GetCommanderAudioComponent()->SetSound(CommanderSoundCue);
+			Player->GetCommanderAudioComponent()->Play();
 			CommanderSoundTriggerType = EEventTriggerType::None;
 			break;
 		case EEventTriggerType::AnyTime:
-			UGameplayStatics::PlaySound2D(this, CommanderSoundCue);
+			Player->GetCommanderAudioComponent()->SetSound(CommanderSoundCue);
+			Player->GetCommanderAudioComponent()->Play();
 			break;
 		default:
 			checkNoEntry();

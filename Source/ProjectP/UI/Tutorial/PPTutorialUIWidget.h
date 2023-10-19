@@ -30,7 +30,8 @@ public:
 	FORCEINLINE void SetTutorialPanelOpacity(const float Opacity) { TutorialPanel->SetRenderOpacity(Opacity); }
 	FORCEINLINE float GetTutorialPanelOpacity() const { return TutorialPanel->GetRenderOpacity(); }
 
-	FORCEINLINE void SetTutorialImage(UTexture2D* Image) const { TutorialImage->SetBrushFromTexture(Image); }
+	// FORCEINLINE void SetTutorialImage(UTexture2D* Image) const { TutorialImage->SetBrushFromTexture(Image); }
+	FORCEINLINE void SetBackgroundImage(UTexture2D* Image) const { BackgroundImage->SetBrushFromTexture(Image); }
 	FORCEINLINE void SetTitleText(const FString TitleString) const { TutorialTitleTextBlock->SetText(FText::FromString(TitleString)); }
 	FORCEINLINE void SetInfoText(const FString InfoString) const { TutorialInfoTextBlock->SetText(FText::FromString(InfoString)); }
 	
@@ -41,8 +42,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UCanvasPanel> TutorialPanel;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
-	TObjectPtr<UImage> TutorialImage;
+	// UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
+	// TObjectPtr<UImage> TutorialImage;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> TutorialTitleTextBlock;

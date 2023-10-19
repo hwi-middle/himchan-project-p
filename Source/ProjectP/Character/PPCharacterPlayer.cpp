@@ -2,6 +2,7 @@
 
 
 #include "ProjectP/Character/PPCharacterPlayer.h"
+
 #include "Engine/DamageEvents.h"
 #include "Engine/PostProcessVolume.h"
 #include "ProjectP/Constant/PPLevelName.h"
@@ -17,12 +18,15 @@ APPCharacterPlayer::APPCharacterPlayer()
 
 	PlayerStatusData = FPPConstructorHelper::FindAndGetObject<UPPPlayerStatusData>(TEXT("/Script/ProjectP.PPPlayerStatusData'/Game/DataAssets/Player/PlayerStatusData.PlayerStatusData'"), EAssertionLevel::Check);
 	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollsionCapsule"));
-	CollisionCapsule->InitCapsuleSize(15.0f, 90.0f);
+	CollisionCapsule->InitCapsuleSize(20.0f, 90.0f);
 	CollisionCapsule->SetCollisionProfileName(CP_PLAYER);
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	CommanderAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("CommanderAudioComponent"));
 	TObjectPtr<USceneComponent> OriginalRootComponent = RootComponent;
 	RootComponent = CollisionCapsule;
 	OriginalRootComponent->SetupAttachment(RootComponent);
-	LoadAnotherLevelDelegate.AddDynamic(this, &APPCharacterPlayer::LoadLevelSequence);
+	AudioComponent->SetupAttachment(RootComponent);
+	CommanderAudioComponent->SetupAttachment(RootComponent);
 }
 
 void APPCharacterPlayer::Tick(const float DeltaTime)
@@ -145,12 +149,6 @@ void APPCharacterPlayer::DecreaseHealth(const float Value)
 	Health -= Value;
 }
 
-void APPCharacterPlayer::LoadLevelSequence()
-{
-	DisableInput(GetWorld()->GetFirstPlayerController());
-	GetWorldTimerManager().SetTimer(LevelRestartTimer, this, &APPCharacterPlayer::LoadLevelDelegate, 0.01f, true);
-}
-
 void APPCharacterPlayer::RestartLevelSequence()
 {
 	UGameplayStatics::PlaySound2D(this, DeadSoundCue);
@@ -185,24 +183,6 @@ void APPCharacterPlayer::ShowDamageFX()
 }
 
 //----------------------Delegates----------------------
-void APPCharacterPlayer::LoadLevelDelegate()
-{
-	if (PostProcessVolume->Settings.AutoExposureBias <= -TargetExposureBias && PostProcessVolume->Settings.VignetteIntensity >= TargetVignetteIntensity)
-	{
-		GetWorldTimerManager().ClearTimer(LevelRestartTimer);
-		GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-		FString LevelName = UGameplayStatics::GetCurrentLevelName(this);
-		UGameplayStatics::OpenLevel(this, ENDING_LEVEL);
-		if (LevelName == MAIN_LEVEL)
-		{
-			UGameplayStatics::OpenLevel(this, ENDING_LEVEL);
-		}
-		return;
-	}
-	PostProcessVolume->Settings.AutoExposureBias -=AddExposureBias;
-	PostProcessVolume->Settings.VignetteIntensity += AddVignetteIntensity;
-}
-
 void APPCharacterPlayer::RestartLevelDelegate()
 {
 	if (PostProcessVolume->Settings.AutoExposureBias <= -TargetExposureBias && PostProcessVolume->Settings.VignetteIntensity >= TargetVignetteIntensity)

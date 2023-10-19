@@ -63,6 +63,14 @@ APPCharacterBoss::APPCharacterBoss()
 	Tags.Add(TEXT("DestructibleObject"));
 }
 
+float APPCharacterBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	DecreaseHealth(DamageAmount);
+	return 0;
+}
+
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();

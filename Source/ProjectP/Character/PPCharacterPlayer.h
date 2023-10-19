@@ -7,6 +7,7 @@
 #include "ProjectP/Enumeration/PPCharacterState.h"
 #include "ProjectP/Character/PPPlayerStatusData.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/AudioComponent.h"
 #include "Engine/PostProcessVolume.h"
 #include "ProjectP/Player/PPVRPawn.h"
 #include "PPCharacterPlayer.generated.h"
@@ -33,10 +34,9 @@ public:
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
+	FORCEINLINE UAudioComponent* GetAudioComponent() { return AudioComponent; }
+	FORCEINLINE UAudioComponent* GetCommanderAudioComponent() { return CommanderAudioComponent; }
 	
-	UFUNCTION(BlueprintCallable)
-	void LoadLevelSequence();
-
 	UPROPERTY(BlueprintAssignable)
 	FLoadAnotherLevelDelegate LoadAnotherLevelDelegate;
 	
@@ -50,6 +50,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Collision)
 	TObjectPtr<UCapsuleComponent> CollisionCapsule;
 
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAudioComponent> AudioComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAudioComponent> CommanderAudioComponent;
 	
 	// Player Variable Section
 private:
@@ -143,7 +148,6 @@ private:
 	void ShowDamageFX();
 
 private:
-	void LoadLevelDelegate();
 	void RestartLevelDelegate();
 	void EnableLowHealthWarningDelegate();
 	void EnableHitCheckTimerDelegate();
