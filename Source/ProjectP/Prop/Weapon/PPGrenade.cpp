@@ -31,7 +31,7 @@ APPGrenade::APPGrenade()
 	GrabComponent->SetupAttachment(Mesh);
 	GrabComponent->SetGrabType(EVRGrabType::ObjToHand);
 	GrabComponent->SetShouldSimulateOnDrop(true);
-}	
+}
 
 // Called when the game starts or when spawned
 void APPGrenade::BeginPlay()
@@ -40,10 +40,11 @@ void APPGrenade::BeginPlay()
 	bIsActivated = false;
 	bIsWaitingForDelay = false;
 	ElapsedActivatedTime = 0.f;
-	ExplodeDelay = 1.0f;
+	ExplodeDelay = 3.0f;
 
+	GrabComponent->OnGrab.AddUObject(this, &APPGrenade::OnGrab);
 	GrabComponent->OnRelease.AddUObject(this, &APPGrenade::OnRelease);
-	
+
 	const APPVRPawn* Player = CastChecked<APPVRPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	CollisionParamsOnTick.AddIgnoredActor(this);
 	CollisionParamsOnTick.AddIgnoredActor(Player);
@@ -71,7 +72,7 @@ void APPGrenade::Tick(float DeltaTime)
 	FHitResult Result;
 
 	// TODO: Hand나 총 같은것도 추가...
-	
+
 	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);
 
 	FCollisionQueryParams CollisionParams;
@@ -80,7 +81,7 @@ void APPGrenade::Tick(float DeltaTime)
 	CollisionParams.AddIgnoredActor(Player);
 	CollisionParams.AddIgnoredActor(Player->GetLeftHand());
 	CollisionParams.AddIgnoredActor(Player->GetRightHand());
-	
+
 	bool bHitResult = GetWorld()->SweepSingleByChannel(
 		Result,
 		GetActorLocation(),
@@ -97,8 +98,8 @@ void APPGrenade::Tick(float DeltaTime)
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("폭발: %s"), *Result.GetActor()->GetName());
-	
-	if(Result.GetActor() == Player->GetRightHand())
+
+	if (Result.GetActor() == Player->GetRightHand())
 	{
 		UE_LOG(LogTemp, Log, TEXT("같은 액터"));
 	}
@@ -106,7 +107,7 @@ void APPGrenade::Tick(float DeltaTime)
 	{
 		UE_LOG(LogTemp, Log, TEXT("같은 액터 아님"));
 	}
-	
+
 	bIsActivated = true;
 
 	if (ExplodeType == EGrenadeExplodeType::OnImpact)
@@ -117,6 +118,13 @@ void APPGrenade::Tick(float DeltaTime)
 	{
 		GetWorldTimerManager().SetTimerForNextTick(this, &APPGrenade::WaitForDelayAndExplode);
 	}
+}
+
+void APPGrenade::OnGrab(APPVRHand* InHand)
+{
+	bIsActivated = false;
+	bIsWaitingForDelay = false;
+	ElapsedActivatedTime = 0.f;
 }
 
 void APPGrenade::OnRelease(APPVRHand* InHand)
@@ -130,6 +138,11 @@ void APPGrenade::OnRelease(APPVRHand* InHand)
 
 void APPGrenade::WaitForDelayAndExplode()
 {
+	if (!bIsActivated)
+	{
+		return;
+	}
+
 	bIsWaitingForDelay = true;
 	const float DeltaTime = GWorld->DeltaTimeSeconds;
 	ElapsedActivatedTime += DeltaTime;

@@ -31,6 +31,7 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void OnGrab(APPVRHand* InHand);
 	void OnRelease(APPVRHand* InHand);
 
 private:
