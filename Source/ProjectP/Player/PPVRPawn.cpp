@@ -20,6 +20,7 @@
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Prop/Weapon/PPGunBase.h"
 #include "ProjectP/UI/Pause/PPPauseWidgetActor.h"
+#include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 // Sets default values
@@ -34,6 +35,12 @@ APPVRPawn::APPVRPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("VRCamera"));
 	Camera->SetupAttachment(VROrigin);
 
+	QueryCapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("QueryOnlyCapsule"));
+	QueryCapsuleComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	QueryCapsuleComponent->SetCollisionProfileName(CP_PLAYER);
+	QueryCapsuleComponent->SetupAttachment(VROrigin);
+	QueryCapsuleComponent->SetCapsuleSize(20.f, 90.f);
+	
 	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovement"));
 
 	MovementData = FPPConstructorHelper::FindAndGetObject<UPPMovementData>(TEXT("/Script/ProjectP.PPMovementData'/Game/DataAssets/Player/PlayerData.PlayerData'"), EAssertionLevel::Check);
@@ -86,6 +93,7 @@ void APPVRPawn::BeginPlay()
 	}
 	WalkSoundRate = SoundData->WalkSoundRate;
 	SprintSoundRate = SoundData->SprintSoundRate;
+	GrenadeStack = 0;
 }
 
 void APPVRPawn::ClearAllTimerOnLevelChange()

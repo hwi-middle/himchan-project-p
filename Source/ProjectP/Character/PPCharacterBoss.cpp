@@ -47,14 +47,10 @@ APPCharacterBoss::APPCharacterBoss()
 	BossGimmickData = FPPConstructorHelper::FindAndGetObject<UPPBossGimmickData>(TEXT("/Script/ProjectP.PPBossGimmickData'/Game/DataAssets/Boss/BossGimmickData.BossGimmickData'"), EAssertionLevel::Check);
 	bHasGFSpawned = false;
 
-	GF_FX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("GreenFogFX"));
-	GF_FX->SetupAttachment(RootComponent);
-	UNiagaraSystem* GreenFogNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(TEXT("/Script/Niagara.NiagaraSystem'/Game/Fantasy_Smoke_VFX/Effects/NS_Smoke_Sphere.NS_Smoke_Sphere'"), EAssertionLevel::Check);
-	GF_FX->SetAsset(GreenFogNiagaraSystem);
-	GF_FX->SetFloatParameter(TEXT("Sprite_Size"), 14.f);
+	/*GF_FX->SetFloatParameter(TEXT("Sprite_Size"), 14.f);
 	GF_FX->SetFloatParameter(TEXT("Sparks_Sprites_Amount"), 0.f);
 	GF_FX->SetFloatParameter(TEXT("Smoke_Sprites_Amount"), 60.f);
-	GF_FX->SetFloatParameter(TEXT("Sphere_radius"), BossGimmickData->GF_Radius);
+	GF_FX->SetFloatParameter(TEXT("Sphere_radius"), BossGimmickData->GF_Radius);*/
 
 	const TSubclassOf<UPPBossAnimInstance> BossAnimInstanceClass = FPPConstructorHelper::FindAndGetClass<UPPBossAnimInstance>(
 		TEXT("/Game/Project-P/Meshes/SkeletalMesh/BossBody/Animation/Misc/ABP_Boss.ABP_Boss_C"), EAssertionLevel::Check);
@@ -80,7 +76,6 @@ void APPCharacterBoss::BeginPlay()
 	Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f, 14.f), FRotator::ZeroRotator);
 	Core->SetBoss(this);
 	bIsAttacking = false;
-	GF_FX->Deactivate();
 	Health = BossData->MaxHP;
 
 	VG_TentacleNum = BossGimmickData->VG_TentacleNum;
@@ -140,7 +135,6 @@ void APPCharacterBoss::Tick(float DeltaSeconds)
 		return;
 	}
 	
-	GF_FX->SetWorldLocation(GetActorLocation());
 
 	if (!bIsAttacking) // 보스전 너무 단조롭다면 패턴 여러개 사용하는 경우도 나오게끔 시간 체크만 하는게 나을지도
 	{
@@ -343,7 +337,7 @@ void APPCharacterBoss::GenerateToxicFogDelegate()
 	if (!bHasGFSpawned)
 	{
 		UGameplayStatics::PlaySound2D(this, GF_SpawnSound);
-		GF_FX->Activate();
+		GF_FX->SetActorHiddenInGame(false);
 		bHasGFSpawned = true;
 	}
 
@@ -352,7 +346,7 @@ void APPCharacterBoss::GenerateToxicFogDelegate()
 		// FlushPersistentDebugLines(GetWorld());
 		bHasGFSpawned = false;
 		GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
-		GF_FX->Deactivate();
+		GF_FX->SetActorHiddenInGame(true);
 		SetIsAttacking(false);
 		FPPTimerHelper::InvalidateTimerHandle(GreenFogTimerHandle);
 		return;

@@ -63,6 +63,9 @@ private:
 	TObjectPtr<class UCameraComponent> Camera;
 
 	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true))
+	TObjectPtr<class UCapsuleComponent> QueryCapsuleComponent;
+	
+	UPROPERTY(VisibleAnywhere, meta=(AllowPrivateAccess=true))
 	TObjectPtr<class UFloatingPawnMovement> FloatingPawnMovement;
 
 private:
@@ -150,6 +153,10 @@ private:
 	uint32 bIsRightHandMainly : 1;
 
 private:
+	UPROPERTY()
+	uint32 GrenadeStack;
+	
+private:
 	void Move(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
 	void GrabLeft(const FInputActionValue& Value);
@@ -191,8 +198,9 @@ private:
 	void ToggleGamePauseState() const;
 	void ToggleFlash() const;
 	void SwapWidgetInteraction() const;
-
+	
 public:
 	FORCEINLINE APPVRHand* GetLeftHand() const { return LeftHand; }
 	FORCEINLINE APPVRHand* GetRightHand() const { return RightHand; }
+	FORCEINLINE void AddGrenadeStack() { GrenadeStack++; }
 };
