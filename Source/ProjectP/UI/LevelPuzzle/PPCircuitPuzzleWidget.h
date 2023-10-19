@@ -37,7 +37,6 @@ public:
 	FORCEINLINE float GetWidgetWidthValue() { return GetPadding().Left; }
 
 	FORCEINLINE void SetEnableTexture() { EndPointImage->SetColorAndOpacity(FLinearColor::Yellow); }
-	void SetEnableTint();
 	void SetDefaultAngle(uint32 First, uint32 Second, uint32 Third);
 	
 	FCorrectCircuitDelegate CorrectCircuitDelegate;
@@ -58,12 +57,6 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (BindWidget))
 	TObjectPtr<UButton> ThirdCircuit;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray<UImage*> Cables;
-
-	UPROPERTY(EditDefaultsOnly)
-	uint32 CableNum;
 	
 private:
 	UFUNCTION()

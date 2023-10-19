@@ -10,19 +10,6 @@ void UPPCircuitPuzzleWidget::NativeConstruct()
 	FirstCircuit->OnClicked.AddDynamic(this, &UPPCircuitPuzzleWidget::PassFirstCircuitWidget);
 	SecondCircuit->OnClicked.AddDynamic(this, &UPPCircuitPuzzleWidget::PassSecondCircuitWidget);
 	ThirdCircuit->OnClicked.AddDynamic(this, &UPPCircuitPuzzleWidget::PassThirdCircuitWidget);
-
-	for (uint32 i = 1; i <= CableNum; i++)
-	{
-		Cables.Emplace(CastChecked<UImage>(GetWidgetFromName(*FString::Printf(TEXT("Cable%d"), i))));
-	}
-}
-
-void UPPCircuitPuzzleWidget::SetEnableTint()
-{
-	for	(auto Image : Cables)
-	{
-		Image->SetColorAndOpacity(FLinearColor::Yellow);
-	}
 }
 
 void UPPCircuitPuzzleWidget::SetDefaultAngle(uint32 First, uint32 Second, uint32 Third)

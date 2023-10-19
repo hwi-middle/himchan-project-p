@@ -203,7 +203,6 @@ void APPCircuitPuzzleWidgetActor::CheckCurrentButtonCorrect()
 	    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("모든 회로 일치 확인")));
 		bIsRotationOnGoing = true;
 		CircuitPuzzleWidget->SetEnableTexture();
-		CircuitPuzzleWidget->SetEnableTint();
 		EventCallerComponent->DeliverEvent();
 	}
 }
