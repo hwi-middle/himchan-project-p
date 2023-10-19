@@ -8,4 +8,5 @@
 #define LOBBY_LEVEL "Project-P_LobbyMap"
 #define PROLOGUE_LEVEL "Project-P_PrologueMap"
 #define MAIN_LEVEL "Project-P_MainMap"
+#define TEST_MERGED_LEVEL "Project-P-TestMergedLevel"
 #define ENDING_LEVEL "Project-P_EndingMap"

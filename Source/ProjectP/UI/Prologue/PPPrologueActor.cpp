@@ -83,7 +83,7 @@ void APPPrologueActor::LoadMainLevelDelegate()
 	{
 		GetWorldTimerManager().ClearTimer(LoadMainLevelTimerHandle);
 		GetWorld()->GetGameInstanceChecked<UPPGameInstance>()->ClearAllTimerHandle();
-		UGameplayStatics::OpenLevel(GetWorld(), MAIN_LEVEL);
+		UGameplayStatics::OpenLevel(GetWorld(), TEST_MERGED_LEVEL);
 		return;
 	}
 	PostProcessVolume->Settings.AutoExposureBias -= 0.02f;

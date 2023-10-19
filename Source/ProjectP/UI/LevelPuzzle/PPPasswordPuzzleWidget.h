@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Components/TextBlock.h"
 #include "PPPasswordPuzzleWidget.generated.h"
 
@@ -44,12 +46,18 @@ UCLASS()
 class PROJECTP_API UPPPasswordPuzzleWidget : public UUserWidget
 {
 	GENERATED_BODY()
+	
 public:
-	FCorrectPasswordDelegate CorrectPasswordDelegate;
-	FORCEINLINE void SetCorrectPassword(FString Password) { CorrectPassword = Password; GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, Password);}
-protected:
 	virtual void NativeConstruct() override;
 	
+	FORCEINLINE void AddWidgetWidthValue(const float Value) { SetPadding(FMargin(GetPadding().Left + Value, GetPadding().Top, GetPadding().Right + Value, GetPadding().Bottom)); }
+	FORCEINLINE void SetWidgetWidthValue(const float Value) { SetPadding(FMargin(Value, GetPadding().Top, Value, GetPadding().Bottom)); }
+	FORCEINLINE float GetWidgetWidthValue() { return GetPadding().Left; }
+	
+	FORCEINLINE void SetCorrectPassword(FString Password) { CorrectPassword = Password; GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, Password);}
+	
+	FCorrectPasswordDelegate CorrectPasswordDelegate;
+
 protected:
 	UPROPERTY()
 	TArray<UButton*> ButtonArray;
