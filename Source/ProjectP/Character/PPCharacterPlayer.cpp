@@ -21,10 +21,12 @@ APPCharacterPlayer::APPCharacterPlayer()
 	CollisionCapsule->InitCapsuleSize(20.0f, 90.0f);
 	CollisionCapsule->SetCollisionProfileName(CP_PLAYER);
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	CommanderAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("CommanderAudioComponent"));
 	TObjectPtr<USceneComponent> OriginalRootComponent = RootComponent;
 	RootComponent = CollisionCapsule;
 	OriginalRootComponent->SetupAttachment(RootComponent);
 	AudioComponent->SetupAttachment(RootComponent);
+	CommanderAudioComponent->SetupAttachment(RootComponent);
 }
 
 void APPCharacterPlayer::Tick(const float DeltaTime)
