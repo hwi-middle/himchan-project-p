@@ -296,6 +296,11 @@ void APPGunBase::OnFire()
 			UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), Damage);
 			UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
 		}
+		else if(ICharacterStatusInterface* Target = Cast<ICharacterStatusInterface>(AimingActor))
+		{
+			const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
+			Target->DecreaseHealth(Damage);
+		}
 		else if (UPPDestructible* Component = AimingActor->FindComponentByClass<UPPDestructible>())
 		{
 			const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
