@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/PostProcessVolume.h"
 #include "GameFramework/Actor.h"
 #include "LevelEnterTriggerActor.generated.h"
 
@@ -23,4 +24,18 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+	void LevelStartDelegate();
+private:
+	UPROPERTY()
+	TObjectPtr<USceneComponent> SceneComponent;
+	
+	UPROPERTY()
+	TObjectPtr<APostProcessVolume> PostProcessVolume;
+
+	UPROPERTY()
+	float SavedExposureValue;
+	
+	UPROPERTY()
+	float SavedVignetteValue;
 };

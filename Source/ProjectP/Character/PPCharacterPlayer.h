@@ -35,6 +35,7 @@ public:
 	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
 	FORCEINLINE UAudioComponent* GetAudioComponent() { return AudioComponent; }
+	FORCEINLINE UAudioComponent* GetCommanderAudioComponent() { return CommanderAudioComponent; }
 	
 	UPROPERTY(BlueprintAssignable)
 	FLoadAnotherLevelDelegate LoadAnotherLevelDelegate;
@@ -51,6 +52,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAudioComponent> AudioComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAudioComponent> CommanderAudioComponent;
 	
 	// Player Variable Section
 private:
