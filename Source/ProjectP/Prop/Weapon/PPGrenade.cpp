@@ -4,7 +4,6 @@
 #include "PPGrenade.h"
 
 #include "GrenadeData.h"
-#include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Character/PPCharacterBoss.h"
 #include "ProjectP/Grab/PPVRGrabComponent.h"
@@ -42,6 +41,7 @@ void APPGrenade::BeginPlay()
 	Super::BeginPlay();
 	bIsActivated = false;
 	bIsWaitingForDelay = false;
+	bIsGrabbed = false;
 	ElapsedActivatedTime = 0.f;
 	ExplodeDelay = 3.0f;
 
@@ -65,7 +65,32 @@ void APPGrenade::BeginPlay()
 void APPGrenade::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
+	if(bIsGrabbed)
+	{
+		DrawDebugSphere(GetWorld(), GetActorLocation(), 20.f, 16, FColor::Red, false, 0.01f);
+		FHitResult Result;
+		FCollisionQueryParams Params(NAME_None, false, this);
+		bool bPlayerHit = GetWorld()->SweepSingleByChannel(
+			Result,
+			GetActorLocation(),
+			GetActorLocation(),
+			FQuat::Identity,
+			ECC_CHECK_PLAYER,
+			FCollisionShape::MakeSphere(20.f),
+			Params
+		);
+		if(bPlayerHit)
+		{
+			APPVRPawn* Player = Cast<APPVRPawn>(Result.GetActor());
+			if(Player)
+			{
+				Player->AddGrenadeStack();
+				Destroy();
+			}
+		}
+	}
+	
 	if (!bIsActivated)
 	{
 		return;
@@ -121,6 +146,12 @@ void APPGrenade::OnGrab(APPVRHand* InHand)
 {
 	bIsActivated = false;
 	bIsWaitingForDelay = false;
+	// bIsPlacedInWorld는 생성자, BeginPlay에서 초기화 안하고 필드에 배치된 오브젝트 디테일 패널에서 설정.
+	// 이렇게 처리하면 저장된 수류탄을 생성해서 손에 잡은 뒤 몸에 닿더라도 다시 흡수하진 않을 것 같은데 맞겠죠?
+	if(bIsPlacedInWorld)
+	{
+		bIsGrabbed = true;
+	}
 	ElapsedActivatedTime = 0.f;
 }
 
