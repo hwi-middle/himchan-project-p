@@ -21,7 +21,7 @@ class PROJECTP_API APPCharacterZombie : public APPCharacterEnemy
 
 public:
 	APPCharacterZombie();
-
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	FAICharacterPatternFinished PatternFinishedDelegate;
 
 protected:
