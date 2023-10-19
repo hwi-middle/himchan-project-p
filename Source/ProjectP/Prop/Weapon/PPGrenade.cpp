@@ -3,6 +3,7 @@
 
 #include "PPGrenade.h"
 
+#include "GrenadeData.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Character/PPCharacterBoss.h"
@@ -27,6 +28,8 @@ APPGrenade::APPGrenade()
 	Mesh->SetSimulatePhysics(true);
 	RootComponent = Mesh;
 
+	GrenadeData = FPPConstructorHelper::FindAndGetObject<UGrenadeData>(TEXT("/Script/ProjectP.GrenadeData'/Game/DataAssets/Weapon/GrenadeData.GrenadeData'"));
+	
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(Mesh);
 	GrabComponent->SetGrabType(EVRGrabType::ObjToHand);
@@ -50,6 +53,12 @@ void APPGrenade::BeginPlay()
 	CollisionParamsOnTick.AddIgnoredActor(Player);
 	CollisionParamsOnTick.AddIgnoredActor(Player->GetLeftHand());
 	CollisionParamsOnTick.AddIgnoredActor(Player->GetRightHand());
+
+	ExplodeDelay = GrenadeData->ExplodeDelay;
+	ExplodeType = GrenadeData->DefaultExplodeType;
+	ActivateRadius = GrenadeData->ActivateRadius * 100;
+	ExplodeRadius = GrenadeData->ExplodeRadius * 100;
+	ExplodeDamage = GrenadeData->ExplodeDamage;
 }
 
 // Called every frame
@@ -62,10 +71,9 @@ void APPGrenade::Tick(float DeltaTime)
 		return;
 	}
 
-	float Radius = 30.f;
 	if (bIsWaitingForDelay)
 	{
-		DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Red, false, 0.f);
+		DrawDebugSphere(GetWorld(), GetActorLocation(), ActivateRadius, 16, FColor::Red, false, 0.f);
 		return;
 	}
 
@@ -73,7 +81,7 @@ void APPGrenade::Tick(float DeltaTime)
 
 	// TODO: Hand나 총 같은것도 추가...
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Green, false, 0.f);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), ActivateRadius, 16, FColor::Green, false, 0.f);
 
 	FCollisionQueryParams CollisionParams;
 	const APPVRPawn* Player = CastChecked<APPVRPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
@@ -88,24 +96,13 @@ void APPGrenade::Tick(float DeltaTime)
 		GetActorLocation(),
 		FQuat::Identity,
 		ECC_Visibility,
-		FCollisionShape::MakeSphere(Radius),
+		FCollisionShape::MakeSphere(ActivateRadius),
 		CollisionParams
 	);
 
 	if (!bHitResult)
 	{
 		return;
-	}
-
-	UE_LOG(LogTemp, Log, TEXT("폭발: %s"), *Result.GetActor()->GetName());
-
-	if (Result.GetActor() == Player->GetRightHand())
-	{
-		UE_LOG(LogTemp, Log, TEXT("같은 액터"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("같은 액터 아님"));
 	}
 
 	bIsActivated = true;
@@ -160,11 +157,10 @@ void APPGrenade::Explode()
 {
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams CollisionParams;
-	float Radius = 500.f; // TODO: 매직넘버 쓰면 안되긴 함 ㅎㅎ
 	CollisionParams.AddIgnoredActor(this);
 	CollisionParams.AddIgnoredActor(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 16, FColor::Red, false, 1.f);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplodeRadius, 16, FColor::Red, false, 1.f);
 
 	bool bHit = GetWorld()->SweepMultiByChannel(
 		HitResults,
@@ -172,7 +168,7 @@ void APPGrenade::Explode()
 		GetActorLocation(),
 		FQuat::Identity,
 		ECC_PLAYER_ATTACK,
-		FCollisionShape::MakeSphere(Radius),
+		FCollisionShape::MakeSphere(ExplodeRadius),
 		CollisionParams
 	);
 
@@ -188,7 +184,7 @@ void APPGrenade::Explode()
 		ICharacterStatusInterface* Enemy = Cast<ICharacterStatusInterface>(Result.GetActor());
 		if (Enemy)
 		{
-			Enemy->DecreaseHealth(100.f);
+			Enemy->DecreaseHealth(ExplodeDamage);
 		}
 	}
 	Destroy();
