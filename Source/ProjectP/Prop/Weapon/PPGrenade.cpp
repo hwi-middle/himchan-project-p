@@ -48,11 +48,13 @@ void APPGrenade::BeginPlay()
 	GrabComponent->OnGrab.AddUObject(this, &APPGrenade::OnGrab);
 	GrabComponent->OnRelease.AddUObject(this, &APPGrenade::OnRelease);
 
-	const APPVRPawn* Player = CastChecked<APPVRPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	CollisionParamsOnTick.AddIgnoredActor(this);
-	CollisionParamsOnTick.AddIgnoredActor(Player);
-	CollisionParamsOnTick.AddIgnoredActor(Player->GetLeftHand());
-	CollisionParamsOnTick.AddIgnoredActor(Player->GetRightHand());
+	if (const APPVRPawn* Player = Cast<APPVRPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)); Player != nullptr)
+	{
+		CollisionParamsOnTick.AddIgnoredActor(Player);
+		CollisionParamsOnTick.AddIgnoredActor(Player->GetLeftHand());
+		CollisionParamsOnTick.AddIgnoredActor(Player->GetRightHand());
+	}
 
 	ExplodeDelay = GrenadeData->ExplodeDelay;
 	ExplodeType = GrenadeData->DefaultExplodeType;
