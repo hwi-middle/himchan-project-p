@@ -8,6 +8,7 @@
 #include "InputMappingContext.h"
 #include "InputCoreTypes.h"
 #include "NiagaraComponent.h"
+#include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Grab/PPVRGrabComponent.h"
 #include "ProjectP/Player/PPVRHand.h"
@@ -57,7 +58,7 @@ APPGunBase::APPGunBase()
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(WeaponMesh);
 	GrabComponent->SetGrabType(EVRGrabType::ObjToHand);
-
+	
 	LeftShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootLeft.IA_VRShootLeft'"), EAssertionLevel::Check);
 	RightShootAction = FPPConstructorHelper::FindAndGetObject<UInputAction>(TEXT("/Script/EnhancedInput.InputAction'/Game/15-Basic-Movement/Input/InputAction/Weapon/IA_VRShootRight.IA_VRShootRight'"), EAssertionLevel::Check);
 	LeftHandInputMappingContext = FPPConstructorHelper::FindAndGetObject<UInputMappingContext>(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/15-Basic-Movement/Input/IMC_Weapon_Left.IMC_Weapon_Left'"), EAssertionLevel::Check);
@@ -74,6 +75,7 @@ APPGunBase::APPGunBase()
 void APPGunBase::BeginPlay()
 {
 	Super::BeginPlay();
+	PlayerCharacter = PlayerCharacter = Cast<APPCharacterPlayer>(UGameplayStatics::GetActorOfClass(GetWorld(), APPCharacterPlayer::StaticClass()));
 	UPPVRGrabComponent* GrabComponentCasted = Cast<UPPVRGrabComponent>(GrabComponent);
 	GrabComponentCasted->OnGrab.AddUObject(this, &APPGunBase::GrabOnHand);
 	GrabComponentCasted->OnRelease.AddUObject(this, &APPGunBase::ReleaseOnHand);
@@ -285,11 +287,12 @@ void APPGunBase::OnFire()
 
 	if (AimingActor)
 	{
-		if (ICharacterStatusInterface* Enemy = Cast<ICharacterStatusInterface>(AimingActor))
+		if (APPCharacterEnemy* Enemy = Cast<APPCharacterEnemy>(AimingActor))
 		{
 			const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
-
-			Enemy->DecreaseHealth(Damage);
+			FDamageEvent DamageEvent;
+			Enemy->TakeDamage(Damage, DamageEvent, PlayerCharacter->GetController(), PlayerCharacter);
+			
 			UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), Damage);
 			UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
 		}

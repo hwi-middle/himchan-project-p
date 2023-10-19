@@ -29,6 +29,21 @@ APPCharacterZombie::APPCharacterZombie()
 	// GetMesh()->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 }
 
+float APPCharacterZombie::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	DecreaseHealth(DamageAmount);
+	APPZombieAIController* ZombieAIController = Cast<APPZombieAIController>(GetController());
+	if(ZombieAIController)
+	{
+		TArray<AActor*> Target;
+		Target.Emplace(DamageCauser);
+		ZombieAIController->SetTarget(Target);
+	}
+	return 0;
+}
+
 void APPCharacterZombie::BeginPlay()
 {
 	Super::BeginPlay();
@@ -130,6 +145,8 @@ void APPCharacterZombie::DecreaseHealth(const float Value)
 		{
 			GetController()->Destroy();
 		}
+		GetCapsuleComponent()->SetCapsuleSize(1.f, 1.f);
+		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		CurrentState = ECharacterState::Dead;
 		PlayPatternAnimMontage();
 	}
