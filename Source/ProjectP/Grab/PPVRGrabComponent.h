@@ -31,6 +31,7 @@ public:
 	FORCEINLINE bool GetIsWeapon() const { return bIsWeapon; }
 	FORCEINLINE void SetGrabType(const EVRGrabType Value) { GrabType = Value; }
 	FORCEINLINE void SetMainHandType(const EControllerHand Value) { MainHandType = Value; }
+
 private:
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
 	uint32 bShouldSimulateOnDrop : 1;
@@ -49,12 +50,12 @@ private:
 
 	UPROPERTY()
 	EControllerHand MainHandType;
-	
+
 public:
 	bool TryGrab(class APPVRHand* InHand);
 	void TryRelease();
 	void SetPrimitiveCompPhysics(bool bInSimulate);
-	void SetShouldSimulateOnDrop();
+	FORCEINLINE void SetShouldSimulateOnDrop(const bool bInSimulate) { bShouldSimulateOnDrop = bInSimulate; }
 
 private:
 	void TryAttachComponentToHand(APPVRHand* InHand);

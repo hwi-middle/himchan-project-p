@@ -4,14 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ProjectP/Player/PPVRHand.h"
 #include "PPGrenade.generated.h"
+
+UENUM()
+enum EGrenadeExplodeType
+{
+	OnImpact,
+	OnImpactWithDelay,
+	OnReleaseWithDelay
+};
 
 UCLASS()
 class PROJECTP_API APPGrenade : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	APPGrenade();
 
@@ -19,14 +28,20 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void OnGrab(APPVRHand* InHand);
+	void OnRelease(APPVRHand* InHand);
 
 private:
-	void Activate();
-	
+	void WaitForDelayAndExplode();
+	void Explode();
+
 private:
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EGrenadeExplodeType> ExplodeType;
+
 	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> Mesh;
 
@@ -36,9 +51,14 @@ private:
 	UPROPERTY()
 	uint32 bIsActivated : 1;
 
-	UPROPERTY()	
+	UPROPERTY()
+	uint32 bIsWaitingForDelay : 1;
+
+	UPROPERTY()
 	float ElapsedActivatedTime;
 
-	UPROPERTY()	
+	UPROPERTY()
 	float ExplodeDelay;
+
+	FCollisionQueryParams CollisionParamsOnTick;
 };

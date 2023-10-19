@@ -25,7 +25,7 @@ protected:
 
 private:
 	void ClearAllTimerOnLevelChange();
-	
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -35,8 +35,12 @@ public:
 
 public:
 	FORCEINLINE void SetTurnDegrees(const float Degrees) { SnapTurnDegrees = Degrees; }
-	FORCEINLINE void SetRightHandMainly(const bool Value) { bIsRightHandMainly = Value; SwapWidgetInteraction(); }
-	
+	FORCEINLINE void SetRightHandMainly(const bool Value)
+	{
+		bIsRightHandMainly = Value;
+		SwapWidgetInteraction();
+	}
+
 private:
 	void InitVROrigin();
 	void InitVRHands();
@@ -64,14 +68,14 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere)
 	TArray<USoundCue*> WalkSoundCueArray;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USoundCue> WalkSoundCue;
 
 private:
 	UPROPERTY()
 	TObjectPtr<AActor> PauseWidget;
-	
+
 private:
 	UPROPERTY()
 	TObjectPtr<class UInputMappingContext> InputMappingContext;
@@ -108,19 +112,19 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UInputAction> ThumbUpRightAction;
-	
+
 	UPROPERTY()
 	TObjectPtr<class UInputAction> RightAButtonPressAction;
-	
+
 	UPROPERTY()
 	TObjectPtr<class UInputAction> RightBButtonPressAction;
-	
+
 	UPROPERTY()
 	TObjectPtr<class UInputAction> LeftYButtonPressAction;
-	
+
 	UPROPERTY()
 	TObjectPtr<class UInputAction> LeftXButtonPressAction;
-	
+
 	UPROPERTY()
 	FTimerHandle MoveSoundTimerHandle;
 
@@ -129,22 +133,22 @@ private:
 
 	UPROPERTY()
 	float SprintSoundRate;
-	
+
 	UPROPERTY()
 	float SnapTurnDegrees;
 
 	UPROPERTY()
 	float MoveSpeed;
-	
+
 	UPROPERTY()
 	float WidgetInteractionDistance;
 
 	UPROPERTY()
 	FVector PauseWidgetCustomPosition;
-	
+
 	UPROPERTY()
 	uint32 bIsRightHandMainly : 1;
-	
+
 private:
 	void Move(const FInputActionValue& Value);
 	void Turn(const FInputActionValue& Value);
@@ -156,7 +160,7 @@ private:
 	void PointRight(const FInputActionValue& Value);
 	void ThumbUpLeft(const FInputActionValue& Value);
 	void ThumbUpRight(const FInputActionValue& Value);
-	
+
 private:
 	void CancelOrCompleteGrabLeft();
 	void CancelOrCompleteGrabRight();
@@ -166,7 +170,7 @@ private:
 	void CompletePointRight();
 	void CompleteThumbUpLeft();
 	void CompleteThumbUpRight();
-	
+
 private:
 	void StartMove(const FInputActionValue& Value);
 	void CompleteMove(const FInputActionValue& Value);
@@ -175,16 +179,20 @@ private:
 private:
 	void StartMoveDelegate();
 	void ToggleSprintDelegate();
-	
+
 private:
 	void PressAButtonAction(const FInputActionValue& Value);
 	void PressBButtonAction(const FInputActionValue& Value);
 	void PressXButtonAction(const FInputActionValue& Value);
 	void PressYButtonAction(const FInputActionValue& Value);
-	
+
 private:
 	void ToggleWidgetInteraction() const;
 	void ToggleGamePauseState() const;
 	void ToggleFlash() const;
 	void SwapWidgetInteraction() const;
+
+public:
+	FORCEINLINE APPVRHand* GetLeftHand() const { return LeftHand; }
+	FORCEINLINE APPVRHand* GetRightHand() const { return RightHand; }
 };
