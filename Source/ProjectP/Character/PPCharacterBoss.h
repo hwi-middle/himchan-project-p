@@ -127,8 +127,8 @@ private:
 	FTimerHandle LT_OnStageSilentTimer;
 	
 	// 기믹 - 녹빛 안개
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<class UNiagaraComponent> GF_FX;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<AActor> GF_FX;
 
 	UPROPERTY()
 	FTimerHandle GreenFogTimerHandle;
