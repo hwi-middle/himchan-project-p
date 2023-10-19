@@ -18,6 +18,7 @@ APPPrologueActor::APPPrologueActor()
 	PrologueWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PrologueWidget"));
 	NextArrayNum = 0;
 	HandleChangeTime = 0;
+	bIsLoadingLevel = false;
 }
 
 // Called when the game starts or when spawned
@@ -35,7 +36,7 @@ void APPPrologueActor::BeginPlay()
 	const FStringDataTable* PrologueString = PrologueStringDataHandle[0].GetRow<FStringDataTable>(PrologueStringDataHandle[0].RowName.ToString());
 	FText PrologueText = FText::FromName(PrologueString->Kor);
 	PrologueWidget->SetPrologueText(PrologueText);
-	PrologueWidget->SkipPrologueDelegate.AddUObject(this, &APPPrologueActor::LoadMainLevelSequence);
+	PrologueWidget->SkipPrologueDelegate.AddUObject(this, &APPPrologueActor::SkipPrologueSequence);
 	NextArrayNum = 1;
 	
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
@@ -59,8 +60,24 @@ void APPPrologueActor::DisplayStringData()
 
 void APPPrologueActor::LoadMainLevelSequence()
 {
+	if(bIsLoadingLevel)
+	{
+		return;
+	}
+	bIsLoadingLevel = true;
 	DisableInput(GetWorld()->GetFirstPlayerController());
 	GetWorldTimerManager().SetTimer(LoadMainLevelTimerHandle, this, &APPPrologueActor::LoadMainLevelDelegate, 0.01f, true, HandleChangeTime);
+}
+
+void APPPrologueActor::SkipPrologueSequence()
+{
+	if(bIsLoadingLevel)
+	{
+		return;
+	}
+	bIsLoadingLevel = true;
+	DisableInput(GetWorld()->GetFirstPlayerController());
+	GetWorldTimerManager().SetTimer(LoadMainLevelTimerHandle, this, &APPPrologueActor::LoadMainLevelDelegate, 0.01f, true);
 }
 
 //------------------------------------------Delegates--------------------------------------
