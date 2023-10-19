@@ -18,7 +18,7 @@ APPGrenade::APPGrenade()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrenadeMesh"));
-	FPPConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/189-Grenade/SM_DummyGrenade.SM_DummyGrenade'"), [&](UStaticMesh* MeshRef)
+	FPPConstructorHelper::FindObjectAndInitialize<UStaticMesh>(TEXT("/Script/Engine.StaticMesh'/Game/Project-P/Meshes/Granade/Mesh/SM_Grenade.SM_Grenade'"), [&](UStaticMesh* MeshRef)
 	{
 		Mesh->SetStaticMesh(MeshRef);
 	}, EAssertionLevel::Check);
