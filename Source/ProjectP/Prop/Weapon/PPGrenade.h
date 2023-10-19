@@ -49,7 +49,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UStaticMeshComponent> Mesh;
-
+	
 	UPROPERTY()
 	TObjectPtr<class UPPVRGrabComponent> GrabComponent;
 
@@ -59,6 +59,12 @@ private:
 	UPROPERTY()
 	uint32 bIsWaitingForDelay : 1;
 
+	UPROPERTY(EditAnywhere)
+	uint32 bIsPlacedInWorld: 1;
+	
+	UPROPERTY()
+	uint32 bIsGrabbed: 1;
+	
 	UPROPERTY()
 	float ElapsedActivatedTime;
 
