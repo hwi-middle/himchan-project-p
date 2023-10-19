@@ -69,6 +69,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	TObjectPtr<class UPPVRGrabComponent> GrabComponent;
 
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<APPCharacterPlayer> PlayerCharacter;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "WeaponData")
 	float ShootDistance;
 	

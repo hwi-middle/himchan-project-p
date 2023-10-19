@@ -48,6 +48,7 @@ APPCharacterBoss::APPCharacterBoss()
 	bHasGFSpawned = false;
 
 	GF_FX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("GreenFogFX"));
+	GF_FX->SetupAttachment(RootComponent);
 	UNiagaraSystem* GreenFogNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(TEXT("/Script/Niagara.NiagaraSystem'/Game/Fantasy_Smoke_VFX/Effects/NS_Smoke_Sphere.NS_Smoke_Sphere'"), EAssertionLevel::Check);
 	GF_FX->SetAsset(GreenFogNiagaraSystem);
 	GF_FX->SetFloatParameter(TEXT("Sprite_Size"), 14.f);
@@ -62,6 +63,14 @@ APPCharacterBoss::APPCharacterBoss()
 	Tags.Add(TEXT("DestructibleObject"));
 }
 
+float APPCharacterBoss::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	DecreaseHealth(DamageAmount);
+	return 0;
+}
+
 void APPCharacterBoss::BeginPlay()
 {
 	Super::BeginPlay();
@@ -71,7 +80,7 @@ void APPCharacterBoss::BeginPlay()
 	Core = GetWorld()->SpawnActor<APPBossCore>(AActor::GetTargetLocation() + FVector(0.f, 0.f, 14.f), FRotator::ZeroRotator);
 	Core->SetBoss(this);
 	bIsAttacking = false;
-	GF_FX->SetActive(false);
+	GF_FX->Deactivate();
 	Health = BossData->MaxHP;
 
 	VG_TentacleNum = BossGimmickData->VG_TentacleNum;
@@ -334,7 +343,7 @@ void APPCharacterBoss::GenerateToxicFogDelegate()
 	if (!bHasGFSpawned)
 	{
 		UGameplayStatics::PlaySound2D(this, GF_SpawnSound);
-		GF_FX->SetActive(true);
+		GF_FX->Activate();
 		bHasGFSpawned = true;
 	}
 
@@ -343,7 +352,7 @@ void APPCharacterBoss::GenerateToxicFogDelegate()
 		// FlushPersistentDebugLines(GetWorld());
 		bHasGFSpawned = false;
 		GetWorldTimerManager().ClearTimer(GreenFogTimerHandle);
-		GF_FX->SetActive(false);
+		GF_FX->Deactivate();
 		SetIsAttacking(false);
 		FPPTimerHelper::InvalidateTimerHandle(GreenFogTimerHandle);
 		return;

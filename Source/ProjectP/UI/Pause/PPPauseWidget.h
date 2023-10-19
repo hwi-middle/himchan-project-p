@@ -39,7 +39,7 @@ protected:
 	FORCEINLINE void ActivateSettingWidget() { PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Setting); }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void ActivateExitWidget() { PassSubWidgetTypeDelegate.Broadcast(ESubWidgetType::Exit); }
+	FORCEINLINE void ActivateExitWidget() { ExitGameDelegate.Broadcast(); }
 	
 	// Widget
 	protected:

@@ -9,6 +9,7 @@
 #include "ProjectP/Character/PPCharacterPlayer.h"
 #include "ProjectP/Character/PPCharacterZombie.h"
 #include "ProjectP/Constant/PPBlackBoardKeyName.h"
+#include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
 APPZombieAIController::APPZombieAIController()
@@ -63,10 +64,39 @@ void APPZombieAIController::SetTarget(const TArray<AActor*>& Actors)
 		FActorPerceptionBlueprintInfo PerceptionInfo;
 		PerceptionComponent->GetActorsPerception(DetectActor, PerceptionInfo);
 		APPCharacterPlayer* PlayerCharacter = Cast<APPCharacterPlayer>(DetectActor);
-		// ACharacter* PlayerCharacter = Cast<ACharacter>(DetectActor);
 		if(PlayerCharacter)
 		{
-			Blackboard->SetValueAsObject(KEY_TARGET, PlayerCharacter);
+			if(!Blackboard->GetValueAsObject(KEY_TARGET))
+			{
+				Blackboard->SetValueAsObject(KEY_TARGET, PlayerCharacter);
+				TArray<FHitResult> HitResults;
+				FCollisionQueryParams CollisionQueryParams(SCENE_QUERY_STAT(Detect), false, GetPawn());
+				bool bResult = GetWorld()->SweepMultiByChannel(
+					HitResults,
+					GetPawn()->GetActorLocation(),
+					GetPawn()->GetActorLocation(),
+					FQuat::Identity,
+					ECC_PLAYER_ATTACK,
+					FCollisionShape::MakeSphere(CommonSight->SightRadius),
+					CollisionQueryParams
+					);
+				if (bResult)
+				{
+					for(auto Result : HitResults)
+					{
+						APPCharacterZombie* FriendZombie = Cast<APPCharacterZombie>(Result.GetActor());
+						if(FriendZombie)
+						{
+							APPZombieAIController* FriendController = Cast<APPZombieAIController>(FriendZombie->GetController());
+							if(FriendController)
+							{
+								FriendController->SetTarget(Actors);
+								
+							}
+						}
+					}
+				}
+			}
 			return;
 		}
 	}
