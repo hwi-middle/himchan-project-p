@@ -69,6 +69,22 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Gun", DisplayName = "총기 플래시 라이트 토글 효과음")
 	TObjectPtr<USoundCue> GunToggleFlashSoundCue;
 
+	// Grenade
+public:
+	UPROPERTY(EditAnywhere, Category = "Grenade", DisplayName = "그라나다 줍는 소리")
+	TObjectPtr<USoundCue> GrenadeGrabOnHandSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Grenade", DisplayName = "그라나다 폭발 소리")
+	TObjectPtr<USoundCue> GrenadeExplodeSoundCue;
+
+	// Prop
+public:
+	UPROPERTY(EditAnywhere, Category = "Ample", DisplayName = "앰플 줍는 소리")
+	TObjectPtr<USoundCue> AmpleGrabOnHandSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Ample", DisplayName = "커맨더 앰플 상호작용 대사")
+	TObjectPtr<USoundCue> CommanderAmpleSoundCue;
+	
 	// Commander
 public:
 	UPROPERTY(EditAnywhere, Category = "Commander", DisplayName = "커맨더 플레이어 체력 경고음")
@@ -113,4 +129,21 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Widget", DisplayName = "UI 닫기 사운드")
 	TObjectPtr<USoundCue> WidgetCloseSoundCue;
+
+	// Puzzle
+public:
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "회로 회전 사운드")
+	TObjectPtr<USoundCue> CircuitSpinSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "회로 성공 사운드")
+	TObjectPtr<USoundCue> CircuitSuccessSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "비밀번호 버튼 사운드")
+	TObjectPtr<USoundCue> PasswordInputSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "비밀번호 성공 사운드")
+	TObjectPtr<USoundCue> PasswordSuccessSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "비밀번호 실패 사운드")
+	TObjectPtr<USoundCue> PasswordFailedSoundCue;
 };

@@ -5,9 +5,7 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/DamageEvents.h"
-
 #include "ProjectP/Character/PPCharacterPlayer.h"
-#include "ProjectP/Animation/PPZombieAnimInstance.h"
 #include "ProjectP/AI/Zombie/PPZombieAIController.h"
 #include "ProjectP/Constant/PPMontageSectionName.h"
 #include "ProjectP/Constant/PPSkeletalMeshSocketName.h"
@@ -25,6 +23,13 @@ APPCharacterZombie::APPCharacterZombie()
 	ZombieData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/186-ZombieAI/ZombieData.ZombieData'"), EAssertionLevel::Check);
 	GetMesh()->SetSkeletalMesh(ZombieData->ZombieMesh);
 	GetMesh()->SetAnimInstanceClass(FPPConstructorHelper::FindAndGetClass<UPPZombieAnimInstance>(TEXT("/Script/Engine.AnimBlueprint'/Game/186-ZombieAI/ABP_Zombie.ABP_Zombie_C'"), EAssertionLevel::Check));
+
+	HitNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("HitVFX"));
+	UNiagaraSystem* HitNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(
+		TEXT("/Script/Niagara.NiagaraSystem'/Game/BloodFX/Fx/NS_BloodSpalatter_001.NS_BloodSpalatter_001'"), EAssertionLevel::Check);
+	HitNiagaraEffect->SetAsset(HitNiagaraSystem);
+	HitNiagaraEffect->SetAutoActivate(false);
+	HitNiagaraEffect->SetActive(false);
 	// GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	// GetMesh()->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 }
@@ -49,6 +54,7 @@ void APPCharacterZombie::BeginPlay()
 	Super::BeginPlay();
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetMesh()->SetCollisionProfileName(CP_ENEMY);
+	HitNiagaraEffect->SetActive(false);
 	
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	Health = ZombieData->Health;
@@ -67,7 +73,7 @@ void APPCharacterZombie::BeginPlay()
 	
 	CurrentState = ECharacterState::Idle;
 	GetCharacterMovement()->MaxWalkSpeed = ZombieData->ResearchMoveSpeed;
-	UPPZombieAnimInstance* ZombieAnimInstance = Cast<UPPZombieAnimInstance>(GetMesh()->GetAnimInstance());
+	ZombieAnimInstance = Cast<UPPZombieAnimInstance>(GetMesh()->GetAnimInstance());
 	if(ZombieAnimInstance)
 	{
 		// 애님 노티파이 연결
@@ -104,6 +110,13 @@ void APPCharacterZombie::DestroyThis()
 	Destroy();
 }
 
+void APPCharacterZombie::TakeDamageEffect(FVector HitLocation)
+{
+	HitNiagaraEffect->SetRelativeLocation(HitLocation);
+	HitNiagaraEffect->SetRelativeRotation(HitLocation.Rotation());
+	HitNiagaraEffect->SetActive(true);
+}
+
 void APPCharacterZombie::SetAIPatternDelegate(const FAICharacterPatternFinished& FinishedDelegate)
 {
 	PatternFinishedDelegate = FinishedDelegate;
@@ -119,6 +132,7 @@ void APPCharacterZombie::PlayPatternAnimMontage()
 		break;
 	case ECharacterState::Dead:
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD, ZombieAnimMontage);
+		ZombieAnimInstance->StopAttackBlend();
 		break;
 	default:
 		// Idle Or Tracking?

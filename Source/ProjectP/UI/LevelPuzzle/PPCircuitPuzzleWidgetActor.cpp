@@ -4,6 +4,7 @@
 #include "ProjectP/UI/LevelPuzzle/PPCircuitPuzzleWidgetActor.h"
 
 #include "GameFramework/Character.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Player/PPVRPawn.h"
 
 /*
@@ -80,6 +81,10 @@ void APPCircuitPuzzleWidgetActor::BeginPlay()
 	CircuitPuzzleWidget->PassTargetCircuitDelegate.AddUObject(this, &APPCircuitPuzzleWidgetActor::RotatePressedButton);
 	CircuitPuzzleWidget->SetWidgetWidthValue(WidgetHalfWidthValue);
 	CircuitPuzzleWidget->SetDefaultAngle(static_cast<uint32>(CurrentFirstCircuitDirection), static_cast<uint32>(CurrentSecondCircuitDirection), static_cast<uint32>(CurrentThirdCircuitDirection));
+
+	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	CircuitSpinSoundCue = GameInstance->GetSoundData()->CircuitSpinSoundCue;
+	CircuitSuccessSoundCue = GameInstance->GetSoundData()->CircuitSuccessSoundCue;
 	
 	bIsRotationOnGoing = false;
 	bIsFirstCircuitCorrected = false;
@@ -134,6 +139,7 @@ void APPCircuitPuzzleWidgetActor::Tick(float DeltaTime)
 
 void APPCircuitPuzzleWidgetActor::RotatePressedButton(UButton* Button, ECircuitNum ButtonNum)
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), CircuitSpinSoundCue);
 	if(bIsRotationOnGoing)
 	{
 		return;
@@ -200,6 +206,7 @@ void APPCircuitPuzzleWidgetActor::CheckCurrentButtonCorrect()
 	
 	if(bIsFirstCircuitCorrected && bIsSecondCircuitCorrected && bIsThirdCircuitCorrected)
 	{
+		UGameplayStatics::PlaySound2D(GetWorld(), CircuitSuccessSoundCue);
 	    GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("모든 회로 일치 확인")));
 		bIsRotationOnGoing = true;
 		CircuitPuzzleWidget->SetEnableTexture();

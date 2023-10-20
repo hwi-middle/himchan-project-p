@@ -8,6 +8,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/TextBlock.h"
+#include "Sound/SoundCue.h"
 #include "PPPasswordPuzzleWidget.generated.h"
 
 /*
@@ -73,6 +74,15 @@ protected:
 
 	UPROPERTY()
 	FString CorrectPassword;
+
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "비밀번호 버튼 사운드")
+	TObjectPtr<USoundCue> PasswordInputSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "비밀번호 성공 사운드")
+	TObjectPtr<USoundCue> PasswordSuccessSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "비밀번호 실패 사운드")
+	TObjectPtr<USoundCue> PasswordFailedSoundCue;
 	
 private:
 	void PerformButtonInteraction(const EPasswordPuzzleButton InButton);
