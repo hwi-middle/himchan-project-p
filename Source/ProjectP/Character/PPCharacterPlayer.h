@@ -34,7 +34,11 @@ public:
 	virtual void IncreaseHealth(const float Value) override;
 	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { return Health; }
+	
+	UFUNCTION()
 	FORCEINLINE UAudioComponent* GetAudioComponent() { return AudioComponent; }
+	
+	UFUNCTION()
 	FORCEINLINE UAudioComponent* GetCommanderAudioComponent() { return CommanderAudioComponent; }
 	
 	UPROPERTY(BlueprintAssignable)
@@ -46,14 +50,14 @@ protected:
 //	FORCEINLINE virtual void SetCharacterState(const ECharacterState EState) override { CurrentState = EState; }
 //	FORCEINLINE const virtual ECharacterState GetCurrentState() override { return CurrentState; }
 	
-private:
+protected:
 	UPROPERTY(EditDefaultsOnly, Category = Collision)
 	TObjectPtr<UCapsuleComponent> CollisionCapsule;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UAudioComponent> AudioComponent;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UAudioComponent> CommanderAudioComponent;
 	
 	// Player Variable Section

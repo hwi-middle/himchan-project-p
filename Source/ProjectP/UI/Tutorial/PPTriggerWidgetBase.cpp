@@ -89,13 +89,19 @@ void APPTriggerWidgetBase::NotifyActorBeginOverlap(AActor* OtherActor)
 		case EEventTriggerType::None:
 			break;
 		case  EEventTriggerType::OneTimeOnly:
-			Player->GetCommanderAudioComponent()->SetSound(CommanderSoundCue);
-			Player->GetCommanderAudioComponent()->Play();
+			if(CommanderSoundCue)
+			{
+				Player->GetCommanderAudioComponent()->SetSound(CommanderSoundCue);
+				Player->GetCommanderAudioComponent()->Play();
+			}
 			CommanderSoundTriggerType = EEventTriggerType::None;
 			break;
 		case EEventTriggerType::AnyTime:
-			Player->GetCommanderAudioComponent()->SetSound(CommanderSoundCue);
-			Player->GetCommanderAudioComponent()->Play();
+			if(CommanderSoundCue)
+			{
+				Player->GetCommanderAudioComponent()->SetSound(CommanderSoundCue);
+				Player->GetCommanderAudioComponent()->Play();
+			}
 			break;
 		default:
 			checkNoEntry();
