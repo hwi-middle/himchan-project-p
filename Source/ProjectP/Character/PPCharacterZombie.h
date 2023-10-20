@@ -9,6 +9,8 @@
 #include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Enumeration/PPCharacterState.h"
 #include "NiagaraComponent.h"
+#include "ProjectP/Game/PPGameInstance.h"
+#include "Sound/SoundCue.h"
 #include "PPCharacterZombie.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FAICharacterPatternFinished)
@@ -24,7 +26,7 @@ public:
 	APPCharacterZombie();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	FAICharacterPatternFinished PatternFinishedDelegate;
-
+	FORCEINLINE UAudioComponent* GetAudioComponent() { return AudioComponent; }
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -34,7 +36,13 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAudioComponent> AudioComponent;
+	
+	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UNiagaraComponent> HitNiagaraEffect;
+
+	UFUNCTION()
+	void DamageEffectOff(UNiagaraComponent* InComponent);
 	// 피격 이펙트 호출
 public:
 	UFUNCTION()
@@ -62,6 +70,19 @@ public:
 	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { Super::GetCurrentHealth(); return Health; }
 
+	// 대기 상태 관련 함수
+private:
+	void IdleSoundCheck();
+	
+	// 대기 상태 관련 변수
+private:
+	FTimerHandle IdleSoundTimerHandle;
+
+	uint32 bIsIdle : 1;
+
+	UPROPERTY()
+	TObjectPtr<USoundCue> ZombieIdleSoundCue;
+	
 	// 공격 관련 함수
 private:
 	void CheckAttackHitResult();
@@ -120,4 +141,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UPPZombieAnimInstance> ZombieAnimInstance;
+
+	UPROPERTY()
+	TObjectPtr<UPPGameInstance> GameInstance;
 };

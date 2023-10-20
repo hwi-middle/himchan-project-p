@@ -47,7 +47,7 @@ APPVRPawn::APPVRPawn()
 	InputMappingContext = MovementData->InputMappingContext;
 	MoveAction = MovementData->MoveAction;
 	TurnAction = MovementData->TurnAction;
-	SprintAction = MovementData->SprintAction;
+	LeftThumbStickButtonAction = MovementData->SprintAction;
 	GrabLeftAction = MovementData->GrabLeftAction;
 	GrabRightAction = MovementData->GrabRightAction;
 	IndexCurlLeftAction = MovementData->IndexCurlLeftAction;
@@ -60,7 +60,7 @@ APPVRPawn::APPVRPawn()
 	LeftYButtonPressAction = MovementData->LeftYButtonPressAction;
 	RightAButtonPressAction = MovementData->RightAButtonPressAction;
 	RightBButtonPressAction = MovementData->RightBButtonPressAction;
-	GrenadeAction = MovementData->GrenadeAction;
+	RightThumbStickButtonAction = MovementData->GrenadeAction;
 
 	MoveSpeed = MovementData->WalkSpeed;
 	SnapTurnDegrees = MovementData->SnapTurnDegrees;
@@ -123,7 +123,6 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APPVRPawn::Move);
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &APPVRPawn::CompleteMove);
 	EnhancedInputComponent->BindAction(TurnAction, ETriggerEvent::Started, this, &APPVRPawn::Turn);
-	EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APPVRPawn::ToggleSprint);
 
 	EnhancedInputComponent->BindAction(GrabLeftAction, ETriggerEvent::Triggered, this, &APPVRPawn::GrabLeft);
 	EnhancedInputComponent->BindAction(GrabLeftAction, ETriggerEvent::Completed, this, &APPVRPawn::CancelOrCompleteGrabLeft);
@@ -158,8 +157,10 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	EnhancedInputComponent->BindAction(RightBButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressBButtonAction);
 	EnhancedInputComponent->BindAction(RightAButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressAButtonAction);
 
-	EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Started, this, &APPVRPawn::SetGrenade);
-	EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Completed, this, &APPVRPawn::ReleaseGrenade);
+	EnhancedInputComponent->BindAction(RightThumbStickButtonAction, ETriggerEvent::Started, this, &APPVRPawn::RightThumbStickButtonInput);
+	EnhancedInputComponent->BindAction(RightThumbStickButtonAction, ETriggerEvent::Completed, this, &APPVRPawn::RightThumbStickButtonRelease);
+	EnhancedInputComponent->BindAction(LeftThumbStickButtonAction, ETriggerEvent::Started, this, &APPVRPawn::LeftThumbStickButtonInput);
+	EnhancedInputComponent->BindAction(LeftThumbStickButtonAction, ETriggerEvent::Completed, this, &APPVRPawn::LeftThumbStickButtonRelease);
 }
 
 void APPVRPawn::InitVROrigin()
@@ -334,6 +335,46 @@ void APPVRPawn::ThumbUpRight(const FInputActionValue& Value)
 	RightHand->SetPoseAlphaThumbUp(0);
 }
 
+void APPVRPawn::LeftThumbStickButtonInput(const FInputActionValue& Value)
+{
+	if(bIsRightHandMainly)
+	{
+		ToggleSprint();
+	}
+	else
+	{
+		SetGrenade();
+	}
+}
+
+void APPVRPawn::LeftThumbStickButtonRelease(const FInputActionValue& Value)
+{
+	if(!bIsRightHandMainly)
+	{
+		ReleaseGrenade();
+	}
+}
+
+void APPVRPawn::RightThumbStickButtonInput(const FInputActionValue& Value)
+{
+	if(bIsRightHandMainly)
+	{
+		SetGrenade();
+	}
+	else
+	{
+		ToggleSprint();
+	}
+}
+
+void APPVRPawn::RightThumbStickButtonRelease(const FInputActionValue& Value)
+{
+	if(bIsRightHandMainly)
+	{
+		ReleaseGrenade();
+	}
+}
+
 void APPVRPawn::CancelOrCompleteGrabLeft()
 {
 	LeftHand->SetPoseAlphaGrasp(0);
@@ -428,7 +469,7 @@ void APPVRPawn::CompleteMove(const FInputActionValue& Value)
 	}
 }
 
-void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
+void APPVRPawn::ToggleSprint()
 {
 	MoveSpeed == MovementData->WalkSpeed ? MoveSpeed = MovementData->SprintSpeed : MoveSpeed = MovementData->WalkSpeed;
 

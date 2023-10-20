@@ -98,6 +98,26 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Commander", DisplayName = "커맨더 녹빛안개 경고음")
 	TArray<USoundCue*> CommanderGFWaringSoundCueArray;
+
+	// 좜비
+public:
+	UPROPERTY(EditAnywhere, Category = "Zombie", DisplayName = "좀비 사운드 감쇠")
+	TObjectPtr<USoundAttenuation> ZombieSoundAttenuation;
+	
+	UPROPERTY(EditAnywhere, Category = "Zombie", DisplayName = "좀비 대기 상태 사운드")
+	TObjectPtr<USoundCue> ZombieIdleSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Zombie", DisplayName = "좀비 탐색 상태 사운드")
+	TObjectPtr<USoundCue> ZombieResearchSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Zombie", DisplayName = "좀비 추적 상태 사운드")
+	TObjectPtr<USoundCue> ZombieTrackingSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Zombie", DisplayName = "좀비 공격 상태 사운드")
+	TObjectPtr<USoundCue> ZombieAttackSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Zombie", DisplayName = "좀비 사망 상태 사운드")
+	TObjectPtr<USoundCue> ZombieDeadSoundCue;
 	
 	// Boss
 public:
