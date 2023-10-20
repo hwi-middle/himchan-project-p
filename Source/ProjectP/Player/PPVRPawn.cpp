@@ -617,6 +617,11 @@ void APPVRPawn::SetGrenade()
 
 void APPVRPawn::ReleaseGrenade()
 {
+	if (GrenadeStack <= 0)
+	{
+		return;
+	}
+	
 	APPVRHand* PrimaryHand = bIsRightHandMainly ? RightHand : LeftHand;
 
 	// 수류탄이 무기임에도 강제로 떼어내기
