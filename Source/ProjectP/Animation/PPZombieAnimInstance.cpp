@@ -5,13 +5,15 @@
 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "ProjectP/Character/PPCharacterZombie.h"
 
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "ProjectP/Character/PPZombieData.h"
+#include "ProjectP/Game/PPGameInstance.h"
 
 UPPZombieAnimInstance::UPPZombieAnimInstance()
 {
-	OwnerData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/186-ZombieAI/ZombieData.ZombieData'"), EAssertionLevel::Check);
+	OwnerData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/DataAssets/Character/ZombieData.ZombieData'"), EAssertionLevel::Check);
 }
 
 void UPPZombieAnimInstance::NativeInitializeAnimation()
@@ -55,6 +57,11 @@ void UPPZombieAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UPPZombieAnimInstance::AnimNotify_AttackHitCheckStart()
 {
 	HitCheckStartDelegate.Broadcast();
+	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	UAudioComponent* AudioComponent = Cast<APPCharacterZombie>(GetOwningActor())->GetAudioComponent();
+	AudioComponent->Stop();
+	AudioComponent->SetSound(GameInstance->GetSoundData()->ZombieAttackSoundCue);
+	AudioComponent->Play();
 	GetWorld()->GetTimerManager().SetTimer(AnimBlendTimerHandle, this, &UPPZombieAnimInstance::AnimBlendSequence, 0.01f, true);
 }
 

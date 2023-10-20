@@ -6,9 +6,11 @@
 #include "AIController.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "ProjectP/Character/PPCharacterZombie.h"
 #include "ProjectP/Constant/PPBlackBoardKeyName.h"
+#include "ProjectP/Game/PPGameInstance.h"
 
 
 UBTTask_PPZombieFindLocation::UBTTask_PPZombieFindLocation()
@@ -40,6 +42,11 @@ EBTNodeResult::Type UBTTask_PPZombieFindLocation::ExecuteTask(UBehaviorTreeCompo
 	if(NavSystem->GetRandomPointInNavigableRadius(OriginLocation, PatrolRadius, NextPatrolLocation))
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector(KEY_PATROL_LOCATION, NextPatrolLocation.Location);
+		UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+		UAudioComponent* AudioComponent = ControllingPawn->GetAudioComponent();
+		AudioComponent->Stop();
+		AudioComponent->SetSound(GameInstance->GetSoundData()->ZombieResearchSoundCue);
+		AudioComponent->Play();
 		return EBTNodeResult::Succeeded;
 	}
 	

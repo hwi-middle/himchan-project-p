@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "ProjectP/Character/PPZombieData.h"
+#include "ProjectP/Constant/PPBlackBoardKeyName.h"
 #include "PPZombieAIController.generated.h"
 
 /**
@@ -21,6 +23,7 @@ public:
 
 	void ActivateAI();
 	void DeActivateAI();
+	FORCEINLINE AActor* GetTargetActor() { return Cast<AActor>(Blackboard->GetValueAsObject(KEY_TARGET)); }
 	
 	UFUNCTION()
 	void SetTarget(const TArray<AActor*>& Actors);
