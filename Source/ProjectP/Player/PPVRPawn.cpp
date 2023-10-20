@@ -4,20 +4,20 @@
 #include "PPVRPawn.h"
 
 #include "HeadMountedDisplayFunctionLibrary.h"
-#include "PPMovementData.h"
-#include "Camera/CameraComponent.h"
-#include "GameFramework/FloatingPawnMovement.h"
 #include "MotionControllerComponent.h"
+#include "PPMovementData.h"
 #include "PPVRHand.h"
-
-#include "EnhancedInput/Public/InputActionValue.h"
-#include "EnhancedInput/Public/EnhancedInputSubsystems.h"
+#include "Camera/CameraComponent.h"
 #include "EnhancedInput/Public/EnhancedInputComponent.h"
+#include "EnhancedInput/Public/EnhancedInputSubsystems.h"
+#include "EnhancedInput/Public/InputActionValue.h"
 #include "EnhancedInput/Public/InputMappingContext.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ProjectP/Constant/PPLevelName.h"
 #include "ProjectP/Game/PPGameInstance.h"
+#include "ProjectP/Prop/Weapon/PPGrenade.h"
 #include "ProjectP/Prop/Weapon/PPGunBase.h"
 #include "ProjectP/UI/Pause/PPPauseWidgetActor.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
@@ -53,7 +53,9 @@ APPVRPawn::APPVRPawn()
 	LeftYButtonPressAction = MovementData->LeftYButtonPressAction;
 	RightAButtonPressAction = MovementData->RightAButtonPressAction;
 	RightBButtonPressAction = MovementData->RightBButtonPressAction;
-	
+	LeftGrenadeAction = MovementData->LeftGrenadeAction;
+	RightGrenadeAction = MovementData->RightGrenadeAction;
+
 	MoveSpeed = MovementData->WalkSpeed;
 	SnapTurnDegrees = MovementData->SnapTurnDegrees;
 	WidgetInteractionDistance = MovementData->WidgetInteractionDistance;
@@ -63,22 +65,23 @@ APPVRPawn::APPVRPawn()
 void APPVRPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	bIsRightHandMainly = false; // 이거 테스트 코드인데 안지우면 내가 개다
 	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
 	InitVROrigin();
 	InitVRHands();
-	
+
 	TArray<AActor*> PauseWidgets;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APPPauseWidgetActor::StaticClass(), PauseWidgets);
-	if(PauseWidgets.Num() > 0)
+	if (PauseWidgets.Num() > 0)
 	{
 		PauseWidget = CastChecked<APPPauseWidgetActor>(PauseWidgets[0]);
 	}
-	
+
 	const TObjectPtr<UPPGameInstance> GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	GameInstance->ClearTimerHandleDelegate.AddUObject(this, &APPVRPawn::ClearAllTimerOnLevelChange);
 	const UPPSoundData* SoundData = GameInstance->GetSoundData();
 	WalkSoundCueArray = SoundData->PlayerWalkTypeASoundCueArray;
-	if(WalkSoundCueArray.IsEmpty())
+	if (WalkSoundCueArray.IsEmpty())
 	{
 		// 배열이 비어있을 때 크래시 방지용.
 		USoundCue* TempSoundCue = nullptr;
@@ -143,11 +146,16 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Triggered, this, &APPVRPawn::ThumbUpRight);
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Completed, this, &APPVRPawn::CompleteThumbUpRight);
 	EnhancedInputComponent->BindAction(ThumbUpRightAction, ETriggerEvent::Canceled, this, &APPVRPawn::ThumbUpRight);
-	
+
 	EnhancedInputComponent->BindAction(LeftYButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressYButtonAction);
 	EnhancedInputComponent->BindAction(LeftXButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressXButtonAction);
 	EnhancedInputComponent->BindAction(RightBButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressBButtonAction);
 	EnhancedInputComponent->BindAction(RightAButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressAButtonAction);
+
+	EnhancedInputComponent->BindAction(LeftGrenadeAction, ETriggerEvent::Started, this, &APPVRPawn::SetGrenade);
+	EnhancedInputComponent->BindAction(RightGrenadeAction, ETriggerEvent::Started, this, &APPVRPawn::SetGrenade);
+	EnhancedInputComponent->BindAction(LeftGrenadeAction, ETriggerEvent::Completed, this, &APPVRPawn::ReleaseGrenade);
+	EnhancedInputComponent->BindAction(RightGrenadeAction, ETriggerEvent::Completed, this, &APPVRPawn::ReleaseGrenade);
 }
 
 void APPVRPawn::InitVROrigin()
@@ -166,7 +174,7 @@ void APPVRPawn::InitVRHands()
 	LeftHand->SetHandType(EControllerHand::Left);
 	LeftHand->FinishSpawning(IdentityTransform);
 	LeftHand->AttachToComponent(VROrigin, AttachRule);
-	
+
 	RightHand = GetWorld()->SpawnActorDeferred<APPVRHand>(APPVRHand::StaticClass(), IdentityTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	ensure(RightHand);
 	RightHand->SetHandType(EControllerHand::Right);
@@ -176,7 +184,7 @@ void APPVRPawn::InitVRHands()
 
 void APPVRPawn::Move(const FInputActionValue& Value)
 {
-	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
+	if (UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
 		return;
 	}
@@ -219,11 +227,11 @@ void APPVRPawn::GrabLeft(const FInputActionValue& Value)
 	const float Alpha = Value.Get<float>();
 	LeftHand->SetPoseAlphaGrasp(Alpha);
 
-	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
+	if (UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
 		return;
 	}
-	
+
 	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
 	static constexpr float GrabThreshold = 0.2f;
 	if (HeldComponent && Alpha < GrabThreshold)
@@ -241,11 +249,11 @@ void APPVRPawn::GrabRight(const FInputActionValue& Value)
 	const float Alpha = Value.Get<float>();
 	RightHand->SetPoseAlphaGrasp(Alpha);
 
-	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
+	if (UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
 		return;
 	}
-	
+
 	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
 	static constexpr float GrabThreshold = 0.2f;
 	if (HeldComponent && Alpha < GrabThreshold)
@@ -264,11 +272,11 @@ void APPVRPawn::IndexCurlLeft(const FInputActionValue& Value)
 	LeftHand->SetPoseAlphaIndexCurl(Alpha);
 	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
 
-	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
+	if (UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
 		return;
 	}
-	
+
 	static constexpr float ShootThreshold = 0.2f;
 	if (HeldComponent)
 	{
@@ -286,11 +294,11 @@ void APPVRPawn::IndexCurlRight(const FInputActionValue& Value)
 	RightHand->SetPoseAlphaIndexCurl(Alpha);
 	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
 
-	if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
+	if (UGameplayStatics::GetGlobalTimeDilation(GetWorld()) != 1.0f)
 	{
 		return;
 	}
-	
+
 	static constexpr float ShootThreshold = 0.2f;
 	if (HeldComponent)
 	{
@@ -339,11 +347,11 @@ void APPVRPawn::CancelOrCompleteIndexCurlLeft()
 	LeftHand->SetPoseAlphaIndexCurl(0);
 	UPPVRGrabComponent* HeldComponent = LeftHand->GetHeldComponent();
 
-	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	if (UGameplayStatics::IsGamePaused(GetWorld()))
 	{
 		return;
 	}
-	
+
 	if (HeldComponent)
 	{
 		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
@@ -359,11 +367,11 @@ void APPVRPawn::CancelOrCompleteIndexCurlRight()
 	RightHand->SetPoseAlphaIndexCurl(0);
 	UPPVRGrabComponent* HeldComponent = RightHand->GetHeldComponent();
 
-	if(UGameplayStatics::IsGamePaused(GetWorld()))
+	if (UGameplayStatics::IsGamePaused(GetWorld()))
 	{
 		return;
 	}
-	
+
 	if (HeldComponent)
 	{
 		APPGunBase* Weapon = Cast<APPGunBase>(HeldComponent->GetOuter());
@@ -396,7 +404,7 @@ void APPVRPawn::CompleteThumbUpRight()
 
 void APPVRPawn::StartMove(const FInputActionValue& Value)
 {
-	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
+	if (GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
 	{
 		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
 	}
@@ -405,11 +413,11 @@ void APPVRPawn::StartMove(const FInputActionValue& Value)
 
 void APPVRPawn::CompleteMove(const FInputActionValue& Value)
 {
-	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
+	if (GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
 	{
 		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
 	}
-	
+
 	if (MoveSpeed == MovementData->SprintSpeed)
 	{
 		MoveSpeed = MovementData->WalkSpeed;
@@ -419,12 +427,12 @@ void APPVRPawn::CompleteMove(const FInputActionValue& Value)
 void APPVRPawn::ToggleSprint(const FInputActionValue& Value)
 {
 	MoveSpeed == MovementData->WalkSpeed ? MoveSpeed = MovementData->SprintSpeed : MoveSpeed = MovementData->WalkSpeed;
-	
-	if(GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
+
+	if (GetWorldTimerManager().IsTimerActive(MoveSoundTimerHandle))
 	{
 		GetWorldTimerManager().ClearTimer(MoveSoundTimerHandle);
 	}
-	if(MoveSpeed == MovementData->WalkSpeed)
+	if (MoveSpeed == MovementData->WalkSpeed)
 	{
 		GetWorldTimerManager().SetTimer(MoveSoundTimerHandle, this, &APPVRPawn::ToggleSprintDelegate, WalkSoundRate, true);
 	}
@@ -449,7 +457,7 @@ void APPVRPawn::ToggleSprintDelegate()
 
 void APPVRPawn::PressAButtonAction(const FInputActionValue& Value)
 {
-	if(bIsRightHandMainly)
+	if (bIsRightHandMainly)
 	{
 		ToggleFlash();
 	}
@@ -461,7 +469,7 @@ void APPVRPawn::PressAButtonAction(const FInputActionValue& Value)
 
 void APPVRPawn::PressBButtonAction(const FInputActionValue& Value)
 {
-	if(bIsRightHandMainly)
+	if (bIsRightHandMainly)
 	{
 		// 매핑된게 없서요
 	}
@@ -473,7 +481,7 @@ void APPVRPawn::PressBButtonAction(const FInputActionValue& Value)
 
 void APPVRPawn::PressXButtonAction(const FInputActionValue& Value)
 {
-	if(bIsRightHandMainly)
+	if (bIsRightHandMainly)
 	{
 		ToggleWidgetInteraction();
 	}
@@ -486,7 +494,7 @@ void APPVRPawn::PressXButtonAction(const FInputActionValue& Value)
 
 void APPVRPawn::PressYButtonAction(const FInputActionValue& Value)
 {
-	if(bIsRightHandMainly)
+	if (bIsRightHandMainly)
 	{
 		ToggleGamePauseState();
 	}
@@ -498,7 +506,7 @@ void APPVRPawn::PressYButtonAction(const FInputActionValue& Value)
 
 void APPVRPawn::ToggleWidgetInteraction() const
 {
-	if(bIsRightHandMainly)
+	if (bIsRightHandMainly)
 	{
 		LeftHand->WidgetInteractionToggle(WidgetInteractionDistance);
 	}
@@ -510,9 +518,9 @@ void APPVRPawn::ToggleWidgetInteraction() const
 
 void APPVRPawn::ToggleGamePauseState() const
 {
-	if(PauseWidget)
+	if (PauseWidget)
 	{
-		if(UGameplayStatics::GetGlobalTimeDilation(GetWorld()) == 1.0f)
+		if (UGameplayStatics::GetGlobalTimeDilation(GetWorld()) == 1.0f)
 		{
 			PauseWidget->SetActorRotation(this->GetActorForwardVector().Rotation());
 			PauseWidget->SetActorLocation(this->GetActorLocation() + this->GetActorForwardVector() * 200 + PauseWidgetCustomPosition);
@@ -538,7 +546,7 @@ void APPVRPawn::ToggleFlash() const
 			Weapon->ToggleFlash();
 		}
 	}
-	else if(RightHeldComponent)
+	else if (RightHeldComponent)
 	{
 		APPGunBase* Weapon = Cast<APPGunBase>(RightHeldComponent->GetOuter());
 		if (Weapon)
@@ -550,12 +558,12 @@ void APPVRPawn::ToggleFlash() const
 
 void APPVRPawn::SwapWidgetInteraction() const
 {
-	if(bIsRightHandMainly)
+	if (bIsRightHandMainly)
 	{
 		LeftHand->SetupWidgetComponent(WidgetInteractionDistance);
 		LeftHand->SetVitalWidgetVisible(true);
 		LeftHand->SetMainHand(false);
-		
+
 		RightHand->SetVitalWidgetVisible(false);
 		RightHand->DisableWidgetComponent();
 		RightHand->SetMainHand(true);
@@ -565,9 +573,50 @@ void APPVRPawn::SwapWidgetInteraction() const
 		LeftHand->DisableWidgetComponent();
 		LeftHand->SetVitalWidgetVisible(false);
 		LeftHand->SetMainHand(true);
-		
+
 		RightHand->SetupWidgetComponent(WidgetInteractionDistance);
 		RightHand->SetVitalWidgetVisible(true);
 		RightHand->SetMainHand(false);
+	}
+}
+
+void APPVRPawn::SetGrenade()
+{
+	// TODO: 수류탄 없으면 return 해야함
+	APPVRHand* PrimaryHand = bIsRightHandMainly ? RightHand : LeftHand;
+	UPPVRGrabComponent* GrabbingComponent = PrimaryHand->GetHeldComponent();
+
+	// 뭔가 잡고 있었으면 손에서 뗌
+	if (GrabbingComponent != nullptr)
+	{
+		// 무기를 잡고 있어도 강제로 손에서 뗌
+		PrimaryHand->HandleRelease(true);
+		HiddenGrabbingObject = CastChecked<AActor>(GrabbingComponent->GetOuter());
+
+		// 숨김처리
+		HiddenGrabbingObject->SetActorHiddenInGame(true);
+	}
+
+	// 수류탄을 쥐어줌
+	UPPVRGrabComponent* GrenadeGrabComponent = GWorld->SpawnActor<APPGrenade>(PrimaryHand->GetMotionController()->GetComponentLocation(), FRotator::ZeroRotator)->GetGrabComponent();
+	GrenadeGrabComponent->TryGrab(PrimaryHand);
+	GrenadeGrabComponent->TryGrab(PrimaryHand);
+	PrimaryHand->SetHeldComponent(GrenadeGrabComponent);
+}
+
+void APPVRPawn::ReleaseGrenade()
+{
+	APPVRHand* PrimaryHand = bIsRightHandMainly ? RightHand : LeftHand;
+
+	// 수류탄이 무기임에도 강제로 떼어내기
+	PrimaryHand->HandleRelease(true);
+
+	if (HiddenGrabbingObject != nullptr)
+	{
+		// 다시 들고있던 물건 붙여주기
+		HiddenGrabbingObject->SetActorHiddenInGame(false);
+		HiddenGrabbingObject->SetActorLocation(PrimaryHand->GetActorLocation());
+		HiddenGrabbingObject = nullptr;
+		PrimaryHand->HandleGrab();
 	}
 }

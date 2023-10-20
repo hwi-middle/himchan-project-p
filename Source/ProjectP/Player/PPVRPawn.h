@@ -126,6 +126,12 @@ private:
 	TObjectPtr<class UInputAction> LeftXButtonPressAction;
 
 	UPROPERTY()
+	TObjectPtr<class UInputAction> LeftGrenadeAction;
+
+	UPROPERTY()
+	TObjectPtr<class UInputAction> RightGrenadeAction;
+	
+	UPROPERTY()
 	FTimerHandle MoveSoundTimerHandle;
 
 	UPROPERTY()
@@ -148,6 +154,9 @@ private:
 
 	UPROPERTY()
 	uint32 bIsRightHandMainly : 1;
+
+	UPROPERTY()
+	TObjectPtr<AActor> HiddenGrabbingObject;
 
 private:
 	void Move(const FInputActionValue& Value);
@@ -191,6 +200,8 @@ private:
 	void ToggleGamePauseState() const;
 	void ToggleFlash() const;
 	void SwapWidgetInteraction() const;
+	void SetGrenade();
+	void ReleaseGrenade();
 
 public:
 	FORCEINLINE APPVRHand* GetLeftHand() const { return LeftHand; }
