@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "ProjectP/Animation/PPZombieAnimInstance.h"
 #include "ProjectP/Character/PPZombieData.h"
 #include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Enumeration/PPCharacterState.h"
-#include "ProjectP/Interface/CharacterStatusInterface.h"
 #include "PPCharacterZombie.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FAICharacterPatternFinished)
@@ -108,4 +108,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UAnimMontage> ZombieAnimMontage;
+
+	UPROPERTY()
+	TObjectPtr<UPPZombieAnimInstance> ZombieAnimInstance;
 };

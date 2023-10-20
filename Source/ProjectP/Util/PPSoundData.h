@@ -69,6 +69,19 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Gun", DisplayName = "총기 플래시 라이트 토글 효과음")
 	TObjectPtr<USoundCue> GunToggleFlashSoundCue;
 
+	// Grenade
+public:
+	UPROPERTY(EditAnywhere, Category = "Grenade", DisplayName = "그라나다 줍는 소리")
+	TObjectPtr<USoundCue> GrenadeGrabOnHandSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Grenade", DisplayName = "그라나다 폭발 소리")
+	TObjectPtr<USoundCue> GrenadeExplodeSoundCue;
+
+	// Prop
+public:
+	UPROPERTY(EditAnywhere, Category = "Ample", DisplayName = "앰플 줍는 소리")
+	TObjectPtr<USoundCue> AmpleGrabOnHandSoundCue;
+	
 	// Commander
 public:
 	UPROPERTY(EditAnywhere, Category = "Commander", DisplayName = "커맨더 플레이어 체력 경고음")
