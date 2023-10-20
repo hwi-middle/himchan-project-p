@@ -129,10 +129,7 @@ private:
 	TObjectPtr<class UInputAction> LeftXButtonPressAction;
 
 	UPROPERTY()
-	TObjectPtr<class UInputAction> LeftGrenadeAction;
-
-	UPROPERTY()
-	TObjectPtr<class UInputAction> RightGrenadeAction;
+	TObjectPtr<class UInputAction> GrenadeAction;
 	
 	UPROPERTY()
 	FTimerHandle MoveSoundTimerHandle;

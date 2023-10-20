@@ -60,8 +60,7 @@ APPVRPawn::APPVRPawn()
 	LeftYButtonPressAction = MovementData->LeftYButtonPressAction;
 	RightAButtonPressAction = MovementData->RightAButtonPressAction;
 	RightBButtonPressAction = MovementData->RightBButtonPressAction;
-	LeftGrenadeAction = MovementData->LeftGrenadeAction;
-	RightGrenadeAction = MovementData->RightGrenadeAction;
+	GrenadeAction = MovementData->GrenadeAction;
 
 	MoveSpeed = MovementData->WalkSpeed;
 	SnapTurnDegrees = MovementData->SnapTurnDegrees;
@@ -159,10 +158,8 @@ void APPVRPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	EnhancedInputComponent->BindAction(RightBButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressBButtonAction);
 	EnhancedInputComponent->BindAction(RightAButtonPressAction, ETriggerEvent::Started, this, &APPVRPawn::PressAButtonAction);
 
-	EnhancedInputComponent->BindAction(LeftGrenadeAction, ETriggerEvent::Started, this, &APPVRPawn::SetGrenade);
-	EnhancedInputComponent->BindAction(RightGrenadeAction, ETriggerEvent::Started, this, &APPVRPawn::SetGrenade);
-	EnhancedInputComponent->BindAction(LeftGrenadeAction, ETriggerEvent::Completed, this, &APPVRPawn::ReleaseGrenade);
-	EnhancedInputComponent->BindAction(RightGrenadeAction, ETriggerEvent::Completed, this, &APPVRPawn::ReleaseGrenade);
+	EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Started, this, &APPVRPawn::SetGrenade);
+	EnhancedInputComponent->BindAction(GrenadeAction, ETriggerEvent::Completed, this, &APPVRPawn::ReleaseGrenade);
 }
 
 void APPVRPawn::InitVROrigin()
