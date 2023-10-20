@@ -89,4 +89,8 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<class UNiagaraComponent> ExplodeVFX;
+
+	UPROPERTY()
+	TObjectPtr<class USoundCue> ExplodeSoundCue;
+	
 };

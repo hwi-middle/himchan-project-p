@@ -5,9 +5,7 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/DamageEvents.h"
-
 #include "ProjectP/Character/PPCharacterPlayer.h"
-#include "ProjectP/Animation/PPZombieAnimInstance.h"
 #include "ProjectP/AI/Zombie/PPZombieAIController.h"
 #include "ProjectP/Constant/PPMontageSectionName.h"
 #include "ProjectP/Constant/PPSkeletalMeshSocketName.h"
@@ -67,7 +65,7 @@ void APPCharacterZombie::BeginPlay()
 	
 	CurrentState = ECharacterState::Idle;
 	GetCharacterMovement()->MaxWalkSpeed = ZombieData->ResearchMoveSpeed;
-	UPPZombieAnimInstance* ZombieAnimInstance = Cast<UPPZombieAnimInstance>(GetMesh()->GetAnimInstance());
+	ZombieAnimInstance = Cast<UPPZombieAnimInstance>(GetMesh()->GetAnimInstance());
 	if(ZombieAnimInstance)
 	{
 		// 애님 노티파이 연결
@@ -119,6 +117,7 @@ void APPCharacterZombie::PlayPatternAnimMontage()
 		break;
 	case ECharacterState::Dead:
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD, ZombieAnimMontage);
+		ZombieAnimInstance->StopAttackBlend();
 		break;
 	default:
 		// Idle Or Tracking?

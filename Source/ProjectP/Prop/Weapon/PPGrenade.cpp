@@ -7,6 +7,7 @@
 #include "NiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Character/PPCharacterBoss.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Grab/PPVRGrabComponent.h"
 #include "ProjectP/Player/PPVRPawn.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
@@ -64,6 +65,8 @@ void APPGrenade::BeginPlay()
 		CollisionParamsOnTick.AddIgnoredActor(Player->GetRightHand());
 	}
 
+	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	ExplodeSoundCue = GameInstance->GetSoundData()->GrenadeExplodeSoundCue;
 	ExplodeDelay = GrenadeData->ExplodeDelay;
 	ExplodeType = GrenadeData->ExplodeType;
 	ActivateRadius = GrenadeData->ActivateRadius * 100;
@@ -230,6 +233,7 @@ void APPGrenade::Explode()
 	}
 
 	Mesh->SetHiddenInGame(true);
+	UGameplayStatics::PlaySound2D(GetWorld(), ExplodeSoundCue);
 	ExplodeVFX->SetActive(true);
 	ExplodeVFX->Activate();
 	ExplodeVFX->OnSystemFinished.AddDynamic(this, &APPGrenade::DestroyOnVfxFinished);
