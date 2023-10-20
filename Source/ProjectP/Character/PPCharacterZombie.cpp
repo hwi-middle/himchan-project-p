@@ -144,6 +144,7 @@ void APPCharacterZombie::SetAIPatternDelegate(const FAICharacterPatternFinished&
 
 void APPCharacterZombie::PlayPatternAnimMontage()
 {
+	GetMesh()->GetAnimInstance()->Montage_Stop(0, ZombieAnimMontage);
 	GetMesh()->GetAnimInstance()->Montage_Play(ZombieAnimMontage);
 	switch (CurrentState)
 	{
@@ -151,12 +152,12 @@ void APPCharacterZombie::PlayPatternAnimMontage()
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_ATTACK, ZombieAnimMontage);
 		break;
 	case ECharacterState::Dead:
+		ZombieAnimInstance->StopAttackBlend();
 		GetWorldTimerManager().ClearTimer(IdleSoundTimerHandle);
 		AudioComponent->Stop();
 		AudioComponent->SetSound(GameInstance->GetSoundData()->ZombieDeadSoundCue);
 		AudioComponent->Play();
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD, ZombieAnimMontage);
-		ZombieAnimInstance->StopAttackBlend();
 		break;
 	default:
 		// Idle Or Tracking?

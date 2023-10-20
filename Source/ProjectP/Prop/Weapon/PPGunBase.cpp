@@ -116,6 +116,7 @@ void APPGunBase::BeginPlay()
 		MainHandType = EControllerHand::Left;
 	}
 	GrabComponent->SetMainHandType(MainHandType);
+	GrabComponent->SetGrabObjectType(EGrabObjectTypes::Gun);
 }
 
 void APPGunBase::ClearAllTimerOnLevelChange()

@@ -19,6 +19,7 @@ APPCharacterPlayer::APPCharacterPlayer()
 	PlayerStatusData = FPPConstructorHelper::FindAndGetObject<UPPPlayerStatusData>(TEXT("/Script/ProjectP.PPPlayerStatusData'/Game/DataAssets/Player/PlayerStatusData.PlayerStatusData'"), EAssertionLevel::Check);
 	CollisionCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollsionCapsule"));
 	CollisionCapsule->InitCapsuleSize(20.0f, 90.0f);
+	CollisionCapsule->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CollisionCapsule->SetCollisionProfileName(CP_PLAYER);
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 	CommanderAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("CommanderAudioComponent"));
