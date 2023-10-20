@@ -5,6 +5,7 @@
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "ProjectP/Game/PPGameInstance.h"
 
 void UPPPasswordPuzzleWidget::NativeConstruct()
 {
@@ -41,11 +42,17 @@ void UPPPasswordPuzzleWidget::NativeConstruct()
 	ButtonArray[EPasswordPuzzleButton::Delete]->OnClicked.AddDynamic(this, &UPPPasswordPuzzleWidget::OnPressDelete);
 	ButtonArray[EPasswordPuzzleButton::Confirm]->OnClicked.AddDynamic(this, &UPPPasswordPuzzleWidget::OnPressConfirm);
 	UE_LOG(LogTemp, Log, TEXT("NativeConstruct"));
+
+	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	PasswordInputSoundCue = GameInstance->GetSoundData()->PasswordInputSoundCue;
+	PasswordSuccessSoundCue = GameInstance->GetSoundData()->PasswordSuccessSoundCue;
+	PasswordFailedSoundCue = GameInstance->GetSoundData()->PasswordFailedSoundCue;
 }
 
 void UPPPasswordPuzzleWidget::PerformButtonInteraction(const EPasswordPuzzleButton InButton)
 {
 	UE_LOG(LogTemp, Log, TEXT("PerformButtonInteraction"));
+	UGameplayStatics::PlaySound2D(GetWorld(), PasswordInputSoundCue);
 	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("버튼 인터렉션 작동: %d"), static_cast<uint8>(InButton)));
 	switch (InButton)
 	{
@@ -105,7 +112,12 @@ void UPPPasswordPuzzleWidget::CheckCorrectPasswordDigit()
 	
 	if(InputPassword == CorrectPassword)
 	{
+		UGameplayStatics::PlaySound2D(GetWorld(), PasswordSuccessSoundCue);
 		CorrectPasswordDelegate.Broadcast();
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("비밀번호 일치 확인")));
+	}
+	else
+	{
+		UGameplayStatics::PlaySound2D(GetWorld(), PasswordFailedSoundCue);
 	}
 }

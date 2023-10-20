@@ -37,6 +37,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundCue> CommanderSound;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundCue> GrabSound;
 	
 	UPROPERTY()
 	uint32 bIsGrabbed: 1;

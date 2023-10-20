@@ -9,6 +9,7 @@
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Actor.h"
 #include "ProjectP/Object/PPEventCaller.h"
+#include "Sound/SoundCue.h"
 #include "PPCircuitPuzzleWidgetActor.generated.h"
 
 UENUM()
@@ -57,6 +58,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> TriggerBox;
+
+private:
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundCue> CircuitSpinSoundCue;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundCue> CircuitSuccessSoundCue;
 	
 private:
 	void RotatePressedButton(UButton* Button, ECircuitNum ButtonNum);

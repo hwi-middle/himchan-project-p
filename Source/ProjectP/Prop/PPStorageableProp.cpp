@@ -35,7 +35,8 @@ void APPStorageableProp::BeginPlay()
 	GrabComponent->OnRelease.AddUObject(this, &APPStorageableProp::OnRelease);
 	
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
-	CommanderSound = GameInstance->GetSoundData()->AmpleGrabOnHandSoundCue;
+	CommanderSound = GameInstance->GetSoundData()->CommanderAmpleSoundCue;
+	GrabSound = GameInstance->GetSoundData()->AmpleGrabOnHandSoundCue;
 }
 
 // Called every frame
@@ -60,6 +61,7 @@ void APPStorageableProp::Tick(float DeltaTime)
 			APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(Result.GetActor());
 			if (Player)
 			{
+				UGameplayStatics::PlaySound2D(GetWorld(), GrabSound);
 				Player->GetCommanderAudioComponent()->SetSound(CommanderSound);
 				Player->GetCommanderAudioComponent()->Play();
 				Destroy();

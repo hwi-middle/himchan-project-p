@@ -81,6 +81,9 @@ public:
 public:
 	UPROPERTY(EditAnywhere, Category = "Ample", DisplayName = "앰플 줍는 소리")
 	TObjectPtr<USoundCue> AmpleGrabOnHandSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Ample", DisplayName = "커맨더 앰플 상호작용 대사")
+	TObjectPtr<USoundCue> CommanderAmpleSoundCue;
 	
 	// Commander
 public:
@@ -126,4 +129,21 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Widget", DisplayName = "UI 닫기 사운드")
 	TObjectPtr<USoundCue> WidgetCloseSoundCue;
+
+	// Puzzle
+public:
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "회로 회전 사운드")
+	TObjectPtr<USoundCue> CircuitSpinSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "회로 성공 사운드")
+	TObjectPtr<USoundCue> CircuitSuccessSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "비밀번호 버튼 사운드")
+	TObjectPtr<USoundCue> PasswordInputSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "비밀번호 성공 사운드")
+	TObjectPtr<USoundCue> PasswordSuccessSoundCue;
+
+	UPROPERTY(EditAnywhere, Category = "Puzzle", DisplayName = "비밀번호 실패 사운드")
+	TObjectPtr<USoundCue> PasswordFailedSoundCue;
 };

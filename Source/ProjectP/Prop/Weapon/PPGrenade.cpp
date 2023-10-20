@@ -96,9 +96,11 @@ void APPGrenade::Tick(float DeltaTime)
 		);
 		if (bPlayerHit)
 		{
-			APPVRPawn* Player = Cast<APPVRPawn>(Result.GetActor());
+			APPCharacterPlayer* Player = Cast<APPCharacterPlayer>(Result.GetActor());
 			if (Player)
 			{
+				UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+				UGameplayStatics::PlaySound2D(GetWorld(), GameInstance->GetSoundData()->GrenadeGrabOnHandSoundCue);
 				Player->AddGrenadeStack();
 				Destroy();
 			}
