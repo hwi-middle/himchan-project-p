@@ -26,7 +26,7 @@ public:
 	APPCharacterZombie();
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	FAICharacterPatternFinished PatternFinishedDelegate;
-
+	FORCEINLINE UAudioComponent* GetAudioComponent() { return AudioComponent; }
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -35,6 +35,9 @@ protected:
 	void DestroyThis();
 
 private:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAudioComponent> AudioComponent;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UNiagaraComponent> HitNiagaraEffect;
 

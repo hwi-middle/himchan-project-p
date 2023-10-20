@@ -43,7 +43,10 @@ EBTNodeResult::Type UBTTask_PPZombieFindLocation::ExecuteTask(UBehaviorTreeCompo
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsVector(KEY_PATROL_LOCATION, NextPatrolLocation.Location);
 		UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
-		UGameplayStatics::PlaySound2D(GetWorld(), GameInstance->GetSoundData()->ZombieResearchSoundCue);
+		UAudioComponent* AudioComponent = ControllingPawn->GetAudioComponent();
+		AudioComponent->Stop();
+		AudioComponent->SetSound(GameInstance->GetSoundData()->ZombieResearchSoundCue);
+		AudioComponent->Play();
 		return EBTNodeResult::Succeeded;
 	}
 	

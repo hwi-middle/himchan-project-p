@@ -25,12 +25,14 @@ APPCharacterZombie::APPCharacterZombie()
 	GetMesh()->SetSkeletalMesh(ZombieData->ZombieMesh);
 	GetMesh()->SetAnimInstanceClass(FPPConstructorHelper::FindAndGetClass<UPPZombieAnimInstance>(TEXT("/Script/Engine.AnimBlueprint'/Game/186-ZombieAI/ABP_Zombie.ABP_Zombie_C'"), EAssertionLevel::Check));
 
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	AudioComponent->SetupAttachment(RootComponent);
+	
 	HitNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("HitVFX"));
 	UNiagaraSystem* HitNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(
 		TEXT("/Script/Niagara.NiagaraSystem'/Game/BloodFX/Fx/NS_BloodSpalatter_001.NS_BloodSpalatter_001'"), EAssertionLevel::Check);
 	HitNiagaraEffect->SetAsset(HitNiagaraSystem);
 	HitNiagaraEffect->SetAutoActivate(false);
-	HitNiagaraEffect->SetActive(false);
 	// GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	// GetMesh()->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 }
@@ -55,8 +57,8 @@ void APPCharacterZombie::BeginPlay()
 	Super::BeginPlay();
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetMesh()->SetCollisionProfileName(CP_ENEMY);
-	HitNiagaraEffect->SetActive(false);
-	
+	// HitNiagaraEffect->SetActive(false);
+	HitNiagaraEffect->Deactivate();
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	Health = ZombieData->Health;
 	AttackDamage = ZombieData->AttackDamage;
@@ -84,7 +86,9 @@ void APPCharacterZombie::BeginPlay()
 		ZombieAnimInstance->DeadAnimEndDelegate.AddUObject(this, &APPCharacterZombie::SetDeadLoop);
 	}
 	GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	AudioComponent->AttenuationSettings = GameInstance->GetSoundData()->ZombieSoundAttenuation;
 	bIsIdle = true;
+	HitNiagaraEffect->OnSystemFinished.AddDynamic(this, &APPCharacterZombie::DamageEffectOff);
 	GetWorldTimerManager().SetTimer(IdleSoundTimerHandle, this, &APPCharacterZombie::IdleSoundCheck, 3.f, true);
 }
 
@@ -118,16 +122,19 @@ void APPCharacterZombie::DestroyThis()
 void APPCharacterZombie::DamageEffectOff(UNiagaraComponent* InComponent)
 {
 	HitNiagaraEffect->Deactivate();
-	HitNiagaraEffect->SetActive(false);
+	// HitNiagaraEffect->SetActive(false);
 }
 
 void APPCharacterZombie::TakeDamageEffect(FVector HitLocation)
 {
 	HitNiagaraEffect->SetRelativeLocation(HitLocation);
 	HitNiagaraEffect->SetRelativeRotation(HitLocation.Rotation());
-	HitNiagaraEffect->SetActive(true);
+	// HitNiagaraEffect->SetActive(true);
+	if(HitNiagaraEffect->IsActive())
+	{
+		HitNiagaraEffect->Deactivate();
+	}
 	HitNiagaraEffect->Activate();
-	HitNiagaraEffect->OnSystemFinished.AddDynamic(this, &APPCharacterZombie::DamageEffectOff);
 }
 
 void APPCharacterZombie::SetAIPatternDelegate(const FAICharacterPatternFinished& FinishedDelegate)
@@ -145,7 +152,9 @@ void APPCharacterZombie::PlayPatternAnimMontage()
 		break;
 	case ECharacterState::Dead:
 		GetWorldTimerManager().ClearTimer(IdleSoundTimerHandle);
-		UGameplayStatics::PlaySound2D(GetWorld(), GameInstance->GetSoundData()->ZombieDeadSoundCue);
+		AudioComponent->Stop();
+		AudioComponent->SetSound(GameInstance->GetSoundData()->ZombieDeadSoundCue);
+		AudioComponent->Play();
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD, ZombieAnimMontage);
 		ZombieAnimInstance->StopAttackBlend();
 		break;
@@ -191,7 +200,9 @@ void APPCharacterZombie::IdleSoundCheck()
 	}
 	if(bIsIdle)
 	{
-		UGameplayStatics::PlaySound2D(GetWorld(), GameInstance->GetSoundData()->ZombieIdleSoundCue);
+		AudioComponent->Stop();
+		AudioComponent->SetSound(GameInstance->GetSoundData()->ZombieIdleSoundCue);
+		AudioComponent->Play();
 	}
 }
 

@@ -5,6 +5,7 @@
 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "ProjectP/Character/PPCharacterZombie.h"
 
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "ProjectP/Character/PPZombieData.h"
@@ -57,7 +58,10 @@ void UPPZombieAnimInstance::AnimNotify_AttackHitCheckStart()
 {
 	HitCheckStartDelegate.Broadcast();
 	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
-	UGameplayStatics::PlaySound2D(GetWorld(), GameInstance->GetSoundData()->ZombieAttackSoundCue);
+	UAudioComponent* AudioComponent = Cast<APPCharacterZombie>(GetOwningActor())->GetAudioComponent();
+	AudioComponent->Stop();
+	AudioComponent->SetSound(GameInstance->GetSoundData()->ZombieAttackSoundCue);
+	AudioComponent->Play();
 	GetWorld()->GetTimerManager().SetTimer(AnimBlendTimerHandle, this, &UPPZombieAnimInstance::AnimBlendSequence, 0.01f, true);
 }
 
