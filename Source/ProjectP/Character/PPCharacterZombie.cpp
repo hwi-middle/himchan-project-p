@@ -114,11 +114,19 @@ void APPCharacterZombie::DestroyThis()
 	Destroy();
 }
 
+void APPCharacterZombie::DamageEffectOff(UNiagaraComponent* InComponent)
+{
+	HitNiagaraEffect->Deactivate();
+	HitNiagaraEffect->SetActive(false);
+}
+
 void APPCharacterZombie::TakeDamageEffect(FVector HitLocation)
 {
 	HitNiagaraEffect->SetRelativeLocation(HitLocation);
 	HitNiagaraEffect->SetRelativeRotation(HitLocation.Rotation());
 	HitNiagaraEffect->SetActive(true);
+	HitNiagaraEffect->Activate();
+	HitNiagaraEffect->OnSystemFinished.AddDynamic(this, &APPCharacterZombie::DamageEffectOff);
 }
 
 void APPCharacterZombie::SetAIPatternDelegate(const FAICharacterPatternFinished& FinishedDelegate)
