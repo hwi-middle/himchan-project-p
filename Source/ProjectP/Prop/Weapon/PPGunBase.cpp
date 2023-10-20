@@ -207,7 +207,7 @@ void APPGunBase::Tick(float DeltaTime)
 	FPPDrawLineHelper::DrawLine(GetWorld(), StartLocation, HitResult.ImpactPoint, LineColor, false, -1, 0, 1.0f);
 
 	FString HitActorName = AimingActor->GetName();
-	FVector HitLocation = HitResult.ImpactPoint;
+	HitLocation = HitResult.ImpactPoint;
 	CrossHairPlane->SetWorldLocation(HitLocation);
 	// UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *HitActorName, *HitLocation.ToString());
 }
@@ -286,11 +286,12 @@ void APPGunBase::OnFire()
 
 	if (AimingActor)
 	{
-		if (APPCharacterEnemy* Enemy = Cast<APPCharacterEnemy>(AimingActor))
+		if (APPCharacterZombie* Zombie = Cast<APPCharacterZombie>(AimingActor))
 		{
 			const float Damage = FMath::RandRange(NormalShotDamageMin, NormalShotDamageMax);
 			FDamageEvent DamageEvent;
-			Enemy->TakeDamage(Damage, DamageEvent, PlayerCharacter->GetController(), PlayerCharacter);
+			Zombie->TakeDamage(Damage, DamageEvent, PlayerCharacter->GetController(), PlayerCharacter);
+			Zombie->TakeDamageEffect(HitLocation);
 			
 			UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), Damage);
 			UE_LOG(LogTemp, Warning, TEXT("Hit %s at location %s"), *AimingActor->GetName(), *AimingActor->GetActorLocation().ToString());
