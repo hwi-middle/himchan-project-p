@@ -13,7 +13,7 @@
 
 UPPZombieAnimInstance::UPPZombieAnimInstance()
 {
-	OwnerData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/186-ZombieAI/ZombieData.ZombieData'"), EAssertionLevel::Check);
+	OwnerData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/DataAssets/Character/ZombieData.ZombieData'"), EAssertionLevel::Check);
 }
 
 void UPPZombieAnimInstance::NativeInitializeAnimation()
