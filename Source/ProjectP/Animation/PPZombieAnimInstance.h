@@ -21,7 +21,7 @@ class PROJECTP_API UPPZombieAnimInstance : public UAnimInstance
 public:
 	UPPZombieAnimInstance();
 	FORCEINLINE void SetAttackBlendValue(float Value) { TrackBlendWithAttackValue = Value; }
-	FORCEINLINE void StopAttackBlend() { GetWorld()->GetTimerManager().ClearTimer(AnimBlendTimerHandle); TrackBlendWithAttackValue = 0; }
+	FORCEINLINE void StopAttackBlend() { AnimNotify_AttackHitCheckEnd(); }
 	FAttackHitCheckStartDelegate HitCheckStartDelegate;
 	FAttackHitCheckEndDelegate HitCheckEndDelegate;
 	FAttackAnimEndDelegate AttackAnimEndDelegate;
