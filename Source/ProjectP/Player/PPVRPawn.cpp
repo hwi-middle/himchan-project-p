@@ -40,7 +40,7 @@ APPVRPawn::APPVRPawn()
 	QueryCapsuleComponent->SetCollisionProfileName(CP_PLAYER);
 	QueryCapsuleComponent->SetupAttachment(VROrigin);
 	QueryCapsuleComponent->SetCapsuleSize(20.f, 90.f);
-	
+
 	FloatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingPawnMovement"));
 
 	MovementData = FPPConstructorHelper::FindAndGetObject<UPPMovementData>(TEXT("/Script/ProjectP.PPMovementData'/Game/DataAssets/Player/PlayerData.PlayerData'"), EAssertionLevel::Check);
@@ -589,7 +589,11 @@ void APPVRPawn::SwapWidgetInteraction() const
 
 void APPVRPawn::SetGrenade()
 {
-	// TODO: 수류탄 없으면 return 해야함
+	if (GrenadeStack <= 0)
+	{
+		return;
+	}
+
 	APPVRHand* PrimaryHand = bIsRightHandMainly ? RightHand : LeftHand;
 	UPPVRGrabComponent* GrabbingComponent = PrimaryHand->GetHeldComponent();
 
@@ -626,4 +630,5 @@ void APPVRPawn::ReleaseGrenade()
 		HiddenGrabbingObject = nullptr;
 		PrimaryHand->HandleGrab();
 	}
+	GrenadeStack--;
 }
