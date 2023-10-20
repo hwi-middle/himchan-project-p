@@ -75,4 +75,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<class UInputAction> LeftYButtonPressAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<class UInputAction> LeftGrenadeAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<class UInputAction> RightGrenadeAction;
+
 };

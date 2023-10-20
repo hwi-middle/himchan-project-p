@@ -28,11 +28,13 @@ APPGrenade::APPGrenade()
 	RootComponent = Mesh;
 
 	GrenadeData = FPPConstructorHelper::FindAndGetObject<UGrenadeData>(TEXT("/Script/ProjectP.GrenadeData'/Game/DataAssets/Weapon/GrenadeData.GrenadeData'"));
-	
+
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));
 	GrabComponent->SetupAttachment(Mesh);
 	GrabComponent->SetGrabType(EVRGrabType::ObjToHand);
 	GrabComponent->SetShouldSimulateOnDrop(true);
+	//GrabComponent->SetIsWeapon(true);
+	UE_LOG(LogTemp, Log, TEXT("Grenade"));
 }
 
 // Called when the game starts or when spawned
@@ -57,7 +59,7 @@ void APPGrenade::BeginPlay()
 	}
 
 	ExplodeDelay = GrenadeData->ExplodeDelay;
-	ExplodeType = GrenadeData->DefaultExplodeType;
+	ExplodeType = GrenadeData->ExplodeType;
 	ActivateRadius = GrenadeData->ActivateRadius * 100;
 	ExplodeRadius = GrenadeData->ExplodeRadius * 100;
 	ExplodeDamage = GrenadeData->ExplodeDamage;
@@ -146,6 +148,7 @@ void APPGrenade::Tick(float DeltaTime)
 
 void APPGrenade::OnGrab(APPVRHand* InHand)
 {
+	UE_LOG(LogTemp, Log, TEXT("OnGrab"));
 	bIsActivated = false;
 	bIsWaitingForDelay = false;
 	// bIsPlacedInWorld는 생성자, BeginPlay에서 초기화 안하고 필드에 배치된 오브젝트 디테일 패널에서 설정.
@@ -159,6 +162,7 @@ void APPGrenade::OnGrab(APPVRHand* InHand)
 
 void APPGrenade::OnRelease(APPVRHand* InHand)
 {
+	UE_LOG(LogTemp, Log, TEXT("수류탄 Release"));
 	bIsActivated = true;
 	if (ExplodeType == EGrenadeExplodeType::OnReleaseWithDelay)
 	{
@@ -188,6 +192,7 @@ void APPGrenade::WaitForDelayAndExplode()
 
 void APPGrenade::Explode()
 {
+	UE_LOG(LogTemp, Log, TEXT("폭발"));
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
@@ -213,7 +218,6 @@ void APPGrenade::Explode()
 
 	for (auto Result : HitResults)
 	{
-		// TODO: 좀비 PPCharacterZombie 머지 되면 필터링 하기, 일단은 보스만 캐스팅해서 검사
 		ICharacterStatusInterface* Enemy = Cast<ICharacterStatusInterface>(Result.GetActor());
 		if (Enemy)
 		{

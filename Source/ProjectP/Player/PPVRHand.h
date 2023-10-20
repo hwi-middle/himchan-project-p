@@ -73,7 +73,7 @@ private:
 public:
 	UPPVRGrabComponent* FindGrabComponentNearby();
 	void HandleGrab();
-	void HandleRelease();
+	void HandleRelease(bool bForceRelease = false);
 	void SetPoseAlphaGrasp(float Value);
 	void SetPoseAlphaIndexCurl(const float Value);
 	void SetPoseAlphaThumbUp(const float Value);
@@ -87,6 +87,7 @@ public:
 	FORCEINLINE class USkeletalMeshComponent* GetHandMesh() const { return HandMesh; }
 	FORCEINLINE void SetHandType(const EControllerHand InHandType) { HandType = InHandType; }
 	FORCEINLINE EControllerHand GetHandType() const { return HandType; }
+	FORCEINLINE void SetHeldComponent(class UPPVRGrabComponent* InTarget) { HeldComponent = InTarget; }
 	FORCEINLINE class UPPVRGrabComponent* GetHeldComponent() const { return HeldComponent; }
 	FORCEINLINE void SetMainHand(const bool Value) { bIsMainHand = Value; }
 	void DisableWidgetComponent() const;

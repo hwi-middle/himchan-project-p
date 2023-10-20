@@ -52,14 +52,16 @@ APPVRHand::APPVRHand()
 
 	VitalWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("VitalWidget"));
 	VitalWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPVitalWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Project-P/UI/Blueprints/VitalWidget.VitalWidget_C'"), EAssertionLevel::Check));
-	VitalWidgetComponent->SetMaterial(0, FPPConstructorHelper::FindAndGetObject<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Engine/EngineMaterials/Widget3DPassThrough_Translucent.Widget3DPassThrough_Translucent'"), EAssertionLevel::Check));
+	VitalWidgetComponent->SetMaterial(
+		0, FPPConstructorHelper::FindAndGetObject<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Engine/EngineMaterials/Widget3DPassThrough_Translucent.Widget3DPassThrough_Translucent'"), EAssertionLevel::Check));
 	VitalWidgetComponent->SetupAttachment(MotionController);
 
 	bIsMainHand = false;
 	// Test Only
 	DebugWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugWidget"));
 	DebugWidgetComponent->SetWidgetClass(FPPConstructorHelper::FindAndGetClass<UPPDebugWidget>(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Project-P/UI/Blueprints/DebugViewWidget.DebugViewWidget_C'"), EAssertionLevel::Check));
-	DebugWidgetComponent->SetMaterial(0, FPPConstructorHelper::FindAndGetObject<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Engine/EngineMaterials/Widget3DPassThrough_Translucent.Widget3DPassThrough_Translucent'"), EAssertionLevel::Check));
+	DebugWidgetComponent->SetMaterial(
+		0, FPPConstructorHelper::FindAndGetObject<UMaterialInterface>(TEXT("/Script/Engine.MaterialInstanceConstant'/Engine/EngineMaterials/Widget3DPassThrough_Translucent.Widget3DPassThrough_Translucent'"), EAssertionLevel::Check));
 	DebugWidgetComponent->SetupAttachment(MotionController);
 	//
 }
@@ -78,9 +80,9 @@ void APPVRHand::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(HeldComponent)
+	if (HeldComponent)
 	{
-		if(HeldComponent->GetIsWeapon())
+		if (HeldComponent->GetIsWeapon())
 		{
 			OnGrabWeaponIndexCurlMinimumValue = 0.6f;
 			AnimInstance->SetPoseAlphaGrasp(OnGrabWeaponIndexCurlMinimumValue);
@@ -91,7 +93,7 @@ void APPVRHand::Tick(float DeltaTime)
 	{
 		OnGrabWeaponIndexCurlMinimumValue = 0.0f;
 	}
-	
+
 	if (!HandWidgetInteraction->IsActive() || HandWidgetInteraction->InteractionDistance <= 0.0f)
 	{
 		return;
@@ -147,28 +149,28 @@ void APPVRHand::HandleGrab()
 	}
 }
 
-void APPVRHand::HandleRelease()
+void APPVRHand::HandleRelease(bool bForceRelease)
 {
 	if (HeldComponent)
 	{
-		if(!HeldComponent->GetIsWeapon() || !bIsMainHand)
+		if (bForceRelease || !(HeldComponent->GetIsWeapon() && bIsMainHand))
 		{
 			AnimInstance->SetPoseAlphaIndexCurl(0.0f);
 			AnimInstance->SetPoseAlphaGrasp(0.0f);
 			TObjectPtr<UPPGameInstance> CurrentGI = CastChecked<UPPGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 			TObjectPtr<UPPSaveSettingOption> SaveSettingOption = CurrentGI->GetSaveSettingOption();
-    
+
 			bool bIsGrabbingWithMainHand = SaveSettingOption->bIsRightHandMainly;
-			if(HeldComponent->GetGrabbingHand()->GetHandType() == EControllerHand::Left)
+			if (HeldComponent->GetGrabbingHand()->GetHandType() == EControllerHand::Left)
 			{
 				bIsGrabbingWithMainHand = !bIsGrabbingWithMainHand;
 			}
 
-			if (HeldComponent->GetIsWeapon() && bIsGrabbingWithMainHand)
+			if (!bForceRelease && HeldComponent->GetIsWeapon() && bIsGrabbingWithMainHand)
 			{
 				return;
 			}
-        
+
 			HeldComponent->TryRelease();
 			HeldComponent = nullptr;
 		}
@@ -177,9 +179,9 @@ void APPVRHand::HandleRelease()
 
 void APPVRHand::SetPoseAlphaGrasp(const float Value)
 {
-	if(HeldComponent)
+	if (HeldComponent)
 	{
-		if(HeldComponent->GetIsWeapon())
+		if (HeldComponent->GetIsWeapon())
 		{
 			AnimInstance->SetPoseAlphaGrasp(0.6f);
 		}
@@ -192,9 +194,9 @@ void APPVRHand::SetPoseAlphaGrasp(const float Value)
 
 void APPVRHand::SetPoseAlphaIndexCurl(const float Value)
 {
-	if(HeldComponent)
+	if (HeldComponent)
 	{
-		if(HeldComponent->GetIsWeapon())
+		if (HeldComponent->GetIsWeapon())
 		{
 			AnimInstance->SetPoseAlphaIndexCurl(0.3f + Value);
 		}
@@ -203,7 +205,7 @@ void APPVRHand::SetPoseAlphaIndexCurl(const float Value)
 	{
 		AnimInstance->SetPoseAlphaIndexCurl(Value);
 	}
-	
+
 	if (HandWidgetInteraction->InteractionDistance > 0.0f)
 	{
 		static constexpr float WidgetInteractionThreshold = 0.1f;
@@ -225,7 +227,7 @@ void APPVRHand::WidgetInteractionToggle(const float Value)
 {
 	// SetActive로 제어하려니 작동이 제대로 안되서 크기 조정으로 대체
 	bool bIsActivated = abs(HandWidgetInteraction->InteractionDistance - Value) <= KINDA_SMALL_NUMBER;
-	HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;	
+	HandWidgetInteraction->InteractionDistance = bIsActivated ? 0.f : Value;
 }
 
 void APPVRHand::InitHand()
@@ -277,7 +279,7 @@ void APPVRHand::SetupVitalWidget()
 {
 	VitalWidgetComponent->SetWorldScale3D(FVector(1.0f, 0.01f, 0.01f));
 	VitalWidgetComponent->SetDrawSize(FVector2d(900.0f, 1080.0f));
-	if(HandType == EControllerHand::Left)
+	if (HandType == EControllerHand::Left)
 	{
 		VitalWidgetComponent->SetRelativeLocation(FVector(0.0f, -4.0f, 0.0f));
 		VitalWidgetComponent->SetRelativeRotation(FRotator(180.0f, 90.0f, 90.0f));

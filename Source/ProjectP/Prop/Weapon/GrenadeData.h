@@ -18,8 +18,8 @@ public:
 	UPROPERTY(EditAnywhere, DisplayName="폭발 지연시간")
 	float ExplodeDelay;
 
-	UPROPERTY(EditAnywhere, DisplayName="기본 폭발 타입")
-	TEnumAsByte<EGrenadeExplodeType> DefaultExplodeType;
+	UPROPERTY(EditAnywhere, DisplayName="폭발 타입")
+	TEnumAsByte<EGrenadeExplodeType> ExplodeType;
 
 	UPROPERTY(EditAnywhere, DisplayName="폭발 인지 반경(m)")
 	float ActivateRadius;

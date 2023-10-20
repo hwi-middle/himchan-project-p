@@ -64,7 +64,7 @@ bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 	default:
 		checkNoEntry();
 	}
-
+	
 	if (bHeld)
 	{
 		OnGrab.Broadcast(GrabbingHand);
@@ -110,7 +110,7 @@ void UPPVRGrabComponent::SetPrimitiveCompPhysics(const bool bInSimulate)
 
 void UPPVRGrabComponent::TryAttachComponentToHand(APPVRHand* InHand)
 {
-	bHeld = GetAttachParent()->AttachToComponent(Cast<UPrimitiveComponent>(InHand->GetMotionController()), FAttachmentTransformRules::KeepWorldTransform);
+	bHeld = GetAttachParent()->AttachToComponent(InHand->GetMotionController(), FAttachmentTransformRules::KeepWorldTransform);
 	GrabbingHand = bHeld ? InHand : nullptr;
 }
 

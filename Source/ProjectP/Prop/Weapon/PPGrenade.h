@@ -35,6 +35,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void OnGrab(APPVRHand* InHand);
 	void OnRelease(APPVRHand* InHand);
+	FORCEINLINE UPPVRGrabComponent* GetGrabComponent() const { return GrabComponent; }
 
 private:
 	void WaitForDelayAndExplode();
@@ -43,8 +44,8 @@ private:
 private:
 	UPROPERTY()
 	TObjectPtr<UGrenadeData> GrenadeData;
-	
-	UPROPERTY(EditAnywhere)
+
+	UPROPERTY()
 	TEnumAsByte<EGrenadeExplodeType> ExplodeType;
 
 	UPROPERTY()
@@ -73,7 +74,7 @@ private:
 
 	UPROPERTY()
 	float ActivateRadius;
-	
+
 	UPROPERTY()
 	float ExplodeRadius;
 
