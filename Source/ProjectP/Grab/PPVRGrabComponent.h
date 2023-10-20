@@ -10,6 +10,14 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(OnGrabEvent, class APPVRHand* hand)
 DECLARE_MULTICAST_DELEGATE_OneParam(OnReleaseEvent, class APPVRHand* hand)
 
+UENUM()
+enum class EGrabObjectTypes : uint8
+{
+	Prop,
+	Grenade,
+	Gun
+};
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTP_API UPPVRGrabComponent : public USceneComponent
 {
@@ -31,7 +39,7 @@ public:
 	FORCEINLINE bool GetIsWeapon() const { return bIsWeapon; }
 	FORCEINLINE void SetGrabType(const EVRGrabType Value) { GrabType = Value; }
 	FORCEINLINE void SetMainHandType(const EControllerHand Value) { MainHandType = Value; }
-
+	FORCEINLINE void SetGrabObjectType(const EGrabObjectTypes ObjectType) { GrabObjectType = ObjectType; }
 private:
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
 	uint32 bShouldSimulateOnDrop : 1;
@@ -51,6 +59,9 @@ private:
 	UPROPERTY()
 	EControllerHand MainHandType;
 
+	UPROPERTY()
+	EGrabObjectTypes GrabObjectType;
+	
 public:
 	bool TryGrab(class APPVRHand* InHand);
 	void TryRelease();

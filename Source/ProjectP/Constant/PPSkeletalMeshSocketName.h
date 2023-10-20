@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 
+// 손
+#define HAND_GRIP_POINT "GripPoint"
+
+// 총
 #define GUN_MUZZLE_FOR_AIMING "MuzzleAiming"
 #define GUN_MUZZLE_FOR_FX "MuzzleFX"
 #define GUN_FLASH "Flash"

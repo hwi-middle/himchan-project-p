@@ -4,6 +4,7 @@
 #include "PPVRGrabComponent.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "ProjectP/Constant/PPSkeletalMeshSocketName.h"
 #include "ProjectP/Enumeration/PPVRGrabType.h"
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Player/PPVRHand.h"
@@ -15,6 +16,7 @@ UPPVRGrabComponent::UPPVRGrabComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	bIsWeapon = false;
+	GrabObjectType = EGrabObjectTypes::Prop;
 	// ...
 }
 
@@ -23,7 +25,7 @@ UPPVRGrabComponent::UPPVRGrabComponent()
 void UPPVRGrabComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	// ...
 }
 
@@ -55,7 +57,22 @@ bool UPPVRGrabComponent::TryGrab(APPVRHand* InHand)
 			// 위치 보정
 			const FVector ComponentToParentDir = GetAttachParent()->GetComponentLocation() - GetComponentLocation();
 			const FVector NewLocation = InHand->GetMotionController()->GetComponentLocation() + ComponentToParentDir;
-			GetAttachParent()->SetWorldLocation(NewLocation, false, nullptr, ETeleportType::TeleportPhysics);
+			const FVector TestNewLocation = InHand->GetHandMesh()->GetSocketLocation(HAND_GRIP_POINT);
+			switch (GrabObjectType)
+			{
+			case EGrabObjectTypes::Prop:
+				GetAttachParent()->SetWorldLocation(NewLocation, false, nullptr, ETeleportType::TeleportPhysics);
+				break;
+			case EGrabObjectTypes::Grenade:
+				GetAttachParent()->SetWorldLocation(TestNewLocation, false, nullptr, ETeleportType::TeleportPhysics);
+				break;
+			case EGrabObjectTypes::Gun:
+				GetAttachParent()->SetWorldLocation(NewLocation, false, nullptr, ETeleportType::TeleportPhysics);
+				break;
+			default:
+				checkNoEntry();
+			}
+			// GetAttachParent()->SetWorldLocation(NewLocation, false, nullptr, ETeleportType::TeleportPhysics);
 			break;
 		}
 	case EVRGrabType::HandToObj:
