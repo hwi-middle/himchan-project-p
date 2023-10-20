@@ -56,7 +56,7 @@ void APPGrenade::BeginPlay()
 
 	GrabComponent->OnGrab.AddUObject(this, &APPGrenade::OnGrab);
 	GrabComponent->OnRelease.AddUObject(this, &APPGrenade::OnRelease);
-
+	GrabComponent->SetGrabObjectType(EGrabObjectTypes::Grenade);
 	CollisionParamsOnTick.AddIgnoredActor(this);
 	if (const APPVRPawn* Player = Cast<APPVRPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)); Player != nullptr)
 	{
