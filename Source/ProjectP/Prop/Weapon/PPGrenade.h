@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NiagaraComponent.h"
 #include "GameFramework/Actor.h"
 #include "ProjectP/Player/PPVRHand.h"
 #include "PPGrenade.generated.h"
@@ -40,6 +41,9 @@ public:
 private:
 	void WaitForDelayAndExplode();
 	void Explode();
+
+	UFUNCTION()
+	void DestroyOnVfxFinished(UNiagaraComponent* InComponent);
 
 private:
 	UPROPERTY()
@@ -82,4 +86,7 @@ private:
 	float ExplodeDamage;
 
 	FCollisionQueryParams CollisionParamsOnTick;
+
+	UPROPERTY()
+	TObjectPtr<class UNiagaraComponent> ExplodeVFX;
 };

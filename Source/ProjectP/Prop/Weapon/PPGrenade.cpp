@@ -4,6 +4,7 @@
 #include "PPGrenade.h"
 
 #include "GrenadeData.h"
+#include "NiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectP/Character/PPCharacterBoss.h"
 #include "ProjectP/Grab/PPVRGrabComponent.h"
@@ -33,8 +34,13 @@ APPGrenade::APPGrenade()
 	GrabComponent->SetupAttachment(Mesh);
 	GrabComponent->SetGrabType(EVRGrabType::ObjToHand);
 	GrabComponent->SetShouldSimulateOnDrop(true);
-	//GrabComponent->SetIsWeapon(true);
-	UE_LOG(LogTemp, Log, TEXT("Grenade"));
+
+	ExplodeVFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ExplodeVFX"));
+	UNiagaraSystem* MuzzleNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(
+		TEXT("/Script/Niagara.NiagaraSystem'/Game/GrenadeFX/Niagara/NS_Grenade_001.NS_Grenade_001'"), EAssertionLevel::Check);
+	ExplodeVFX->SetAsset(MuzzleNiagaraSystem);
+	ExplodeVFX->SetAutoActivate(false);
+	ExplodeVFX->SetActive(false);
 }
 
 // Called when the game starts or when spawned
@@ -69,8 +75,9 @@ void APPGrenade::BeginPlay()
 void APPGrenade::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if(bIsGrabbed)
+
+	ExplodeVFX->SetWorldLocation(GetActorLocation());
+	if (bIsGrabbed)
 	{
 		DrawDebugSphere(GetWorld(), GetActorLocation(), 20.f, 16, FColor::Red, false, 0.01f);
 		FHitResult Result;
@@ -84,17 +91,17 @@ void APPGrenade::Tick(float DeltaTime)
 			FCollisionShape::MakeSphere(20.f),
 			Params
 		);
-		if(bPlayerHit)
+		if (bPlayerHit)
 		{
 			APPVRPawn* Player = Cast<APPVRPawn>(Result.GetActor());
-			if(Player)
+			if (Player)
 			{
 				Player->AddGrenadeStack();
 				Destroy();
 			}
 		}
 	}
-	
+
 	if (!bIsActivated)
 	{
 		return;
@@ -153,7 +160,7 @@ void APPGrenade::OnGrab(APPVRHand* InHand)
 	bIsWaitingForDelay = false;
 	// bIsPlacedInWorld는 생성자, BeginPlay에서 초기화 안하고 필드에 배치된 오브젝트 디테일 패널에서 설정.
 	// 이렇게 처리하면 저장된 수류탄을 생성해서 손에 잡은 뒤 몸에 닿더라도 다시 흡수하진 않을 것 같은데 맞겠죠?
-	if(bIsPlacedInWorld)
+	if (bIsPlacedInWorld)
 	{
 		bIsGrabbed = true;
 	}
@@ -192,7 +199,7 @@ void APPGrenade::WaitForDelayAndExplode()
 
 void APPGrenade::Explode()
 {
-	UE_LOG(LogTemp, Log, TEXT("폭발"));
+	bIsWaitingForDelay = false;
 	TArray<FHitResult> HitResults;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
@@ -210,19 +217,25 @@ void APPGrenade::Explode()
 		CollisionParams
 	);
 
-	if (!bHit)
+	if (bHit)
 	{
-		Destroy();
-		return;
-	}
-
-	for (auto Result : HitResults)
-	{
-		ICharacterStatusInterface* Enemy = Cast<ICharacterStatusInterface>(Result.GetActor());
-		if (Enemy)
+		for (auto Result : HitResults)
 		{
-			Enemy->DecreaseHealth(ExplodeDamage);
+			ICharacterStatusInterface* Enemy = Cast<ICharacterStatusInterface>(Result.GetActor());
+			if (Enemy)
+			{
+				Enemy->DecreaseHealth(ExplodeDamage);
+			}
 		}
 	}
+
+	Mesh->SetHiddenInGame(true);
+	ExplodeVFX->SetActive(true);
+	ExplodeVFX->Activate();
+	ExplodeVFX->OnSystemFinished.AddDynamic(this, &APPGrenade::DestroyOnVfxFinished);
+}
+
+void APPGrenade::DestroyOnVfxFinished(UNiagaraComponent* InComponent)
+{
 	Destroy();
 }
