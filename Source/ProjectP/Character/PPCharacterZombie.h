@@ -35,6 +35,9 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<class UNiagaraComponent> HitNiagaraEffect;
+
+	UFUNCTION()
+	void DamageEffectOff(UNiagaraComponent* InComponent);
 	// 피격 이펙트 호출
 public:
 	UFUNCTION()
