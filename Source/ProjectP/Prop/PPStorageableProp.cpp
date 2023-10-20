@@ -16,7 +16,6 @@ APPStorageableProp::APPStorageableProp()
 	Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Mesh->SetCollisionObjectType(ECC_GIMMICK);
 	Mesh->SetEnableGravity(true);
-	Mesh->SetSimulatePhysics(true);
 	
 	RootComponent = Mesh;
 	GrabComponent = CreateDefaultSubobject<UPPVRGrabComponent>(TEXT("GrabComponent"));

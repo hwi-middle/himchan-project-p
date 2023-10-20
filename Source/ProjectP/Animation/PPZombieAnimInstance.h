@@ -64,16 +64,16 @@ protected:
 
 private:
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_AttackHitCheckStart();
+	void AnimNotify_AttackHitCheckStart();
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_AttackHitCheckEnd();
+	void AnimNotify_AttackHitCheckEnd();
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_AttackAnimEnd();
+	void AnimNotify_AttackAnimEnd();
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void AnimNotify_EnterDeadLoop();
+	void AnimNotify_EnterDeadLoop();
 	
 	void AnimBlendSequence();
 	

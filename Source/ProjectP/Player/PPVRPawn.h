@@ -90,7 +90,7 @@ private:
 	TObjectPtr<class UInputAction> TurnAction;
 
 	UPROPERTY()
-	TObjectPtr<class UInputAction> SprintAction;
+	TObjectPtr<class UInputAction> LeftThumbStickButtonAction;
 
 	UPROPERTY()
 	TObjectPtr<class UInputAction> GrabLeftAction;
@@ -129,7 +129,7 @@ private:
 	TObjectPtr<class UInputAction> LeftXButtonPressAction;
 
 	UPROPERTY()
-	TObjectPtr<class UInputAction> GrenadeAction;
+	TObjectPtr<class UInputAction> RightThumbStickButtonAction;
 	
 	UPROPERTY()
 	FTimerHandle MoveSoundTimerHandle;
@@ -173,7 +173,11 @@ private:
 	void PointRight(const FInputActionValue& Value);
 	void ThumbUpLeft(const FInputActionValue& Value);
 	void ThumbUpRight(const FInputActionValue& Value);
-
+	void LeftThumbStickButtonInput(const FInputActionValue& Value);
+	void LeftThumbStickButtonRelease(const FInputActionValue& Value);
+	void RightThumbStickButtonInput(const FInputActionValue& Value);
+	void RightThumbStickButtonRelease(const FInputActionValue& Value);
+	
 private:
 	void CancelOrCompleteGrabLeft();
 	void CancelOrCompleteGrabRight();
@@ -187,7 +191,7 @@ private:
 private:
 	void StartMove(const FInputActionValue& Value);
 	void CompleteMove(const FInputActionValue& Value);
-	void ToggleSprint(const FInputActionValue& Value);
+	void ToggleSprint();
 
 private:
 	void StartMoveDelegate();

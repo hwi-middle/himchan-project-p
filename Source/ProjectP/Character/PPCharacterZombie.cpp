@@ -9,6 +9,7 @@
 #include "ProjectP/AI/Zombie/PPZombieAIController.h"
 #include "ProjectP/Constant/PPMontageSectionName.h"
 #include "ProjectP/Constant/PPSkeletalMeshSocketName.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
@@ -20,16 +21,18 @@ APPCharacterZombie::APPCharacterZombie()
 	AIControllerClass = APPZombieAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	
-	ZombieData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/186-ZombieAI/ZombieData.ZombieData'"), EAssertionLevel::Check);
+	ZombieData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/DataAssets/Character/ZombieData.ZombieData'"), EAssertionLevel::Check);
 	GetMesh()->SetSkeletalMesh(ZombieData->ZombieMesh);
-	GetMesh()->SetAnimInstanceClass(FPPConstructorHelper::FindAndGetClass<UPPZombieAnimInstance>(TEXT("/Script/Engine.AnimBlueprint'/Game/186-ZombieAI/ABP_Zombie.ABP_Zombie_C'"), EAssertionLevel::Check));
+	GetMesh()->SetAnimInstanceClass(FPPConstructorHelper::FindAndGetClass<UPPZombieAnimInstance>(TEXT("/Script/Engine.AnimBlueprint'/Game/Project-P/Meshes/SkeletalMesh/Zombie/Animation/ABP_Zombie.ABP_Zombie_C'"), EAssertionLevel::Check));
 
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+	AudioComponent->SetupAttachment(RootComponent);
+	
 	HitNiagaraEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("HitVFX"));
 	UNiagaraSystem* HitNiagaraSystem = FPPConstructorHelper::FindAndGetObject<UNiagaraSystem>(
 		TEXT("/Script/Niagara.NiagaraSystem'/Game/BloodFX/Fx/NS_BloodSpalatter_001.NS_BloodSpalatter_001'"), EAssertionLevel::Check);
 	HitNiagaraEffect->SetAsset(HitNiagaraSystem);
 	HitNiagaraEffect->SetAutoActivate(false);
-	HitNiagaraEffect->SetActive(false);
 	// GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	// GetMesh()->SetCollisionProfileName(TEXT("IgnoreOnlyPawn"));
 }
@@ -54,8 +57,8 @@ void APPCharacterZombie::BeginPlay()
 	Super::BeginPlay();
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetMesh()->SetCollisionProfileName(CP_ENEMY);
-	HitNiagaraEffect->SetActive(false);
-	
+	// HitNiagaraEffect->SetActive(false);
+	HitNiagaraEffect->Deactivate();
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	Health = ZombieData->Health;
 	AttackDamage = ZombieData->AttackDamage;
@@ -82,11 +85,17 @@ void APPCharacterZombie::BeginPlay()
 		ZombieAnimInstance->AttackAnimEndDelegate.AddUObject(this, &APPCharacterZombie::AttackFinishedNotify);
 		ZombieAnimInstance->DeadAnimEndDelegate.AddUObject(this, &APPCharacterZombie::SetDeadLoop);
 	}
+	GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	AudioComponent->AttenuationSettings = GameInstance->GetSoundData()->ZombieSoundAttenuation;
+	bIsIdle = true;
+	HitNiagaraEffect->OnSystemFinished.AddDynamic(this, &APPCharacterZombie::DamageEffectOff);
+	GetWorldTimerManager().SetTimer(IdleSoundTimerHandle, this, &APPCharacterZombie::IdleSoundCheck, 3.f, true);
 }
 
 void APPCharacterZombie::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	
 }
 
 //TODO: 시간이 된다면 다른 클래스들도 BeginDestroy()에 타이머 해제 추가하기
@@ -110,11 +119,22 @@ void APPCharacterZombie::DestroyThis()
 	Destroy();
 }
 
+void APPCharacterZombie::DamageEffectOff(UNiagaraComponent* InComponent)
+{
+	HitNiagaraEffect->Deactivate();
+	// HitNiagaraEffect->SetActive(false);
+}
+
 void APPCharacterZombie::TakeDamageEffect(FVector HitLocation)
 {
 	HitNiagaraEffect->SetRelativeLocation(HitLocation);
 	HitNiagaraEffect->SetRelativeRotation(HitLocation.Rotation());
-	HitNiagaraEffect->SetActive(true);
+	// HitNiagaraEffect->SetActive(true);
+	if(HitNiagaraEffect->IsActive())
+	{
+		HitNiagaraEffect->Deactivate();
+	}
+	HitNiagaraEffect->Activate();
 }
 
 void APPCharacterZombie::SetAIPatternDelegate(const FAICharacterPatternFinished& FinishedDelegate)
@@ -131,6 +151,10 @@ void APPCharacterZombie::PlayPatternAnimMontage()
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_ATTACK, ZombieAnimMontage);
 		break;
 	case ECharacterState::Dead:
+		GetWorldTimerManager().ClearTimer(IdleSoundTimerHandle);
+		AudioComponent->Stop();
+		AudioComponent->SetSound(GameInstance->GetSoundData()->ZombieDeadSoundCue);
+		AudioComponent->Play();
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD, ZombieAnimMontage);
 		ZombieAnimInstance->StopAttackBlend();
 		break;
@@ -163,6 +187,22 @@ void APPCharacterZombie::DecreaseHealth(const float Value)
 		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		CurrentState = ECharacterState::Dead;
 		PlayPatternAnimMontage();
+	}
+}
+
+void APPCharacterZombie::IdleSoundCheck()
+{
+	bIsIdle = true;
+	APPZombieAIController* ZombieAIController = Cast<APPZombieAIController>(GetController());
+	if(ZombieAIController->GetTargetActor())
+	{
+		bIsIdle = false;
+	}
+	if(bIsIdle)
+	{
+		AudioComponent->Stop();
+		AudioComponent->SetSound(GameInstance->GetSoundData()->ZombieIdleSoundCue);
+		AudioComponent->Play();
 	}
 }
 

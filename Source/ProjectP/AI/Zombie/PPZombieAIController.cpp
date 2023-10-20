@@ -14,9 +14,9 @@
 
 APPZombieAIController::APPZombieAIController()
 {
-	CommonBlackboardData = FPPConstructorHelper::FindAndGetObject<UBlackboardData>(TEXT("/Script/AIModule.BlackboardData'/Game/186-ZombieAI/AI/BB_Zombie.BB_Zombie'"), EAssertionLevel::Check);
-	CommonBehaviorTree = FPPConstructorHelper::FindAndGetObject<UBehaviorTree>(TEXT("/Script/AIModule.BehaviorTree'/Game/186-ZombieAI/AI/BT_Zombie.BT_Zombie'"), EAssertionLevel::Check);
-	ZombieAIData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/186-ZombieAI/ZombieData.ZombieData'"), EAssertionLevel::Check);
+	CommonBlackboardData = FPPConstructorHelper::FindAndGetObject<UBlackboardData>(TEXT("/Script/AIModule.BlackboardData'/Game/Project-P/AI/BB_Zombie.BB_Zombie'"), EAssertionLevel::Check);
+	CommonBehaviorTree = FPPConstructorHelper::FindAndGetObject<UBehaviorTree>(TEXT("/Script/AIModule.BehaviorTree'/Game/Project-P/AI/BT_Zombie.BT_Zombie'"), EAssertionLevel::Check);
+	ZombieAIData = FPPConstructorHelper::FindAndGetObject<UPPZombieData>(TEXT("/Script/ProjectP.PPZombieData'/Game/DataAssets/Character/ZombieData.ZombieData'"), EAssertionLevel::Check);
 	
 	CommonPerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPercptionComponent"));
 	CommonSight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("AI_Sight"));
