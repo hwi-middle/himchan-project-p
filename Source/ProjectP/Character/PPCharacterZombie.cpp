@@ -9,6 +9,7 @@
 #include "ProjectP/AI/Zombie/PPZombieAIController.h"
 #include "ProjectP/Constant/PPMontageSectionName.h"
 #include "ProjectP/Constant/PPSkeletalMeshSocketName.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Util/PPCollisionChannels.h"
 #include "ProjectP/Util/PPConstructorHelper.h"
 
@@ -82,11 +83,14 @@ void APPCharacterZombie::BeginPlay()
 		ZombieAnimInstance->AttackAnimEndDelegate.AddUObject(this, &APPCharacterZombie::AttackFinishedNotify);
 		ZombieAnimInstance->DeadAnimEndDelegate.AddUObject(this, &APPCharacterZombie::SetDeadLoop);
 	}
+	bIsIdle = true;
+	GetWorldTimerManager().SetTimer(IdleSoundTimerHandle, this, &APPCharacterZombie::IdleSoundCheck, 3.f, true);
 }
 
 void APPCharacterZombie::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	
 }
 
 //TODO: 시간이 된다면 다른 클래스들도 BeginDestroy()에 타이머 해제 추가하기
@@ -131,6 +135,9 @@ void APPCharacterZombie::PlayPatternAnimMontage()
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_ATTACK, ZombieAnimMontage);
 		break;
 	case ECharacterState::Dead:
+		GetWorldTimerManager().ClearTimer(IdleSoundTimerHandle);
+		UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+		UGameplayStatics::PlaySound2D(GetWorld(), GameInstance->GetSoundData()->ZombieDeadSoundCue);
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD, ZombieAnimMontage);
 		ZombieAnimInstance->StopAttackBlend();
 		break;
@@ -163,6 +170,21 @@ void APPCharacterZombie::DecreaseHealth(const float Value)
 		GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		CurrentState = ECharacterState::Dead;
 		PlayPatternAnimMontage();
+	}
+}
+
+void APPCharacterZombie::IdleSoundCheck()
+{
+	bIsIdle = true;
+	APPZombieAIController* ZombieAIController = Cast<APPZombieAIController>(GetController());
+	if(ZombieAIController->GetTargetActor())
+	{
+		bIsIdle = false;
+	}
+	if(bIsIdle)
+	{
+		UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+		UGameplayStatics::PlaySound2D(GetWorld(), GameInstance->GetSoundData()->ZombieIdleSoundCue);
 	}
 }
 

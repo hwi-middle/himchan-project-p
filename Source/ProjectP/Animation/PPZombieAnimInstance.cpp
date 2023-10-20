@@ -8,6 +8,7 @@
 
 #include "ProjectP/Util/PPConstructorHelper.h"
 #include "ProjectP/Character/PPZombieData.h"
+#include "ProjectP/Game/PPGameInstance.h"
 
 UPPZombieAnimInstance::UPPZombieAnimInstance()
 {
@@ -55,6 +56,8 @@ void UPPZombieAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 void UPPZombieAnimInstance::AnimNotify_AttackHitCheckStart()
 {
 	HitCheckStartDelegate.Broadcast();
+	UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
+	UGameplayStatics::PlaySound2D(GetWorld(), GameInstance->GetSoundData()->ZombieAttackSoundCue);
 	GetWorld()->GetTimerManager().SetTimer(AnimBlendTimerHandle, this, &UPPZombieAnimInstance::AnimBlendSequence, 0.01f, true);
 }
 

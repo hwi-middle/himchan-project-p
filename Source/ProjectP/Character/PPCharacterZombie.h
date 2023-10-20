@@ -9,6 +9,7 @@
 #include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Enumeration/PPCharacterState.h"
 #include "NiagaraComponent.h"
+#include "Sound/SoundCue.h"
 #include "PPCharacterZombie.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FAICharacterPatternFinished)
@@ -62,6 +63,19 @@ public:
 	virtual void DecreaseHealth(const float Value) override;
 	FORCEINLINE const virtual float GetCurrentHealth() override { Super::GetCurrentHealth(); return Health; }
 
+	// 대기 상태 관련 함수
+private:
+	void IdleSoundCheck();
+	
+	// 대기 상태 관련 변수
+private:
+	FTimerHandle IdleSoundTimerHandle;
+
+	uint32 bIsIdle : 1;
+
+	UPROPERTY()
+	TObjectPtr<USoundCue> ZombieIdleSoundCue;
+	
 	// 공격 관련 함수
 private:
 	void CheckAttackHitResult();
