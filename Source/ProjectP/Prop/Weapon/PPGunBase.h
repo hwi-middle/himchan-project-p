@@ -6,6 +6,7 @@
 #include "ProjectP/Game/PPGameInstance.h"
 #include "ProjectP/Enumeration/PPGunState.h"
 #include "ProjectP/Prop/Weapon/PPWeaponData.h"
+#include "ProjectP/Character/PPCharacterZombie.h"
 #include "Sound/SoundCue.h"
 #include "Components/SpotLightComponent.h"
 #include "ProjectP/Constant/PPSkeletalMeshSocketName.h"
@@ -131,6 +132,9 @@ private:
 
 	UPROPERTY()
 	EControllerHand MainHandType;
+
+	UPROPERTY()
+	FVector HitLocation;
 	
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "CrossHair")

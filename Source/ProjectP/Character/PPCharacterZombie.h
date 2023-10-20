@@ -8,6 +8,7 @@
 #include "ProjectP/Character/PPZombieData.h"
 #include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Enumeration/PPCharacterState.h"
+#include "NiagaraComponent.h"
 #include "PPCharacterZombie.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FAICharacterPatternFinished)
@@ -30,6 +31,14 @@ protected:
 	virtual void BeginDestroy() override;
 	void SetDeadLoop();
 	void DestroyThis();
+
+private:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<class UNiagaraComponent> HitNiagaraEffect;
+	// 피격 이펙트 호출
+public:
+	UFUNCTION()
+	void TakeDamageEffect(FVector HitLocation);
 
 	// AI 호출
 	// AI 관련 클래스에서만 호출 가능하게 인자값으로 적절하게 무언가를 받는 방법을 고민하는 중이에요
