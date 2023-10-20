@@ -83,6 +83,7 @@ void APPCharacterZombie::BeginPlay()
 		ZombieAnimInstance->AttackAnimEndDelegate.AddUObject(this, &APPCharacterZombie::AttackFinishedNotify);
 		ZombieAnimInstance->DeadAnimEndDelegate.AddUObject(this, &APPCharacterZombie::SetDeadLoop);
 	}
+	GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 	bIsIdle = true;
 	GetWorldTimerManager().SetTimer(IdleSoundTimerHandle, this, &APPCharacterZombie::IdleSoundCheck, 3.f, true);
 }
@@ -144,7 +145,6 @@ void APPCharacterZombie::PlayPatternAnimMontage()
 		break;
 	case ECharacterState::Dead:
 		GetWorldTimerManager().ClearTimer(IdleSoundTimerHandle);
-		UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 		UGameplayStatics::PlaySound2D(GetWorld(), GameInstance->GetSoundData()->ZombieDeadSoundCue);
 		GetMesh()->GetAnimInstance()->Montage_JumpToSection(AM_SECTION_DEAD, ZombieAnimMontage);
 		ZombieAnimInstance->StopAttackBlend();
@@ -191,7 +191,6 @@ void APPCharacterZombie::IdleSoundCheck()
 	}
 	if(bIsIdle)
 	{
-		UPPGameInstance* GameInstance = GetWorld()->GetGameInstanceChecked<UPPGameInstance>();
 		UGameplayStatics::PlaySound2D(GetWorld(), GameInstance->GetSoundData()->ZombieIdleSoundCue);
 	}
 }

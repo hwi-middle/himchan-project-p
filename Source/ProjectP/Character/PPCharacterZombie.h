@@ -9,6 +9,7 @@
 #include "ProjectP/Character/PPCharacterEnemy.h"
 #include "ProjectP/Enumeration/PPCharacterState.h"
 #include "NiagaraComponent.h"
+#include "ProjectP/Game/PPGameInstance.h"
 #include "Sound/SoundCue.h"
 #include "PPCharacterZombie.generated.h"
 
@@ -137,4 +138,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UPPZombieAnimInstance> ZombieAnimInstance;
+
+	UPROPERTY()
+	TObjectPtr<UPPGameInstance> GameInstance;
 };
