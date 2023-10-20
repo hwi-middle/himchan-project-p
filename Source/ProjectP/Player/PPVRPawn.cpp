@@ -72,7 +72,6 @@ APPVRPawn::APPVRPawn()
 void APPVRPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	bIsRightHandMainly = false; // 이거 테스트 코드인데 안지우면 내가 개다
 	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
 	InitVROrigin();
 	InitVRHands();
